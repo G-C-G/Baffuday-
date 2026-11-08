@@ -33,4 +33,12 @@ window.SING = [
   { n: 2, label: "Rather not" },
   { n: 1, label: "Please no" }
 ];
-window.singOf = function (g) { return g && g.sing ? +g.sing : 3; };
+// Not ticking Karaoke sends someone to the bottom tier (still reachable as a last resort).
+window.singOf = function (g) { return g && g.involve && !g.involve.karaoke ? 1 : g && g.sing ? +g.sing : 3; };
+// What each guest wants to take part in. Old records without it: bee from the old field, others assumed yes.
+window.INVOLVE = [
+  { id: "bee", label: "Spelling bee" },
+  { id: "takes", label: "Hot takes" },
+  { id: "karaoke", label: "Karaoke" }
+];
+window.into = function (g, k) { return g && g.involve ? !!g.involve[k] : (k === "bee" ? g && g.bee === "yes" : true); };

@@ -2,7 +2,7 @@
 
 Static site, no build step. Open `index.html`.
 
-- `join.html` guest onboarding: name, karaoke song, spelling bee, hot-take picks, allergies and diet
+- `join.html` guest onboarding: name, what they want to take part in (spelling bee, hot takes, karaoke; any mix), karaoke song and willingness, hot-take picks (only shown if they tick Hot takes), allergies and diet
 - `host.html` guest list, allergy summary, karaoke "Surprise me", hot-take assignment, CSV export
 - `screen.html` projector view (home, menu, karaoke, hot take)
 
@@ -24,3 +24,7 @@ Everyone submits a song, then rates how they feel about performing (5 Put me on 
 3 I'll do it if called, 2 Rather not, 1 Please no). "Surprise me" draws at random from the most willing
 tier that still has people, so 1s and 2s are only reached last. `KARAOKE_TARGET` in `config.js` (15) drives
 the performed counter and a warning if too few people are willing.
+
+## Involvement
+Guests tick which of spelling bee, hot takes and karaoke they want to join. People who don't tick hot takes
+are never assigned a side. People who don't tick karaoke drop to the last karaoke tier (still reachable).

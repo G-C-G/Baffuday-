@@ -44,6 +44,10 @@
   <form id="f" class="wrap" style="gap:30px" autocomplete="off">
     <div class="field"><label class="k" for="name">Your name</label><input type="text" id="name" required maxlength="40" placeholder="First name and initial"></div>
 
+    <div class="field"><span class="k">What do you want to take part in?</span>
+      <div class="chips" id="inv"></div>
+      <span style="color:var(--muted);font-size:12px">Tick as many as you like. Everything is optional, and you can just watch.</span></div>
+
     <div class="field"><label class="k" for="song">Your karaoke song</label>
       <input type="text" id="song" required maxlength="100" placeholder="Song title and artist">
       <span style="color:var(--muted);font-size:12px">Pick one you can actually sing, or one you'd happily attempt.</span></div>
@@ -52,13 +56,7 @@
       <div class="chips" id="sing"></div>
       <span style="color:var(--muted);font-size:12px">Honest answers help. We'd rather hear from people who want to.</span></div>
 
-    <div class="field"><span class="k">Spelling bee</span>
-      <div class="chips" id="bee">
-        <label><input type="radio" name="bee" value="yes" checked> I'm in</label>
-        <label><input type="radio" name="bee" value="watch"> I'll watch</label>
-      </div></div>
-
-    <section class="wrap" style="gap:12px">
+    <section class="wrap" style="gap:12px" id="takesec">
       <div><span class="k">Hot takes</span>
         <p class="lede" style="margin:0">Pick your side on the ones you have a real opinion about, then say how strongly. Skip the rest. Answer honestly, not to be funny.</p></div>
       <div id="takes" class="wrap" style="gap:10px"></div>
@@ -97,6 +95,11 @@
   $("ttl").textContent = window.GCG_CONFIG.TITLE || "";
   if (store.demo) $("demo").hidden = false;
 
+  INVOLVE.forEach(function (o) {
+    var l = document.createElement("label"); l.innerHTML = '<input type="checkbox" data-i="' + o.id + '"> ' + o.label; $("inv").appendChild(l);
+  });
+  function showTakes() { $("takesec").style.display = document.querySelector('#inv [data-i=takes]').checked ? "" : "none"; }
+  $("inv").addEventListener("change", showTakes); showTakes();
   SING.forEach(function (o) {
     var l = document.createElement("label"); l.innerHTML = '<input type="radio" name="sing" value="' + o.n + '"> ' + o.label; $("sing").appendChild(l);
   });
@@ -134,7 +137,7 @@
   if (gid) store.get("guests/" + gid).then(function (g) {
     if (!g) return;
     $("name").value = g.name || ""; $("song").value = g.song || ""; if (g.sing) document.querySelector("input[name=sing][value=\"" + g.sing + "\"]").checked = true; $("allergy").value = g.allergies || ""; $("other").value = g.other || "";
-    document.querySelector('input[name=bee][value=' + (g.bee || "yes") + ']').checked = true;
+    INVOLVE.forEach(function (o) { document.querySelector("#inv [data-i=" + o.id + "]").checked = into(g, o.id); }); showTakes();
     document.querySelectorAll("#diet input").forEach(function (c) { c.checked = !!(g.diet && g.diet[c.value]); });
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
   });
@@ -145,10 +148,12 @@
     var missing = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; });
     if (missing.length) { $("err").textContent = "Pick how strongly you feel on: \"" + missing[0].q + "\""; document.getElementById("take-" + missing[0].id).scrollIntoView({ block: "center" }); return; }
     $("go").disabled = true;
+    var involve = {}; INVOLVE.forEach(function (o) { involve[o.id] = document.querySelector("#inv [data-i=" + o.id + "]").checked; });
+    if (!involve.takes) picks = {};
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
     var rec = {
       name: $("name").value.trim(), song: $("song").value.trim(), sing: +document.querySelector("input[name=sing]:checked").value,
-      bee: document.querySelector("input[name=bee]:checked").value,
+      involve: involve, bee: involve.bee ? "yes" : "watch",
       allergies: $("allergy").value.trim(), diet: diet, other: $("other").value.trim(),
       picks: picks, updatedAt: Date.now()
     };

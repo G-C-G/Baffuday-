@@ -25,3 +25,12 @@ window.SCALE = [
 ];
 // Picks are stored as { s: "agree"|"disagree", n: 1-5 }. Old string picks count as 3.
 window.pick = function (v) { return !v ? null : typeof v === "string" ? { s: v, n: 3 } : v; };
+// Karaoke willingness. Everyone still submits a song; this decides who is called first.
+window.SING = [
+  { n: 5, label: "Put me on first" },
+  { n: 4, label: "Happy to sing" },
+  { n: 3, label: "I'll do it if called" },
+  { n: 2, label: "Rather not" },
+  { n: 1, label: "Please no" }
+];
+window.singOf = function (g) { return g && g.sing ? +g.sing : 3; };

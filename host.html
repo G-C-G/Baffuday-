@@ -67,6 +67,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         <button class="btn ghost" id="kback">Hide</button>
         <span class="note" id="kinfo"></span>
       </div>
+      <div class="note" id="kqueue"></div>
     </div>
     <div>
       <span class="k">Hot takes</span>
@@ -109,14 +110,14 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var songs = L.filter(function (g) { return g.song; }).length;
     var perf = L.filter(function (g) { return g.performed; }).length;
     var bee = L.filter(function (g) { return g.bee === "yes"; }).length;
-    $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf, "Performed"], [bee, "In the bee"], [withAll, "Allergies"]]
+    $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf + " / " + (window.GCG_CONFIG.KARAOKE_TARGET || 15), "Performed / target"], [L.filter(function (g) { return singOf(g) >= 4; }).length, "Want to sing"], [bee, "In the bee"], [withAll, "Allergies"]]
       .map(function (s) { return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
 
-    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Bee</th><th>Takes picked</th><th>Done</th></tr>" +
+    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Sing</th><th>Bee</th><th>Takes picked</th><th>Done</th></tr>" +
       (L.map(function (g) {
-        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + esc(g.bee) + "</td><td>" +
+        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + singOf(g) + "/5</td><td>" + esc(g.bee) + "</td><td>" +
           Object.keys(g.picks || {}).length + '</td><td>' + (g.performed ? '<span class="ok">sung</span>' : '<span class="dim">-</span>') + "</td></tr>";
-      }).join("") || '<tr><td colspan="5" class="dim">No guests yet. Send them the join link.</td></tr>');
+      }).join("") || '<tr><td colspan="6" class="dim">No guests yet. Send them the join link.</td></tr>');
 
     var need = L.filter(function (g) { return g.allergies || g.other || Object.keys(g.diet || {}).length; });
     $("ft").innerHTML = "<tr><th>Name</th><th>Allergies</th><th>Diet</th><th>Other</th></tr>" +
@@ -126,7 +127,24 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
     $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
+    queue();
     preview();
+  }
+
+  // Karaoke: call the most willing people first, random within the best remaining tier.
+  function tier(g) { var n = singOf(g); return n >= 4 ? "A (4-5)" : n === 3 ? "B (3)" : n === 2 ? "C (2)" : "D (1)"; }
+  function pool() {
+    var left = list().filter(function (g) { return g.song && !g.performed; });
+    var best = left.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
+    return left.filter(function (g) { return tier(g) === best; });
+  }
+  function queue() {
+    var left = list().filter(function (g) { return g.song && !g.performed; }), t = {};
+    left.forEach(function (g) { t[tier(g)] = (t[tier(g)] || 0) + 1; });
+    var target = window.GCG_CONFIG.KARAOKE_TARGET || 15, done = list().filter(function (g) { return g.performed; }).length;
+    var willing = left.filter(function (g) { return singOf(g) >= 3; }).length;
+    $("kqueue").innerHTML = "Still to call by willingness: " + (Object.keys(t).sort().map(function (k) { return k + ": " + t[k]; }).join(" · ") || "none") +
+      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are willing to sing (3 or higher), below your target of " + target + ". Calling lower tiers will mean asking people who said they'd rather not.</span>" : "");
   }
 
   // Hot-take assignment: stance "agree" -> must argue AGAINST; "disagree" -> must argue FOR.
@@ -160,9 +178,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   $("modes").addEventListener("click", function (e) { var m = e.target.dataset && e.target.dataset.m; if (m) setState({ mode: m }).then(render); });
   $("kback").onclick = function () { setState({ mode: "home" }).then(render); };
   $("surprise").onclick = function () {
-    var pool = list().filter(function (g) { return g.song && !g.performed; });
-    if (!pool.length) { $("kinfo").textContent = "Everyone with a song has performed."; return; }
-    var g = pool[Math.floor(Math.random() * pool.length)];
+    var pool_ = pool();
+    if (!pool_.length) { $("kinfo").textContent = "Everyone with a song has performed."; return; }
+    var g = pool_[Math.floor(Math.random() * pool_.length)];
+    g.performed = true; // update locally now so a quick second press cannot pick the same person
     store.update("guests/" + g.id, { performed: true });
     setState({ mode: "karaoke", name: g.name, song: g.song }).then(render);
   };

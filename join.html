@@ -48,6 +48,10 @@
       <input type="text" id="song" required maxlength="100" placeholder="Song title and artist">
       <span style="color:var(--muted);font-size:12px">Pick one you can actually sing, or one you'd happily attempt.</span></div>
 
+    <div class="field"><span class="k">How do you feel about performing it?</span>
+      <div class="chips" id="sing"></div>
+      <span style="color:var(--muted);font-size:12px">Honest answers help. We'd rather hear from people who want to.</span></div>
+
     <div class="field"><span class="k">Spelling bee</span>
       <div class="chips" id="bee">
         <label><input type="radio" name="bee" value="yes" checked> I'm in</label>
@@ -93,6 +97,9 @@
   $("ttl").textContent = window.GCG_CONFIG.TITLE || "";
   if (store.demo) $("demo").hidden = false;
 
+  SING.forEach(function (o) {
+    var l = document.createElement("label"); l.innerHTML = '<input type="radio" name="sing" value="' + o.n + '"> ' + o.label; $("sing").appendChild(l);
+  });
   var box = $("takes");
   TAKES.forEach(function (t) {
     var d = document.createElement("div"); d.className = "take";
@@ -126,7 +133,7 @@
   var gid = null; try { gid = localStorage.getItem(ID_KEY); } catch (e) {}
   if (gid) store.get("guests/" + gid).then(function (g) {
     if (!g) return;
-    $("name").value = g.name || ""; $("song").value = g.song || ""; $("allergy").value = g.allergies || ""; $("other").value = g.other || "";
+    $("name").value = g.name || ""; $("song").value = g.song || ""; if (g.sing) document.querySelector("input[name=sing][value=\"" + g.sing + "\"]").checked = true; $("allergy").value = g.allergies || ""; $("other").value = g.other || "";
     document.querySelector('input[name=bee][value=' + (g.bee || "yes") + ']').checked = true;
     document.querySelectorAll("#diet input").forEach(function (c) { c.checked = !!(g.diet && g.diet[c.value]); });
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
@@ -134,12 +141,13 @@
 
   $("f").onsubmit = function (e) {
     e.preventDefault(); $("err").textContent = "";
+    if (!document.querySelector("input[name=sing]:checked")) { $("err").textContent = "Tell us how you feel about performing your song."; $("sing").scrollIntoView({ block: "center" }); return; }
     var missing = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; });
     if (missing.length) { $("err").textContent = "Pick how strongly you feel on: \"" + missing[0].q + "\""; document.getElementById("take-" + missing[0].id).scrollIntoView({ block: "center" }); return; }
     $("go").disabled = true;
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
     var rec = {
-      name: $("name").value.trim(), song: $("song").value.trim(),
+      name: $("name").value.trim(), song: $("song").value.trim(), sing: +document.querySelector("input[name=sing]:checked").value,
       bee: document.querySelector("input[name=bee]:checked").value,
       allergies: $("allergy").value.trim(), diet: diet, other: $("other").value.trim(),
       picks: picks, updatedAt: Date.now()

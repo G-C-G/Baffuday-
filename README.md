@@ -18,3 +18,9 @@ screen links private and delete the data after the party.
 
 ## Not built yet
 Spelling bee screens and word list; hot-take timers and scoring; a passcode on the host page.
+
+## Karaoke
+Everyone submits a song, then rates how they feel about performing (5 Put me on first, 4 Happy to sing,
+3 I'll do it if called, 2 Rather not, 1 Please no). "Surprise me" draws at random from the most willing
+tier that still has people, so 1s and 2s are only reached last. `KARAOKE_TARGET` in `config.js` (15) drives
+the performed counter and a warning if too few people are willing.

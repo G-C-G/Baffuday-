@@ -4,5 +4,6 @@
 window.GCG_CONFIG = {
   DB_URL: "",
   ROOT: "baffuday28",
-  TITLE: "Hinda's 28th"
+  TITLE: "Hinda's 28th",
+  KARAOKE_TARGET: 15
 };

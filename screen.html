@@ -34,12 +34,21 @@ body{padding:0;overflow:hidden;cursor:none;
 .sides .f h2{color:var(--mint)}.sides .a h2{color:var(--red)}
 .sides li{list-style:none;font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.2vw,44px);line-height:1.15}
 .sides ul{margin:0;padding:0}
+/* Result flashes: red + buzzer for wrong, yellow + confetti for right. Level 1-6 sets how big the celebration is. */
+body.res-no{background:#C0152C!important;--white:#fff;--muted:#ffd9de;--yellow:#fff}
+body.res-ok{background:#F5D76E!important;--white:#08183E;--muted:#2F4268;--yellow:#08183E;--mint:#08183E}
+body.res-no #stage .big,body.res-ok #stage .big{animation:pop .5s ease-out}
+body.shake #stage{animation:shake .45s linear 3}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-1.2vw,.5vw)}40%{transform:translate(1.2vw,-.5vw)}60%{transform:translate(-.8vw,-.4vw)}80%{transform:translate(.8vw,.4vw)}}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--mono);color:var(--dim);cursor:pointer;background:none;border:0}
 </style>
 </head>
 <body>
 <div id="stage"></div>
-<button class="fs" id="fs">fullscreen</button>
+<canvas id="fx"></canvas>
+<button class="fs" id="fs">click once to enable sound · fullscreen</button>
 <script src="config.js"></script>
 <script src="assets/store.js"></script>
 <script>
@@ -75,6 +84,61 @@ body{padding:0;overflow:hidden;cursor:none;
     var k = JSON.stringify(s); if (k === last) return; last = k;
     var el = document.getElementById("stage"); el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
     el.innerHTML = view(s);
+    react(s);
+  });
+
+  // ---- Right / wrong effects ----
+  var first = true, fx = document.getElementById("fx"), ctx2 = fx.getContext("2d"), parts = [], raf = 0, ac = null;
+  function audio() {
+    try { if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch (e) { ac = null; }
+    return ac;
+  }
+  document.addEventListener("click", function () { audio(); document.getElementById("fs").textContent = "fullscreen"; });
+  function tone(f, t0, dur, type, vol) {
+    var a = audio(); if (!a) return; var o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, a.currentTime + t0); g.gain.exponentialRampToValueAtTime(.001, a.currentTime + t0 + dur);
+    o.connect(g); g.connect(a.destination); o.start(a.currentTime + t0); o.stop(a.currentTime + t0 + dur + .05);
+  }
+  function noise(dur, vol) {
+    var a = audio(); if (!a) return; var n = a.sampleRate * dur, b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    var s = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 2500; g.gain.value = vol;
+    s.buffer = b; s.connect(f); f.connect(g); g.connect(a.destination); s.start();
+  }
+  function buzzer() { tone(110, 0, .45, "sawtooth", .8); tone(117, 0, .45, "square", .5); tone(98, .5, .7, "sawtooth", .8); tone(104, .5, .7, "square", .5); noise(.3, .5); }
+  function cheer(level) {
+    var notes = [523, 659, 784, 1047, 1319, 1568, 2093], count = 3 + level * 2, step = Math.max(.07, .16 - level * .015);
+    for (var i = 0; i < count; i++) tone(notes[i % notes.length] * (i >= 7 ? 2 : 1), i * step, .3, "triangle", .18 + level * .04);
+    noise(.4 + level * .35, .08 + level * .05);
+    if (level >= 4) { tone(262, count * step, 1.2, "sawtooth", .25); tone(392, count * step, 1.2, "sawtooth", .2); tone(523, count * step, 1.2, "sawtooth", .2); }
+  }
+  function confetti(n) {
+    fx.width = innerWidth; fx.height = innerHeight; var cols = ["#08183E", "#ffffff", "#D94050", "#3DBFA0", "#F0EDE4"];
+    for (var i = 0; i < n; i++) parts.push({ x: Math.random() * fx.width, y: -20 - Math.random() * fx.height * .5, vx: (Math.random() - .5) * 6, vy: 2 + Math.random() * 6, s: 6 + Math.random() * 10, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: cols[i % cols.length] });
+    cancelAnimationFrame(raf); (function step() {
+      ctx2.clearRect(0, 0, fx.width, fx.height);
+      parts.forEach(function (p) { p.x += p.vx; p.y += p.vy; p.vy += .06; p.r += p.vr; ctx2.save(); ctx2.translate(p.x, p.y); ctx2.rotate(p.r); ctx2.fillStyle = p.c; ctx2.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx2.restore(); });
+      parts = parts.filter(function (p) { return p.y < fx.height + 30; });
+      if (parts.length) raf = requestAnimationFrame(step); else ctx2.clearRect(0, 0, fx.width, fx.height);
+    })();
+  }
+  // Level 1-5 grows with the round and with how few people are left; 6 is the champion.
+  function levelFor(s) { return s.mode === "beewin" ? 6 : Math.min(5, (s.round || 1) + ((s.standing || 9) <= 3 ? 1 : 0)); }
+  function react(s) {
+    var b = document.body; b.classList.remove("res-ok", "res-no", "shake");
+    var wasFirst = first; first = false; // a page opened on an old result must not blast sound
+    var isRes = s.mode === "bee" && s.phase === "result", win = s.mode === "beewin";
+    if (!isRes && !win) return;
+    var ok = win || s.ok; b.classList.add(ok ? "res-ok" : "res-no");
+    if (wasFirst) return;
+    var lv = levelFor(s);
+    if (ok) { confetti([0, 40, 90, 170, 300, 450, 750][lv]); cheer(lv); if (lv >= 4) b.classList.add("shake"); }
+    else { buzzer(); b.classList.add("shake"); }
+  }
+  // Test keys on the projector: 1-5 celebration size, 6 champion, b buzzer.
+  document.addEventListener("keydown", function (e) {
+    if (e.key >= "1" && e.key <= "6") { confetti([0, 40, 90, 170, 300, 450, 750][+e.key]); cheer(+e.key); }
+    if (e.key === "b") buzzer();
   });
   document.getElementById("fs").onclick = function () { (document.documentElement.requestFullscreen || function () {}).call(document.documentElement); };
 })();

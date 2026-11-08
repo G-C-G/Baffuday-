@@ -314,6 +314,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   function renderBee() {
     var L = list(), a = alive(), e = entry(), c = curGuest();
+    $("bwin").className = a.length === 1 ? "btn" : "btn ghost";
     $("bstats").innerHTML = [[a.length, "Still standing"], [L.filter(function (g) { return bs(g).on; }).length, "Started on stage"], [((bee.n || 0) + 1) + " / " + BEE.length, "Prompt"], ["Round " + (bee.round || 1), BEE_ROUNDS[bee.round || 1]], [Math.min((bee.passDone || []).length, a.length + (bee.passDone || []).length) + " / " + (a.length + (bee.passDone || []).filter(function (id) { return !a.some(function (g) { return g.id === id; }); }).length), "Gone this round"]]
       .map(function (s) { return '<div class="stat"><b>' + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></div>"; }).join("");
     $("bcard").innerHTML = '<span class="k">Contestant</span><div style="font-size:22px;margin-bottom:12px">' + (c ? esc(c.name) : '<span class="dim">load sign-ups first</span>') +

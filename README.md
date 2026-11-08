@@ -60,3 +60,9 @@ Rounds advance by pass: everyone still standing gets one turn per round, then th
 The projector shows the sentence plus the possible spellings (in a random order). The contestant spells their answer
 out loud; the host taps the spelling they gave (or types something else) and the system marks it right or wrong
 against the correct word. Correct / Incorrect buttons remain as a manual override if the host mishears.
+
+## Right / wrong effects (projector)
+Wrong: the whole screen goes red, shakes, and a loud buzzer plays. Right: the screen goes yellow with confetti and a
+cheer that grows with the round and with how few people are left (levels 1-5). The champion screen is level 6, the biggest.
+Browsers block sound until someone clicks the projector page once, so click it before the night.
+Test keys on the projector page: 1-5 celebration sizes, 6 champion, b buzzer.

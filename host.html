@@ -54,7 +54,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     <a class="btn ghost" href="screen.html" target="_blank" style="text-decoration:none">Open screen</a>
   </div>
 
-  <section class="panel on" id="p-guests"><div class="tbl"><table id="gt"></table></div></section>
+  <section class="panel on" id="p-guests">
+    <div class="bar"><label class="btn ghost" style="cursor:pointer">Import answer PDFs<input type="file" id="imp" accept="application/pdf" multiple hidden></label>
+      <span class="note" id="impmsg">Guests download a PDF at the end of the form and send it to you. Pick as many as you like; importing the same PDF twice just updates that guest.</span></div>
+    <div class="tbl"><table id="gt"></table></div></section>
 
   <section class="panel" id="p-food"><div class="tbl"><table id="ft"></table></div></section>
 
@@ -124,6 +127,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 <script src="assets/takes.js"></script>
 <script src="assets/bee.js"></script>
 <script src="assets/store.js"></script>
+<script src="assets/answers.js"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -293,6 +297,24 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "guests.csv"; a.click();
   };
+
+  // ---- Import answer PDFs ----
+  $("imp").addEventListener("change", function () {
+    var files = Array.prototype.slice.call(this.files), self = this, ok = 0, bad = [];
+    $("impmsg").textContent = "Reading " + files.length + " file" + (files.length === 1 ? "" : "s") + "...";
+    files.reduce(function (chain, f) {
+      return chain.then(function () { return readAnswersPdf(f); }).then(function (rec) {
+        if (!rec || !rec.name) { bad.push(f.name); return; }
+        var id = rec._id || ("imp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)); delete rec._id;
+        var has = !!guests[id]; if (!has) rec.createdAt = rec.createdAt || Date.now();
+        guests[id] = Object.assign(guests[id] || {}, rec);
+        ok++; return has ? store.update("guests/" + id, rec) : store.set("guests/" + id, rec);
+      }).catch(function () { bad.push(f.name); });
+    }, Promise.resolve()).then(function () {
+      $("impmsg").textContent = "Imported " + ok + (bad.length ? ". Could not read: " + bad.join(", ") + " (not an answers PDF)." : ".");
+      self.value = ""; render(); drawTakes();
+    });
+  });
 
   // ---- Spelling bee: elimination, everyone on stage starts in; wrong answer sits down ----
   var bee = { n: 0, round: 1, passDone: [], cur: null, order: [] }, scored = false;

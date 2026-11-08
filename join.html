@@ -85,11 +85,15 @@
     <button class="btn" type="submit" id="go">Save my answers</button>
   </form>
 
-  <div class="done" id="done"><h2>You're on the list.</h2><p class="lede" style="margin:0">See you there. You can reopen this link any time to change your answers.</p></div>
+  <div class="done" id="done"><h2>You're on the list.</h2>
+    <p class="lede" id="donemsg" style="margin:0 0 14px">Download your answers as a PDF and send it to Hinda so they are in for the night. You can reopen this link any time to change them.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" id="dl">Download my answers (PDF)</button><button class="btn ghost" type="button" id="share" hidden>Share it</button></div></div>
 </main>
 <script src="config.js"></script>
 <script src="assets/takes.js"></script>
 <script src="assets/store.js"></script>
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/answers.js"></script>
 <script>
 (function () {
   var ID_KEY = "gcg-guest-id-" + (window.GCG_CONFIG.ROOT || "");
@@ -147,6 +151,14 @@
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
   });
 
+  function makePdfButtons(rec) {
+    var doc = makeAnswersPdf(rec), name = answersFileName(rec);
+    $("dl").onclick = function () { doc.save(name); };
+    try {
+      var file = new File([doc.output("blob")], name, { type: "application/pdf" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { $("share").hidden = false; $("share").onclick = function () { navigator.share({ files: [file], title: name }).catch(function () {}); }; }
+    } catch (e) {}
+  }
   $("f").onsubmit = function (e) {
     e.preventDefault(); $("err").textContent = "";
     if (!document.querySelector("input[name=sing]:checked")) { $("err").textContent = "Tell us how you feel about performing your song."; $("sing").scrollIntoView({ block: "center" }); return; }
@@ -163,6 +175,7 @@
     };
     var p = gid ? store.update("guests/" + gid, rec) : (rec.createdAt = Date.now(), store.push("guests", rec).then(function (id) { gid = id; try { localStorage.setItem(ID_KEY, id); } catch (e) {} }));
     Promise.resolve(p).then(function () {
+      rec._id = gid; makePdfButtons(rec);
       $("f").style.display = "none"; $("done").style.display = "block"; window.scrollTo(0, 0);
     }).catch(function () { $("err").textContent = "Could not save. Check your connection and try again."; $("go").disabled = false; });
   };

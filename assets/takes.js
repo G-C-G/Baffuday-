@@ -53,3 +53,25 @@ window.singOf = function (g) {
   var p = pref(g, "karaoke"), n = g && g.sing ? +g.sing : 3;
   return p === "not" ? 1 : p === "want" ? Math.max(n, 4) : n;
 };
+// Interaction score 0-10: activity preferences (0-6) + karaoke willingness (0-2) + how many takes they picked (0-2).
+window.engagement = function (g) {
+  var pv = { want: 2, ok: 1, not: 0 }, s = 0;
+  INVOLVE.forEach(function (o) { s += pv[pref(g, o.id)]; });
+  var sing = ((g.sing ? +g.sing : 3) - 1) / 4 * 2;
+  var np = Math.min(Object.keys(g.picks || {}).length, 4) / 4 * 2;
+  return Math.round((s + sing + np) * 10) / 10;
+};
+window.levelOf = function (score) { return score >= 7 ? "High" : score >= 4 ? "Medium" : "Low"; };
+// Has this guest been in at least one game yet? (karaoke, a hot-take reveal, the bee, or marked by hand)
+window.involved = function (g) { return !!(g.performed || (g.took && (g.took.takes || g.took.bee || g.took.manual))); };
+// Suggest the game they are least against, then the least exposed: hot takes, then bee, then karaoke.
+window.suggest = function (g) {
+  var rank = { want: 0, ok: 1, not: 2 }, order = ["takes", "bee", "karaoke"], best = null;
+  order.forEach(function (k) { if (best === null || rank[pref(g, k)] < rank[pref(g, best)]) best = k; });
+  return INVOLVE.filter(function (o) { return o.id === best; })[0].label;
+};
+// Spot the extremes: "All in" wants everything, "Watcher" wants none and is against at least two.
+window.kindOf = function (g) {
+  var w = 0, n = 0; INVOLVE.forEach(function (o) { var p = pref(g, o.id); if (p === "want") w++; if (p === "not") n++; });
+  return w === INVOLVE.length ? "All in" : (w === 0 && n >= 2 ? "Watcher" : "");
+};

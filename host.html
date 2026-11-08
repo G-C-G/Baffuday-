@@ -42,6 +42,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <div class="bar" id="tabs">
     <button class="btn ghost on" data-p="guests">Guests</button>
     <button class="btn ghost" data-p="food">Allergies &amp; diet</button>
+    <button class="btn ghost" data-p="people">Engagement</button>
     <button class="btn ghost" data-p="show">Show control</button>
     <span class="sp"></span>
     <button class="btn ghost" id="csv">Export CSV</button>
@@ -51,6 +52,12 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <section class="panel on" id="p-guests"><div class="tbl"><table id="gt"></table></div></section>
 
   <section class="panel" id="p-food"><div class="tbl"><table id="ft"></table></div></section>
+
+  <section class="panel" id="p-people">
+    <p class="note">Interaction score is 0-10, from what people said they would rather do, their karaoke willingness and how many hot takes they picked. Everyone should be in at least one game. People not yet in one are listed first, lowest score first, with the game they are least against.</p>
+    <div class="stats" id="pstats"></div>
+    <div class="tbl"><table id="pt"></table></div>
+  </section>
 
   <section class="panel" id="p-show">
     <div>
@@ -73,6 +80,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <span class="k">Hot takes</span>
       <div class="takepick" id="takepick"></div>
       <div class="bar" style="margin-top:10px">
+        <label class="k" for="perside" style="margin:0">People per side (0 = everyone)</label>
+        <input type="text" id="perside" value="4" inputmode="numeric" style="width:70px">
         <button class="btn ghost" id="tshow">1. Show take</button>
         <button class="btn" id="treveal">2. Reveal sides</button>
       </div>
@@ -128,8 +137,27 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
     queue();
+    people(L);
     preview();
   }
+
+  function people(L) {
+    var rows = L.map(function (g) { var s = engagement(g); return { g: g, s: s, lv: levelOf(s), inn: involved(g), kind: kindOf(g) }; });
+    var cnt = function (lv) { return rows.filter(function (r) { return r.lv === lv; }).length; };
+    $("pstats").innerHTML = [[rows.filter(function (r) { return r.kind === "All in"; }).length, "All in"], [cnt("High"), "Most likely to interact"], [cnt("Medium"), "Medium"], [cnt("Low"), "Hard to draw in"], [rows.filter(function (r) { return r.kind === "Watcher"; }).length, "Watchers"], [rows.filter(function (r) { return !r.inn; }).length, "Not in a game yet"]]
+      .map(function (s) { return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
+    rows.sort(function (x, y) { return (x.inn - y.inn) || (x.s - y.s); });
+    $("pt").innerHTML = "<tr><th>Name</th><th>Score</th><th>Level</th><th>Type</th><th>Been in</th><th>Suggest</th><th></th></tr>" +
+      (rows.map(function (r) {
+        var t = r.g.took || {}, been = [r.g.performed ? "karaoke" : "", t.takes ? "hot takes x" + t.takes : "", t.bee ? "bee" : "", t.manual ? "marked" : ""].filter(Boolean).join(", ");
+        return "<tr><td>" + esc(r.g.name) + "</td><td>" + r.s + '</td><td class="' + (r.lv === "Low" ? "flag" : r.lv === "High" ? "ok" : "") + '">' + r.lv + '</td><td class="' + (r.kind === "Watcher" ? "flag" : "ok") + '">' + r.kind + "</td><td>" + (been || '<span class="flag">not yet</span>') + "</td><td>" +
+          (r.inn ? '<span class="dim">-</span>' : esc(suggest(r.g))) + '</td><td>' + (r.inn ? "" : '<button class="btn ghost" data-mark="' + r.g.id + '" style="padding:6px 10px">Mark in</button>') + "</td></tr>";
+      }).join("") || '<tr><td colspan="7" class="dim">No guests yet.</td></tr>');
+  }
+  $("pt").addEventListener("click", function (e) {
+    var id = e.target.dataset && e.target.dataset.mark; if (!id) return;
+    var g = guests[id]; g.took = g.took || {}; g.took.manual = true; store.update("guests/" + id, { took: g.took }); render();
+  });
 
   // Karaoke: call the most willing people first, random within the best remaining tier.
   function tier(g) { var n = singOf(g); return n >= 4 ? "A (4-5)" : n === 3 ? "B (3)" : n === 2 ? "C (2)" : "D (1)"; }
@@ -147,31 +175,39 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are willing to sing (3 or higher), below your target of " + target + ". Calling lower tiers will mean asking people who said they'd rather not.</span>" : "");
   }
 
-  // Hot-take assignment: stance "agree" -> must argue AGAINST; "disagree" -> must argue FOR.
+  // Hot-take assignment: a pick of "agree" argues AGAINST; "disagree" argues FOR.
+  // If "people per side" is set, order decides who is in: rather-do first, "rather not" last,
+  // then people who have not yet been in a hot take, then the strongest feelings.
   function assignment(tid) {
-    var out = { argueFor: [], argueAgainst: [], open: [] };
+    var per = +$("perside").value || 0, t = TAKES.filter(function (x) { return x.id === tid; })[0];
+    var out = { argueFor: [], argueAgainst: [], waiting: [], open: [] };
     list().forEach(function (g) {
-      var p = into(g, "takes") ? pick((g.picks || {})[tid]) : null;
+      var p = pick((g.picks || {})[tid]);
       if (!p) { out.open.push(g.name); return; }
-      var side = opposite(p.s);
-      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: p.s, n: p.n, label: (function () { var t = TAKES.filter(function (x) { return x.id === tid; })[0]; return p.s === "agree" ? t.a : t.b; })() });
+      var side = opposite(p.s), pf = pref(g, "takes");
+      (side === "agree" ? out.argueFor : out.argueAgainst).push({ id: g.id, name: g.name, real: p.s, n: p.n, pf: pf,
+        label: p.s === "agree" ? t.a : t.b, rank: { want: 0, ok: 1, not: 2 }[pf], done: (g.took && g.took.takes) || 0 });
     });
-    out.argueFor.sort(function (a, b) { return b.n - a.n; });
-    out.argueAgainst.sort(function (a, b) { return b.n - a.n; });
+    ["argueFor", "argueAgainst"].forEach(function (k) {
+      out[k].sort(function (x, y) { return x.rank - y.rank || x.done - y.done || y.n - x.n; });
+      if (per) { out.waiting = out.waiting.concat(out[k].slice(per)); out[k] = out[k].slice(0, per); }
+    });
     return out;
   }
   function preview() {
     var a = assignment(takeId);
     function col(cls, title, arr) {
       return '<div class="side ' + cls + '"><h3>' + title + " (" + arr.length + ')</h3><ul>' +
-        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(picked ' + esc(p.label) + ", " + p.n + "/5)</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
+        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(picked ' + esc(p.label) + ", " + p.n + "/5" + (p.pf === "not" ? ", rather not" : p.pf === "want" ? ", keen" : "") + (p.done ? ", been in " + p.done : "") + ")</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
     }
     $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
-      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK OR NOT TAKING PART (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";
+      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">WAITING (' + a.waiting.length + ')</h3><span class="dim">' + (esc(a.waiting.map(function (p) { return p.name; }).join(", ")) || "nobody") + '</span></div>' +
+      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";
     document.querySelectorAll("#takepick button").forEach(function (b) { b.classList.toggle("on", b.dataset.t === takeId); });
   }
 
   $("takepick").innerHTML = TAKES.map(function (t, i) { return '<button data-t="' + t.id + '">' + (i + 1) + ". " + esc(t.text) + "</button>"; }).join("");
+  $("perside").addEventListener("input", preview);
   $("takepick").addEventListener("click", function (e) { var t = e.target.dataset && e.target.dataset.t; if (t) { takeId = t; preview(); } });
 
   function setState(o) { state = o; return store.set("state", o); }
@@ -182,7 +218,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     if (!pool_.length) { $("kinfo").textContent = "Everyone with a song has performed."; return; }
     var g = pool_[Math.floor(Math.random() * pool_.length)];
     g.performed = true; // update locally now so a quick second press cannot pick the same person
-    store.update("guests/" + g.id, { performed: true });
+    g.took = g.took || {}; g.took.karaoke = true;
+    store.update("guests/" + g.id, { performed: true, took: g.took });
     setState({ mode: "karaoke", name: g.name, song: g.song }).then(render);
   };
   $("tshow").onclick = function () {
@@ -191,6 +228,13 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   };
   $("treveal").onclick = function () {
     var t = TAKES.filter(function (x) { return x.id === takeId; })[0], a = assignment(takeId);
+    if (!(state.mode === "hottake" && state.reveal && state.takeId === takeId)) {
+      a.argueFor.concat(a.argueAgainst).forEach(function (p) {
+        var g = guests[p.id]; if (!g) return;
+        g.took = g.took || {}; g.took.takes = (g.took.takes || 0) + 1;
+        store.update("guests/" + p.id, { took: g.took });
+      });
+    }
     setState({ mode: "hottake", takeId: t.id, text: t.text, reveal: true,
       argueFor: a.argueFor.map(function (p) { return p.name; }), argueAgainst: a.argueAgainst.map(function (p) { return p.name; }) }).then(render);
   };

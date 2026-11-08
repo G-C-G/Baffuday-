@@ -27,5 +27,11 @@ the performed counter and a warning if too few people are willing.
 
 ## Preferences (last step of the form)
 For each of spelling bee, hot takes and karaoke: "rather do", "either way" (default) or "rather not".
-"Rather not" on hot takes means never assigned a side. On karaoke it drops them to the last tier (still reachable);
+"Rather not" on hot takes puts them last in line for a side (set "people per side" on the host panel to cut each side down). On karaoke it drops them to the last tier (still reachable);
 "rather do" lifts them to at least tier 4.
+
+## Engagement tab (host)
+Scores everyone 0-10 (preferences, karaoke willingness, hot takes picked), labels them High / Medium / Low,
+and tags "All in" (wants all three) and "Watcher" (wants none, against at least two). Everyone should be in
+at least one game: people not yet in one are listed first, lowest score first, with the game they are least against.
+Karaoke calls and hot-take reveals mark people in automatically; "Mark in" covers the spelling bee until it is built.

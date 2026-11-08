@@ -71,6 +71,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     <div class="bar">
       <button class="btn ghost" id="brules">Rules on screen</button>
       <button class="btn ghost" id="bstage">Stage count on screen</button>
+      <button class="btn ghost" id="bcall">Call up contestant</button>
       <button class="btn" id="bshow">Show sentence</button>
       <button class="btn" id="bok">Correct ✓</button>
       <button class="btn red" id="bno">Incorrect ✕</button>
@@ -288,14 +289,14 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   };
 
   // ---- Spelling bee: elimination, everyone on stage starts in; wrong answer sits down ----
-  var bee = { n: 0, cur: null, order: [] }, scored = false;
+  var bee = { n: 0, round: 1, passDone: [], cur: null, order: [] }, scored = false;
   var bs = function (g) { return g.beeStat || {}; };
   function alive() {
     var by = {}; list().forEach(function (g) { by[g.id] = g; });
     return (bee.order || []).map(function (id) { return by[id]; }).filter(function (g) { return g && bs(g).on && !bs(g).out; });
   }
   function nextAfter(id) {
-    var ord = bee.order || [], a = alive(), ids = a.map(function (g) { return g.id; });
+    var ord = bee.order || [], done = bee.passDone || [], a = alive().filter(function (g) { return done.indexOf(g.id) < 0; }), ids = a.map(function (g) { return g.id; });
     if (!a.length) return null;
     var i = ord.indexOf(id);
     for (var k = 1; k <= ord.length; k++) { var c = ord[(i + k + ord.length) % ord.length]; if (ids.indexOf(c) >= 0) return c; }
@@ -307,7 +308,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   function renderBee() {
     var L = list(), a = alive(), e = entry(), c = curGuest();
-    $("bstats").innerHTML = [[a.length, "Still standing"], [L.filter(function (g) { return bs(g).on; }).length, "Started on stage"], [((bee.n || 0) + 1) + " / " + BEE.length, "Prompt"], ["Round " + e[0], BEE_ROUNDS[e[0]]]]
+    $("bstats").innerHTML = [[a.length, "Still standing"], [L.filter(function (g) { return bs(g).on; }).length, "Started on stage"], [((bee.n || 0) + 1) + " / " + BEE.length, "Prompt"], ["Round " + (bee.round || 1), BEE_ROUNDS[bee.round || 1]], [Math.min((bee.passDone || []).length, a.length + (bee.passDone || []).length) + " / " + (a.length + (bee.passDone || []).filter(function (id) { return !a.some(function (g) { return g.id === id; }); }).length), "Gone this round"]]
       .map(function (s) { return '<div class="stat"><b>' + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></div>"; }).join("");
     $("bcard").innerHTML = '<span class="k">Contestant</span><div style="font-size:22px;margin-bottom:12px">' + (c ? esc(c.name) : '<span class="dim">load sign-ups first</span>') +
       '</div><span class="k">The word (host only)</span><div style="font-family:var(--serif);font-style:italic;font-size:44px;line-height:1">' + esc(e[3]) + "</div>" +
@@ -332,7 +333,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var ids = list().filter(function (g) { return pref(g, "bee") === "want"; }).map(function (g) { return g.id; });
     for (var i = ids.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
     list().forEach(function (g) { var s = ids.indexOf(g.id) >= 0 ? { on: true, out: false, score: 0, turns: 0 } : { on: false }; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); });
-    bee = { n: 0, cur: ids[0] || null, order: ids }; scored = false; saveBee(); renderBee();
+    bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids }; scored = false; saveBee(); renderBee();
   };
   $("brules").onclick = function () { setState({ mode: "beerules" }); };
   $("bstage").onclick = function () { var c = curGuest(); setState({ mode: "beestage", standing: alive().length, next: c ? c.name : "" }); };
@@ -346,18 +347,27 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       var s = c.beeStat || { on: true }; s.turns = (s.turns || 0) + 1; if (ok) s.score = (s.score || 0) + 1; else s.out = true;
       c.beeStat = s; c.took = c.took || {}; c.took.bee = (c.took.bee || 0) + 1;
       store.update("guests/" + c.id, { beeStat: s, took: c.took });
+      bee.passDone = (bee.passDone || []).concat(c.id); saveBee();
     }
     setState({ mode: "bee", phase: "result", ok: ok, round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], contestant: c ? c.name : "",
       answer: e[3], alts: e[4].map(function (w) { return { w: w, m: BEE_W[w] || "", right: w === e[3] }; }), standing: alive().length }).then(function () { render(); renderBee(); });
   }
   $("bok").onclick = function () { result(true); };
   $("bno").onclick = function () { result(false); };
+  // Everyone still on stage gets one turn per round; when they have all gone, the next round (harder) starts.
+  function callUp() { var c = curGuest(); return setState({ mode: "beecall", name: c ? c.name : "", round: bee.round || 1, standing: alive().length }); }
   $("bnext").onclick = function () {
-    bee.n = Math.min((bee.n || 0) + 1, BEE.length - 1); bee.cur = nextAfter(bee.cur); scored = false; saveBee();
-    var c = curGuest(); setState({ mode: "beestage", standing: alive().length, next: c ? c.name : "" }).then(renderBee);
+    var done = bee.passDone || [], left = alive().filter(function (g) { return done.indexOf(g.id) < 0; });
+    if (!left.length) {
+      bee.passDone = []; bee.round = Math.min((bee.round || 1) + 1, 5);
+      var i = (bee.n || 0) + 1; while (i < BEE.length - 1 && BEE[i][0] < bee.round) i++;
+      bee.n = Math.min(i, BEE.length - 1);
+    } else bee.n = Math.min((bee.n || 0) + 1, BEE.length - 1);
+    bee.cur = nextAfter(bee.cur); scored = false; saveBee(); callUp().then(renderBee);
   };
+  $("bcall").onclick = function () { callUp(); };
   $("bwin").onclick = function () { var a = alive(); setState({ mode: "beewin", name: a.length === 1 ? a[0].name : a.map(function (g) { return g.name; }).join(" & ") }); };
-  store.subscribe("setup/bee", function (v) { bee = v || { n: 0, cur: null, order: [] }; if (!bee.order) bee.order = []; renderBee(); });
+  store.subscribe("setup/bee", function (v) { bee = v || { n: 0, cur: null, order: [] }; if (!bee.order) bee.order = []; if (!bee.passDone) bee.passDone = []; if (!bee.round) bee.round = 1; renderBee(); });
 
   store.subscribe("guests", function (v) { guests = v || {}; render(); drawTakes(); renderBee(); });
   store.subscribe("state", function (v) { state = v || {}; render(); });

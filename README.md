@@ -52,3 +52,7 @@ Untick "Play" on the ones you are leaving out; that choice is saved.
 screen. The projector shows only the sentence; the host sees the word, the question to ask and the sentence to read.
 Correct: they stay on. Incorrect: they sit down and the projector reveals all spellings with meanings.
 Last one standing wins. The rules slide, a "still standing" count and a winner slide are on the projector too.
+
+Rounds advance by pass: everyone still standing gets one turn per round, then the next, harder round starts
+(prompts 1-10 easy through 41-50 hardest). "Next prompt" calls the next person up on the projector by name;
+"Show sentence" then puts their sentence on screen. Correct / Incorrect updates the table; wrong sits them down.

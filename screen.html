@@ -55,6 +55,7 @@ body{padding:0;overflow:hidden;cursor:none;
       '<div class="note"><b>ALLERGIES</b>Tell Hinda or the host before you eat. Any dish can be checked.</div></div>';
     if (s.mode === "beerules") return '<div><span class="badge">THE EVIL SPELLING BEE</span><div class="sides" style="text-align:left"><div class="f"><h2>YOU MAY ASK FOR</h2><ul><li>Definition</li><li>Sentence</li><li>Part of speech</li></ul></div><div class="a"><h2>YOU MAY NOT ASK FOR</h2><ul><li>The first letter</li><li>The number of letters</li><li>Another sentence</li><li>The word in a different context</li></ul></div></div></div>';
     if (s.mode === "beestage") return '<div><span class="badge">SPELLING BEE</span><div class="big" style="font-size:clamp(70px,16vw,240px)">' + esc(s.standing) + '</div><div class="sub">still standing</div>' + (s.next ? '<div class="sub" style="color:var(--yellow)">Up next: ' + esc(s.next) + '</div>' : "") + '</div>';
+    if (s.mode === "beecall") return '<div><span class="badge">ROUND ' + esc(s.round) + '</span><div class="big">' + esc(s.name) + '</div><div class="sub" style="color:var(--yellow)">to the stage</div><div class="sub">' + esc(s.standing) + ' still standing</div></div>';
     if (s.mode === "beewin") return '<div><span class="badge">LAST ONE STANDING</span><div class="big">' + esc(s.name) + '</div><div class="sub" style="color:var(--yellow)">Spelling bee champion</div></div>';
     if (s.mode === "bee") {
       var head = '<span class="badge">ROUND ' + esc(s.round) + '</span>';

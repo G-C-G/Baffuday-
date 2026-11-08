@@ -1,17 +1,18 @@
 // The 11 hot takes, in the order they will be played (easy warm-ups first).
 window.TAKES = [
-  { id: "pineapple", text: "Pineapple belongs on pizza." },
-  { id: "shower",    text: "Showering at night is better than showering in the morning." },
-  { id: "cereal",    text: "Cereal is better eaten dry than with milk." },
-  { id: "onread",    text: "It's acceptable to leave someone on read for three days." },
-  { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof." },
-  { id: "dramatic",  text: "Men are actually more dramatic than women." },
-  { id: "firstmove", text: "Women should make the first move." },
-  { id: "leaders",   text: "Women are better leaders than men." },
-  { id: "homemaker", text: "A woman can be the sole breadwinner and the man should be the primary homemaker." },
-  { id: "partners",  text: "Men make better partners than women." },
-  { id: "president", text: "The next President of Ghana should be under 40." }
+  { id: "pineapple", text: "Pineapple belongs on pizza.", q: "Pineapple on pizza?", a: "Belongs on it", b: "Never" },
+  { id: "shower",    text: "Showering at night is better than showering in the morning.", q: "When should you shower?", a: "Night", b: "Morning" },
+  { id: "cereal",    text: "Cereal is better eaten dry than with milk.", q: "How do you eat cereal?", a: "Dry", b: "With milk" },
+  { id: "onread",    text: "It's acceptable to leave someone on read for three days.", q: "Leaving someone on read for three days?", a: "Acceptable", b: "Not acceptable" },
+  { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof.", q: "Whose jollof wins?", a: "Nigerian", b: "Ghanaian" },
+  { id: "dramatic",  text: "Men are actually more dramatic than women.", q: "Who is more dramatic?", a: "Men", b: "Women" },
+  { id: "firstmove", text: "Women should make the first move.", q: "Who should make the first move?", a: "Women should", b: "Women shouldn't have to" },
+  { id: "leaders",   text: "Women are better leaders than men.", q: "Who are better leaders?", a: "Women", b: "Men" },
+  { id: "homemaker", text: "A woman can be the sole breadwinner and the man should be the primary homemaker.", q: "Woman as sole breadwinner, man as primary homemaker?", a: "Works for me", b: "Not for me" },
+  { id: "partners",  text: "Men make better partners than women.", q: "Who make better partners?", a: "Men", b: "Women" },
+  { id: "president", text: "The next President of Ghana should be under 40.", q: "The next President of Ghana?", a: "Under 40", b: "40 or older" }
 ];
+// Each take is asked as a question with two answers. a = the side the take text states (stored "agree"), b = the other ("disagree").
 // A guest's stored pick is "agree" or "disagree". The game gives them the OPPOSITE side.
 window.opposite = function (stance) { return stance === "agree" ? "disagree" : "agree"; };
 // Scale shown to guests.

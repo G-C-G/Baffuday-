@@ -136,7 +136,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       var p = pick((g.picks || {})[tid]);
       if (!p) { out.open.push(g.name); return; }
       var side = opposite(p.s);
-      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: p.s, n: p.n });
+      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: p.s, n: p.n, label: (function () { var t = TAKES.filter(function (x) { return x.id === tid; })[0]; return p.s === "agree" ? t.a : t.b; })() });
     });
     out.argueFor.sort(function (a, b) { return b.n - a.n; });
     out.argueAgainst.sort(function (a, b) { return b.n - a.n; });
@@ -146,7 +146,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var a = assignment(takeId);
     function col(cls, title, arr) {
       return '<div class="side ' + cls + '"><h3>' + title + " (" + arr.length + ')</h3><ul>' +
-        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(really ' + (p.real === "agree" ? "agrees" : "disagrees") + ", " + p.n + "/5)</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
+        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(picked ' + esc(p.label) + ", " + p.n + "/5)</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
     }
     $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
       '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";

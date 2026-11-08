@@ -56,7 +56,7 @@
 
     <section class="wrap" style="gap:12px">
       <div><span class="k">Hot takes</span>
-        <p class="lede" style="margin:0">Tap the ones you have a strong opinion on, for or against. Skip the rest. Pick as many as you like, but only the ones you really mean.</p></div>
+        <p class="lede" style="margin:0">Pick your side on the ones you have a real opinion about, then say how strongly. Skip the rest. Answer honestly, not to be funny.</p></div>
       <div id="takes" class="wrap" style="gap:10px"></div>
     </section>
 
@@ -96,14 +96,15 @@
   var box = $("takes");
   TAKES.forEach(function (t) {
     var d = document.createElement("div"); d.className = "take";
-    d.innerHTML = '<p></p><div class="pair"><button type="button" data-s="agree">I agree</button><button type="button" data-s="disagree">I disagree</button></div><p class="q">How strongly do you feel?</p><div class="scale"></div>';
+    d.innerHTML = '<p></p><div class="pair"><button type="button" data-s="agree"></button><button type="button" data-s="disagree"></button></div><p class="q">How strongly do you feel?</p><div class="scale"></div>';
     var sc = d.querySelector(".scale");
     SCALE.forEach(function (o) {
       var x = document.createElement("button"); x.type = "button"; x.dataset.n = o.n; x.innerHTML = "<b>" + o.n + "</b>" + o.label;
       x.onclick = function () { if (picks[t.id]) { picks[t.id].n = o.n; paint(); } };
       sc.appendChild(x);
     });
-    d.querySelector("p").textContent = t.text;
+    d.querySelector("p").textContent = t.q;
+    d.querySelector("[data-s=agree]").textContent = t.a; d.querySelector("[data-s=disagree]").textContent = t.b;
     d.querySelectorAll(".pair button").forEach(function (b) {
       b.onclick = function () {
         var s = b.dataset.s;
@@ -134,7 +135,7 @@
   $("f").onsubmit = function (e) {
     e.preventDefault(); $("err").textContent = "";
     var missing = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; });
-    if (missing.length) { $("err").textContent = "Pick how strongly you feel on: \"" + missing[0].text + "\""; document.getElementById("take-" + missing[0].id).scrollIntoView({ block: "center" }); return; }
+    if (missing.length) { $("err").textContent = "Pick how strongly you feel on: \"" + missing[0].q + "\""; document.getElementById("take-" + missing[0].id).scrollIntoView({ block: "center" }); return; }
     $("go").disabled = true;
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
     var rec = {

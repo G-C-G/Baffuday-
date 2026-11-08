@@ -45,6 +45,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   <div class="bar" id="tabs">
     <button class="btn ghost on" data-p="guests">Guests</button>
+    <button class="btn ghost" data-p="roster">Who's coming</button>
     <button class="btn ghost" data-p="food">Allergies &amp; diet</button>
     <button class="btn ghost" data-p="people">Engagement</button>
     <button class="btn ghost" data-p="bee">Spelling bee</button>
@@ -58,6 +59,17 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     <div class="bar"><label class="btn ghost" style="cursor:pointer">Import answer PDFs<input type="file" id="imp" accept="application/pdf" multiple hidden></label>
       <span class="note" id="impmsg">Guests download a PDF at the end of the form and send it to you. Pick as many as you like; importing the same PDF twice just updates that guest.</span></div>
     <div class="tbl"><table id="gt"></table></div></section>
+
+  <section class="panel" id="p-roster">
+    <p class="note">Paste everyone you are expecting, one per line (a phone number after a comma is optional). As answer PDFs come in they tick people off by name, so you can see who has not sent theirs.</p>
+    <textarea id="rtext" placeholder="Ama Kwarteng, 024 000 0001&#10;Kofi Mensah&#10;Esi Boateng" style="min-height:130px"></textarea>
+    <div class="bar"><button class="btn" id="rsave">Save the list</button><span class="note" id="rmsg"></span></div>
+    <div class="stats" id="rstats"></div>
+    <div class="tbl"><table id="rt"></table></div>
+    <div id="runm"></div>
+    <div id="rchase" style="display:none"><span class="k">Not yet (to chase)</span><textarea id="rchasetext" readonly style="min-height:110px"></textarea>
+      <div class="bar" style="margin-top:8px"><button class="btn ghost" id="rcopy">Copy this list</button></div></div>
+  </section>
 
   <section class="panel" id="p-food"><div class="tbl"><table id="ft"></table></div></section>
 
@@ -173,6 +185,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
     queue();
     people(L);
+    renderRoster();
     preview();
   }
 
@@ -297,6 +310,64 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "guests.csv"; a.click();
   };
+
+  // ---- Expected guests: who has sent their answers? ----
+  var roster = {}; // slug -> { name, phone }
+  var norm = function (s) { return String(s || "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim(); };
+  function parts(s) { var p = norm(s).split(" "); return { first: p[0] || "", last: p.slice(1).join(" ") }; }
+  // 3 = same name, 2 = same first name and matching last name or initial, 1 = same first name only (needs a human)
+  function score(g, r) {
+    if (norm(g.name) === norm(r.name)) return 3;
+    var a = parts(g.name), b = parts(r.name); if (!a.first || a.first !== b.first) return 0;
+    if (a.last && b.last && (a.last === b.last || ((a.last.length === 1 || b.last.length === 1) && a.last[0] === b.last[0]))) return 2;
+    return 1;
+  }
+  function mapRoster() {
+    var L = list(), res = {}, used = {};
+    L.forEach(function (g) { if (g.rosterId && roster[g.rosterId]) { res[g.rosterId] = g; used[g.id] = 1; } });
+    Object.keys(roster).forEach(function (k) {
+      if (res[k]) return; var best = null, bs = 0, n = 0;
+      L.forEach(function (g) { if (used[g.id] || g.rosterId) return; var s = score(g, roster[k]); if (s >= 2) { if (s > bs) { best = g; bs = s; n = 1; } else if (s === bs) n++; } });
+      if (best && n === 1) { res[k] = best; used[best.id] = 1; }
+    });
+    return { res: res, used: used, L: L };
+  }
+  function renderRoster() {
+    var keys = Object.keys(roster), m = mapRoster();
+    var done = keys.filter(function (k) { return m.res[k]; }).length;
+    $("rstats").innerHTML = keys.length ? [[done + " / " + keys.length, "Sent their answers"], [keys.length - done, "Still to chase"]].map(function (s) { return '<div class="stat"><b>' + s[0] + "</b><span>" + s[1] + "</span></div>"; }).join("") : "";
+    $("rt").innerHTML = keys.length ? "<tr><th>Expected</th><th>Status</th><th>Came in as</th></tr>" + keys.slice().sort(function (a, b) { return (m.res[a] ? 1 : 0) - (m.res[b] ? 1 : 0); }).map(function (k) {
+      var g = m.res[k], r = roster[k];
+      return "<tr><td>" + esc(r.name) + (r.phone ? ' <span class="dim">' + esc(r.phone) + "</span>" : "") + "</td><td>" + (g ? '<span class="ok">sent</span>' : '<span class="flag">not yet</span>') + "</td><td>" + (g ? esc(g.name) : "") + "</td></tr>";
+    }).join("") : "";
+    var unm = m.L.filter(function (g) { return !m.used[g.id] && g.rosterId !== "-"; });
+    $("runm").innerHTML = keys.length && unm.length ? '<span class="k">Answers that do not match anyone on the list</span><div class="tbl"><table><tr><th>Came in as</th><th>This is</th></tr>' + unm.map(function (g) {
+      var opts = keys.filter(function (k) { return !m.res[k]; }).sort(function (a, b) { return score(g, roster[b]) - score(g, roster[a]); });
+      return "<tr><td>" + esc(g.name) + '</td><td><select data-rlink="' + g.id + '" style="max-width:260px"><option value="">Choose...</option>' + opts.map(function (k) { return '<option value="' + esc(k) + '">' + esc(roster[k].name) + (score(g, roster[k]) ? " (possible)" : "") + "</option>"; }).join("") + '<option value="-">Not on my list (plus one, etc.)</option></select></td></tr>';
+    }).join("") + "</table></div>" : "";
+    var chase = keys.filter(function (k) { return !m.res[k]; }).map(function (k) { return roster[k].name + (roster[k].phone ? ", " + roster[k].phone : ""); });
+    $("rchase").style.display = chase.length ? "block" : "none"; $("rchasetext").value = chase.join("\n");
+  }
+  $("runm").addEventListener("change", function (e) {
+    var id = e.target.dataset && e.target.dataset.rlink, v = e.target.value; if (!id || !v) return;
+    guests[id].rosterId = v; store.update("guests/" + id, { rosterId: v }); render(); renderRoster();
+  });
+  $("rsave").onclick = function () {
+    var out = {}, seen = {};
+    $("rtext").value.split("\n").forEach(function (ln) {
+      var i = ln.indexOf(","), name = (i < 0 ? ln : ln.slice(0, i)).trim(), phone = i < 0 ? "" : ln.slice(i + 1).trim(); if (!name) return;
+      var slug = norm(name).replace(/ /g, "-") || "x"; seen[slug] = (seen[slug] || 0) + 1; if (seen[slug] > 1) slug += "-" + seen[slug];
+      out[slug] = { name: name, phone: phone };
+    });
+    roster = out; store.set("setup/roster", out).then(function () { $("rmsg").textContent = "Saved " + Object.keys(out).length + " people."; renderRoster(); });
+  };
+  $("rcopy").onclick = function () {
+    var ta = $("rchasetext"); ta.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).then(function () { $("rmsg").textContent = "Copied."; }, function () { document.execCommand && document.execCommand("copy"); $("rmsg").textContent = "Selected, press copy."; });
+  };
+  store.subscribe("setup/roster", function (v) {
+    roster = v || {}; if (document.activeElement !== $("rtext")) $("rtext").value = Object.keys(roster).map(function (k) { return roster[k].name + (roster[k].phone ? ", " + roster[k].phone : ""); }).join("\n"); renderRoster();
+  });
 
   // ---- Import answer PDFs ----
   $("imp").addEventListener("change", function () {

@@ -75,3 +75,9 @@ and a file that is not an answers PDF is reported and skipped. `assets/jspdf.umd
 in the repo so it works without internet.
 Limits: letters outside basic Latin show as "?" in the readable PDF text (the code inside is exact); people who fill the
 form on two different browsers get two entries (match is by an id stored in the browser).
+
+## Who's coming (host panel)
+Paste your expected guests, one per line (optional phone after a comma). Imported or submitted answers tick people off
+by name; "Ama K." matches "Ama Kwarteng" automatically, and anything uncertain goes into a small "does not match
+anyone" list where you pick who it is or mark it as a plus-one. The table shows who has sent and who has not, and a
+chase list of the rest can be copied.

@@ -40,3 +40,8 @@ Karaoke calls and hot-take reveals mark people in automatically; "Mark in" cover
 When "people per side" cuts a side down, people are called in this order: strong feelings (4-5) who are keen,
 strong with no preference, strong but "rather not", medium (3), medium "rather not", then weak feelings (1-2).
 Within a group, people who have not yet been in a hot take go first.
+
+## Choosing tonight's takes
+The form collects all 11, but you won't play them all. On the host panel's Show control tab, each take shows
+how many people picked it, the split between the two sides, how many feel strongly (4-5) and the average strength.
+Untick "Play" on the ones you are leaving out; that choice is saved.

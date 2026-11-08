@@ -22,6 +22,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 .flag{color:var(--red)}.ok{color:var(--mint)}.dim{color:var(--dim)}
 .takepick{display:flex;gap:6px;flex-wrap:wrap}
 .takepick button{font:inherit;font-size:12px;padding:8px 12px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;text-align:left}
+.takepick .row{display:flex;gap:8px;align-items:stretch;width:100%}
+.takepick .row button{flex:1}
+.takepick .row label{display:flex;align-items:center;gap:6px;border:1px solid var(--border);padding:0 10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.takepick .row.off button{opacity:.55}
 .takepick button.on{border-color:var(--yellow);color:var(--yellow);background:rgba(8,24,62,.07)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:560px){.two{grid-template-columns:1fr}}
@@ -206,9 +210,26 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     document.querySelectorAll("#takepick button").forEach(function (b) { b.classList.toggle("on", b.dataset.t === takeId); });
   }
 
-  $("takepick").innerHTML = TAKES.map(function (t, i) { return '<button data-t="' + t.id + '">' + (i + 1) + ". " + esc(t.text) + "</button>"; }).join("");
+  var inplay = {}; // take id -> false when left out tonight (saved so it survives a refresh)
+  function drawTakes() {
+    var L = list();
+    $("takepick").innerHTML = TAKES.map(function (t, i) {
+      var ps = L.map(function (g) { return into(g, "takes") ? pick((g.picks || {})[t.id]) : null; }).filter(Boolean);
+      var a = ps.filter(function (p) { return p.s === "agree"; }).length, avg = ps.length ? (ps.reduce(function (s, p) { return s + p.n; }, 0) / ps.length).toFixed(1) : "-";
+      var strong = ps.filter(function (p) { return p.n >= 4; }).length, on = inplay[t.id] !== false;
+      return '<div class="row' + (on ? "" : " off") + '"><button data-t="' + t.id + '">' + (i + 1) + ". " + esc(t.text) +
+        '<br><span class="dim">' + ps.length + " picks (" + a + " / " + (ps.length - a) + " split), " + strong + " strong, avg " + avg + '</span></button>' +
+        '<label><input type="checkbox" data-play="' + t.id + '"' + (on ? " checked" : "") + "> Play</label></div>";
+    }).join("");
+    preview();
+  }
+  $("takepick").addEventListener("change", function (e) {
+    var id = e.target.dataset && e.target.dataset.play; if (!id) return;
+    inplay[id] = e.target.checked; store.set("setup/inplay", inplay); drawTakes();
+  });
+  store.subscribe("setup/inplay", function (v) { inplay = v || {}; drawTakes(); });
   $("perside").addEventListener("input", preview);
-  $("takepick").addEventListener("click", function (e) { var t = e.target.dataset && e.target.dataset.t; if (t) { takeId = t; preview(); } });
+  $("takepick").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-t]"); if (b) { takeId = b.dataset.t; preview(); } });
 
   function setState(o) { state = o; return store.set("state", o); }
   $("modes").addEventListener("click", function (e) { var m = e.target.dataset && e.target.dataset.m; if (m) setState({ mode: m }).then(render); });
@@ -246,7 +267,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "guests.csv"; a.click();
   };
 
-  store.subscribe("guests", function (v) { guests = v || {}; render(); });
+  store.subscribe("guests", function (v) { guests = v || {}; render(); drawTakes(); });
   store.subscribe("state", function (v) { state = v || {}; render(); });
 })();
 </script>

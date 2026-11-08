@@ -35,6 +35,9 @@ body{padding:0;overflow:hidden;cursor:none;
 .sides li{list-style:none;font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.2vw,44px);line-height:1.15}
 .sides ul{margin:0;padding:0}
 /* Result flashes: red + buzzer for wrong, yellow + confetti for right. Level 1-6 sets how big the celebration is. */
+/* The name screen: yellow ground, blue accents (the brand look). Other screens stay dark for the room. */
+body.home{background:#F5D76E!important;--white:#08183E;--yellow:#08183E;--mint:#08183E;--muted:#2F4268}
+body.home .big{font-size:clamp(48px,11vw,170px)}
 body.res-no{background:#C0152C!important;--white:#fff;--muted:#ffd9de;--yellow:#fff}
 body.res-ok{background:#F5D76E!important;--white:#08183E;--muted:#2F4268;--yellow:#08183E;--mint:#08183E}
 body.res-no #stage .big,body.res-ok #stage .big{animation:pop .5s ease-out}
@@ -77,7 +80,7 @@ body.shake #stage{animation:shake .45s linear 3}
       '<div class="sub">Your song has been selected: <span style="color:var(--yellow)">' + esc(s.song) + '</span></div><div class="big" style="font-size:clamp(30px,5vw,70px);margin-top:3vw;color:var(--mint)">You\'re up.</div></div>';
     if (s.mode === "hottake") return '<div style="max-width:1300px"><span class="badge">HOT TAKE</span><div class="big" style="font-size:clamp(32px,5.6vw,84px)">' + esc(s.text) + '</div>' +
       (s.reveal ? '<div class="sub" style="color:var(--yellow);letter-spacing:.2em;text-transform:uppercase">Tonight you argue the opposite</div><div class="sides"><div class="f"><h2>ARGUE FOR</h2><ul>' + li(s.argueFor) + '</ul></div><div class="a"><h2>ARGUE AGAINST</h2><ul>' + li(s.argueAgainst) + '</ul></div></div>' : "") + '</div>';
-    return '<div><p class="tag">The game night</p><div class="big">' + esc(title).replace(/^(\S+)/, "<span>$1</span>") + '</div></div>';
+    return '<div><p class="tag">The game night</p><div class="big">' + esc(title) + '</div></div>';
   }
   store.subscribe("state", function (s) {
     s = s || { mode: "home" };
@@ -125,7 +128,8 @@ body.shake #stage{animation:shake .45s linear 3}
   // Level 1-5 grows with the round and with how few people are left; 6 is the champion.
   function levelFor(s) { return s.mode === "beewin" ? 6 : Math.min(5, (s.round || 1) + ((s.standing || 9) <= 3 ? 1 : 0)); }
   function react(s) {
-    var b = document.body; b.classList.remove("res-ok", "res-no", "shake");
+    var b = document.body; b.classList.remove("res-ok", "res-no", "shake", "home");
+    if (s.mode !== "menu" && s.mode !== "karaoke" && s.mode !== "hottake" && s.mode !== "bee" && s.mode !== "beerules" && s.mode !== "beestage" && s.mode !== "beecall" && s.mode !== "beewin") b.classList.add("home");
     var wasFirst = first; first = false; // a page opened on an old result must not blast sound
     var isRes = s.mode === "bee" && s.phase === "result", win = s.mode === "beewin";
     if (!isRes && !win) return;

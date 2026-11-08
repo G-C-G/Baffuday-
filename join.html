@@ -21,6 +21,11 @@
 .pair button{font:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer}
 .pair button.on[data-s=agree]{background:var(--mint);color:var(--bg);border-color:var(--mint)}
 .pair button.on[data-s=disagree]{background:var(--red);color:#fff;border-color:var(--red)}
+.scale{display:none;gap:6px;flex-wrap:wrap}.scale.show{display:flex}
+.scale button{font:inherit;font-size:11px;padding:7px 10px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;text-align:left;flex:1 1 auto}
+.scale button.on{border-color:var(--yellow);color:var(--yellow);background:rgba(245,215,110,.08)}
+.scale b{font-family:var(--bebas);font-weight:400;font-size:18px;margin-right:6px}
+.q{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin:0;display:none}.q.show{display:block}
 .done{border:1px solid rgba(61,191,160,.4);background:rgba(61,191,160,.08);padding:18px;display:none}
 .done h2{font-family:var(--serif);font-style:italic;font-size:30px;margin-bottom:6px}
 .err{color:var(--red);min-height:1.2em;margin:0}
@@ -91,12 +96,18 @@
   var box = $("takes");
   TAKES.forEach(function (t) {
     var d = document.createElement("div"); d.className = "take";
-    d.innerHTML = '<p></p><div class="pair"><button type="button" data-s="agree">I agree</button><button type="button" data-s="disagree">I disagree</button></div>';
+    d.innerHTML = '<p></p><div class="pair"><button type="button" data-s="agree">I agree</button><button type="button" data-s="disagree">I disagree</button></div><p class="q">How strongly do you feel?</p><div class="scale"></div>';
+    var sc = d.querySelector(".scale");
+    SCALE.forEach(function (o) {
+      var x = document.createElement("button"); x.type = "button"; x.dataset.n = o.n; x.innerHTML = "<b>" + o.n + "</b>" + o.label;
+      x.onclick = function () { if (picks[t.id]) { picks[t.id].n = o.n; paint(); } };
+      sc.appendChild(x);
+    });
     d.querySelector("p").textContent = t.text;
-    d.querySelectorAll("button").forEach(function (b) {
+    d.querySelectorAll(".pair button").forEach(function (b) {
       b.onclick = function () {
         var s = b.dataset.s;
-        if (picks[t.id] === s) delete picks[t.id]; else picks[t.id] = s;
+        if (picks[t.id] && picks[t.id].s === s) delete picks[t.id]; else picks[t.id] = { s: s, n: picks[t.id] ? picks[t.id].n : 0 };
         paint();
       };
     });
@@ -104,9 +115,10 @@
   });
   function paint() {
     TAKES.forEach(function (t) {
-      document.querySelectorAll("#take-" + t.id + " button").forEach(function (b) {
-        b.classList.toggle("on", picks[t.id] === b.dataset.s);
-      });
+      var p = picks[t.id], root = document.getElementById("take-" + t.id);
+      root.querySelectorAll(".pair button").forEach(function (b) { b.classList.toggle("on", !!p && p.s === b.dataset.s); });
+      root.querySelector(".q").classList.toggle("show", !!p); root.querySelector(".scale").classList.toggle("show", !!p);
+      root.querySelectorAll(".scale button").forEach(function (b) { b.classList.toggle("on", !!p && p.n === +b.dataset.n); });
     });
   }
 
@@ -116,11 +128,14 @@
     $("name").value = g.name || ""; $("song").value = g.song || ""; $("allergy").value = g.allergies || ""; $("other").value = g.other || "";
     document.querySelector('input[name=bee][value=' + (g.bee || "yes") + ']').checked = true;
     document.querySelectorAll("#diet input").forEach(function (c) { c.checked = !!(g.diet && g.diet[c.value]); });
-    picks = g.picks || {}; paint();
+    picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
   });
 
   $("f").onsubmit = function (e) {
-    e.preventDefault(); $("err").textContent = ""; $("go").disabled = true;
+    e.preventDefault(); $("err").textContent = "";
+    var missing = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; });
+    if (missing.length) { $("err").textContent = "Pick how strongly you feel on: \"" + missing[0].text + "\""; document.getElementById("take-" + missing[0].id).scrollIntoView({ block: "center" }); return; }
+    $("go").disabled = true;
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
     var rec = {
       name: $("name").value.trim(), song: $("song").value.trim(),

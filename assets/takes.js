@@ -14,3 +14,13 @@ window.TAKES = [
 ];
 // A guest's stored pick is "agree" or "disagree". The game gives them the OPPOSITE side.
 window.opposite = function (stance) { return stance === "agree" ? "disagree" : "agree"; };
+// Scale shown to guests.
+window.SCALE = [
+  { n: 1, label: "Whatever" },
+  { n: 2, label: "Mildly" },
+  { n: 3, label: "I have opinions" },
+  { n: 4, label: "Don't start with me" },
+  { n: 5, label: "I will argue about this" }
+];
+// Picks are stored as { s: "agree"|"disagree", n: 1-5 }. Old string picks count as 3.
+window.pick = function (v) { return !v ? null : typeof v === "string" ? { s: v, n: 3 } : v; };

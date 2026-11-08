@@ -75,7 +75,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         <button class="btn ghost" id="tshow">1. Show take</button>
         <button class="btn" id="treveal">2. Reveal sides</button>
       </div>
-      <p class="note">Guests picked the side they actually hold. The reveal gives each person the OPPOSITE. Guests who skipped this take are not assigned; split them by hand.</p>
+      <p class="note">Guests picked the side they actually hold. The reveal gives each person the OPPOSITE. Strongest feelings are listed first (1 to 5). Guests who skipped this take are not assigned; split them by hand.</p>
       <div class="two" id="preview"></div>
     </div>
   </section>
@@ -133,18 +133,20 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   function assignment(tid) {
     var out = { argueFor: [], argueAgainst: [], open: [] };
     list().forEach(function (g) {
-      var s = (g.picks || {})[tid];
-      if (!s) { out.open.push(g.name); return; }
-      var side = opposite(s);
-      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: s });
+      var p = pick((g.picks || {})[tid]);
+      if (!p) { out.open.push(g.name); return; }
+      var side = opposite(p.s);
+      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: p.s, n: p.n });
     });
+    out.argueFor.sort(function (a, b) { return b.n - a.n; });
+    out.argueAgainst.sort(function (a, b) { return b.n - a.n; });
     return out;
   }
   function preview() {
     var a = assignment(takeId);
     function col(cls, title, arr) {
       return '<div class="side ' + cls + '"><h3>' + title + " (" + arr.length + ')</h3><ul>' +
-        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(really ' + (p.real === "agree" ? "agrees" : "disagrees") + ")</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
+        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(really ' + (p.real === "agree" ? "agrees" : "disagrees") + ", " + p.n + "/5)</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
     }
     $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
       '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";
@@ -176,7 +178,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   $("csv").onclick = function () {
     var rows = [["name", "song", "bee", "allergies", "diet", "other"].concat(TAKES.map(function (t) { return t.id; }))];
-    list().forEach(function (g) { rows.push([g.name, g.song, g.bee, g.allergies, dietText(g), g.other].concat(TAKES.map(function (t) { return (g.picks || {})[t.id] || ""; }))); });
+    list().forEach(function (g) { rows.push([g.name, g.song, g.bee, g.allergies, dietText(g), g.other].concat(TAKES.map(function (t) { var p = pick((g.picks || {})[t.id]); return p ? p.s + " " + p.n : ""; }))); });
     var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "guests.csv"; a.click();
   };

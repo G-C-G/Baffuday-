@@ -7,7 +7,7 @@ Static site, no build step. Open `index.html`.
 - `screen.html` projector view (home, menu, karaoke, hot take)
 
 ## Hot-take trick
-Guests pick "I agree" or "I disagree" on the takes they feel strongly about. The host reveal assigns each
+Guests pick "I agree" or "I disagree" on the takes they feel strongly about, then rate 1-5 (Whatever, Mildly, I have opinions, Don't start with me, I will argue about this). The host reveal assigns each
 person the OPPOSITE side (agree -> argue against, disagree -> argue for). The join form never says this.
 
 ## Going live

@@ -16,7 +16,7 @@ For the real night, create a Firebase Realtime Database, paste its URL into `DB_
 allow read/write on the `baffuday28` path. Anyone with the URL can read guest data, so keep the host and
 screen links private and delete the data after the party.
 
-## Not built yet
+## Not built yet (old list)
 Spelling bee screens and word list; hot-take timers and scoring; a passcode on the host page.
 
 ## Karaoke
@@ -45,3 +45,10 @@ Within a group, people who have not yet been in a hot take go first.
 The form collects all 11, but you won't play them all. On the host panel's Show control tab, each take shows
 how many people picked it, the split between the two sides, how many feel strongly (4-5) and the average strength.
 Untick "Play" on the ones you are leaving out; that choice is saved.
+
+## Spelling bee (host panel, "Spelling bee" tab)
+50 homophone prompts in 5 rounds (`assets/bee.js`). Everyone who chose "rather do" the bee starts on stage
+("Load sign-ups onto stage"; add or remove people in the table). The contestant stands with their back to the
+screen. The projector shows only the sentence; the host sees the word, the question to ask and the sentence to read.
+Correct: they stay on. Incorrect: they sit down and the projector reveals all spellings with meanings.
+Last one standing wins. The rules slide, a "still standing" count and a winner slide are on the projector too.

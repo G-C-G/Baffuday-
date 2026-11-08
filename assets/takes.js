@@ -35,10 +35,21 @@ window.SING = [
 ];
 // Not ticking Karaoke sends someone to the bottom tier (still reachable as a last resort).
 window.singOf = function (g) { return g && g.involve && !g.involve.karaoke ? 1 : g && g.sing ? +g.sing : 3; };
-// What each guest wants to take part in. Old records without it: bee from the old field, others assumed yes.
+// Activities. Each guest says, at the end of the form, which they'd rather do and which they'd rather not.
 window.INVOLVE = [
   { id: "bee", label: "Spelling bee" },
   { id: "takes", label: "Hot takes" },
   { id: "karaoke", label: "Karaoke" }
 ];
-window.into = function (g, k) { return g && g.involve ? !!g.involve[k] : (k === "bee" ? g && g.bee === "yes" : true); };
+// Returns "want", "ok" (either way) or "not". Old records: bee from the old field, true = want, else ok.
+window.pref = function (g, k) {
+  var v = g && g.involve ? g.involve[k] : (k === "bee" && g && g.bee === "yes" ? "want" : "ok");
+  return v === true ? "want" : v === "want" || v === "not" ? v : "ok";
+};
+// Taking part = not "rather not".
+window.into = function (g, k) { return pref(g, k) !== "not"; };
+// Karaoke order: willingness scale, raised to 4 if they'd rather do karaoke, dropped to 1 if they'd rather not.
+window.singOf = function (g) {
+  var p = pref(g, "karaoke"), n = g && g.sing ? +g.sing : 3;
+  return p === "not" ? 1 : p === "want" ? Math.max(n, 4) : n;
+};

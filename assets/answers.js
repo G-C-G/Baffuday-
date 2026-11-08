@@ -4,7 +4,7 @@
   var TAG = "GCGDATA:";
   function enc(rec) { return btoa(unescape(encodeURIComponent(JSON.stringify(rec)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
   function dec(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return JSON.parse(decodeURIComponent(escape(atob(s)))); }
-  function ascii(s) { return String(s == null ? "" : s).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E -ÿ]/g, "?"); }
+  function ascii(s) { return String(s == null ? "" : s).replace(/[\u2013\u2014]/g, "-").replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E -ÿ]/g, "?"); }
 
   // rec: the guest record plus _id. Returns a jsPDF document.
   window.makeAnswersPdf = function (rec) {

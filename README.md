@@ -66,3 +66,12 @@ Wrong: the whole screen goes red, shakes, and a loud buzzer plays. Right: the sc
 cheer that grows with the round and with how few people are left (levels 1-5). The champion screen is level 6, the biggest.
 Browsers block sound until someone clicks the projector page once, so click it before the night.
 Test keys on the projector page: 1-5 celebration sizes, 6 champion, b buzzer.
+
+## Answers PDF (works with no database)
+At the end of the join form, guests download a PDF of their answers (or share it on a phone that supports it) and send
+it to the host, for example on WhatsApp. The PDF is readable and also carries the answers as a code, so on the host
+panel's Guests tab "Import answer PDFs" reads many files at once. Importing the same PDF again updates that guest,
+and a file that is not an answers PDF is reported and skipped. `assets/jspdf.umd.min.js` is jsPDF 2.5.1 (MIT), kept
+in the repo so it works without internet.
+Limits: letters outside basic Latin show as "?" in the readable PDF text (the code inside is exact); people who fill the
+form on two different browsers get two entries (match is by an id stored in the browser).

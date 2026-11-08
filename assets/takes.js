@@ -75,3 +75,13 @@ window.kindOf = function (g) {
   var w = 0, n = 0; INVOLVE.forEach(function (o) { var p = pref(g, o.id); if (p === "want") w++; if (p === "not") n++; });
   return w === INVOLVE.length ? "All in" : (w === 0 && n >= 2 ? "Watcher" : "");
 };
+// Hot-take call order (lower = called first). n is the 1-5 strength, pf is "want" | "ok" | "not".
+// Strong feelings beat everything else, even "rather not" (the host can try to talk those people round).
+//   0 strong (4-5), rather do   1 strong, either way   2 strong, rather not
+//   3 medium (3), rather do or either way   4 medium, rather not   5 weak feelings (1-2)
+window.takeRank = function (n, pf) {
+  if (n <= 2) return 5;
+  if (n >= 4) return pf === "want" ? 0 : pf === "ok" ? 1 : 2;
+  return pf === "not" ? 4 : 3;
+};
+window.RANK_LABEL = ["strong + keen", "strong", "strong, rather not", "medium", "medium, rather not", "weak feelings"];

@@ -176,8 +176,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   }
 
   // Hot-take assignment: a pick of "agree" argues AGAINST; "disagree" argues FOR.
-  // If "people per side" is set, order decides who is in: rather-do first, "rather not" last,
-  // then people who have not yet been in a hot take, then the strongest feelings.
+  // If "people per side" is set, order decides who is in: strongest feelings who are keen first,
+  // "rather not" near the end, weak feelings last; within a group, people not yet in a hot take go first.
   function assignment(tid) {
     var per = +$("perside").value || 0, t = TAKES.filter(function (x) { return x.id === tid; })[0];
     var out = { argueFor: [], argueAgainst: [], waiting: [], open: [] };
@@ -186,7 +186,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       if (!p) { out.open.push(g.name); return; }
       var side = opposite(p.s), pf = pref(g, "takes");
       (side === "agree" ? out.argueFor : out.argueAgainst).push({ id: g.id, name: g.name, real: p.s, n: p.n, pf: pf,
-        label: p.s === "agree" ? t.a : t.b, rank: { want: 0, ok: 1, not: 2 }[pf], done: (g.took && g.took.takes) || 0 });
+        label: p.s === "agree" ? t.a : t.b, rank: takeRank(p.n, pf), done: (g.took && g.took.takes) || 0 });
     });
     ["argueFor", "argueAgainst"].forEach(function (k) {
       out[k].sort(function (x, y) { return x.rank - y.rank || x.done - y.done || y.n - x.n; });
@@ -198,7 +198,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var a = assignment(takeId);
     function col(cls, title, arr) {
       return '<div class="side ' + cls + '"><h3>' + title + " (" + arr.length + ')</h3><ul>' +
-        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(picked ' + esc(p.label) + ", " + p.n + "/5" + (p.pf === "not" ? ", rather not" : p.pf === "want" ? ", keen" : "") + (p.done ? ", been in " + p.done : "") + ")</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
+        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(picked ' + esc(p.label) + ", " + p.n + "/5" + ", " + RANK_LABEL[p.rank] + (p.done ? ", been in " + p.done : "") + ")</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
     }
     $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
       '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">WAITING (' + a.waiting.length + ')</h3><span class="dim">' + (esc(a.waiting.map(function (p) { return p.name; }).join(", ")) || "nobody") + '</span></div>' +

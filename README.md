@@ -35,3 +35,8 @@ Scores everyone 0-10 (preferences, karaoke willingness, hot takes picked), label
 and tags "All in" (wants all three) and "Watcher" (wants none, against at least two). Everyone should be in
 at least one game: people not yet in one are listed first, lowest score first, with the game they are least against.
 Karaoke calls and hot-take reveals mark people in automatically; "Mark in" covers the spelling bee until it is built.
+
+## Hot-take call order
+When "people per side" cuts a side down, people are called in this order: strong feelings (4-5) who are keen,
+strong with no preference, strong but "rather not", medium (3), medium "rather not", then weak feelings (1-2).
+Within a group, people who have not yet been in a hot take go first.

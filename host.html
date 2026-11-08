@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Host panel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar .sp{flex:1}
+.panel{display:none;gap:16px}.panel.on{display:grid}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{border:1px solid var(--border);padding:12px 14px}.stat b{display:block;font-family:var(--bebas);font-weight:400;font-size:34px;color:var(--yellow);line-height:1}
+.stat span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--border)}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yellow);font-weight:400}
+.flag{color:var(--red)}.ok{color:var(--mint)}.dim{color:var(--dim)}
+.takepick{display:flex;gap:6px;flex-wrap:wrap}
+.takepick button{font:inherit;font-size:12px;padding:8px 12px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;text-align:left}
+.takepick button.on{border-color:var(--yellow);color:var(--yellow);background:rgba(245,215,110,.07)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.side{border:1px solid var(--border);padding:14px}
+.side h3{font-family:var(--bebas);letter-spacing:.2em;font-size:20px;margin-bottom:8px}
+.side.f h3{color:var(--mint)}.side.a h3{color:var(--red)}
+.side li{list-style:none}.side ul{margin:0;padding:0}
+.note{color:var(--muted);font-size:12px;max-width:70ch}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header><p class="eyebrow" id="ttl"></p><h1>Host <span>panel</span></h1>
+    <p class="note" id="demo" hidden>Demo mode: data is local to this browser. Add the database URL in config.js to go live.</p></header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="bar" id="tabs">
+    <button class="btn ghost on" data-p="guests">Guests</button>
+    <button class="btn ghost" data-p="food">Allergies &amp; diet</button>
+    <button class="btn ghost" data-p="show">Show control</button>
+    <span class="sp"></span>
+    <button class="btn ghost" id="csv">Export CSV</button>
+    <a class="btn ghost" href="screen.html" target="_blank" style="text-decoration:none">Open screen</a>
+  </div>
+
+  <section class="panel on" id="p-guests"><div class="tbl"><table id="gt"></table></div></section>
+
+  <section class="panel" id="p-food"><div class="tbl"><table id="ft"></table></div></section>
+
+  <section class="panel" id="p-show">
+    <div>
+      <span class="k">Screen mode</span>
+      <div class="bar" id="modes">
+        <button class="btn ghost" data-m="home">Home</button>
+        <button class="btn ghost" data-m="menu">Menu</button>
+      </div>
+    </div>
+    <div>
+      <span class="k">Karaoke</span>
+      <div class="bar">
+        <button class="btn" id="surprise">Surprise me</button>
+        <button class="btn ghost" id="kback">Hide</button>
+        <span class="note" id="kinfo"></span>
+      </div>
+    </div>
+    <div>
+      <span class="k">Hot takes</span>
+      <div class="takepick" id="takepick"></div>
+      <div class="bar" style="margin-top:10px">
+        <button class="btn ghost" id="tshow">1. Show take</button>
+        <button class="btn" id="treveal">2. Reveal sides</button>
+      </div>
+      <p class="note">Guests picked the side they actually hold. The reveal gives each person the OPPOSITE. Guests who skipped this take are not assigned; split them by hand.</p>
+      <div class="two" id="preview"></div>
+    </div>
+  </section>
+</main>
+<script src="config.js"></script>
+<script src="assets/takes.js"></script>
+<script src="assets/store.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var guests = [], state = {}, takeId = TAKES[0].id;
+  $("ttl").textContent = window.GCG_CONFIG.TITLE || "";
+  if (store.demo) $("demo").hidden = false;
+
+  $("tabs").addEventListener("click", function (e) {
+    var p = e.target.dataset && e.target.dataset.p; if (!p) return;
+    document.querySelectorAll("#tabs [data-p]").forEach(function (b) { b.classList.toggle("on", b === e.target); });
+    document.querySelectorAll(".panel").forEach(function (s) { s.classList.toggle("on", s.id === "p-" + p); });
+  });
+
+  function list() {
+    return Object.keys(guests || {}).map(function (id) { var g = guests[id]; g.id = id; return g; })
+      .sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+  }
+  function dietText(g) { return Object.keys(g.diet || {}).join(", "); }
+
+  function render() {
+    var L = list();
+    var withAll = L.filter(function (g) { return g.allergies; }).length;
+    var songs = L.filter(function (g) { return g.song; }).length;
+    var perf = L.filter(function (g) { return g.performed; }).length;
+    var bee = L.filter(function (g) { return g.bee === "yes"; }).length;
+    $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf, "Performed"], [bee, "In the bee"], [withAll, "Allergies"]]
+      .map(function (s) { return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
+
+    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Bee</th><th>Takes picked</th><th>Done</th></tr>" +
+      (L.map(function (g) {
+        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + esc(g.bee) + "</td><td>" +
+          Object.keys(g.picks || {}).length + '</td><td>' + (g.performed ? '<span class="ok">sung</span>' : '<span class="dim">-</span>') + "</td></tr>";
+      }).join("") || '<tr><td colspan="5" class="dim">No guests yet. Send them the join link.</td></tr>');
+
+    var need = L.filter(function (g) { return g.allergies || g.other || Object.keys(g.diet || {}).length; });
+    $("ft").innerHTML = "<tr><th>Name</th><th>Allergies</th><th>Diet</th><th>Other</th></tr>" +
+      (need.map(function (g) {
+        return "<tr><td>" + esc(g.name) + '</td><td class="flag">' + esc(g.allergies) + "</td><td>" + esc(dietText(g)) + "</td><td>" + esc(g.other) + "</td></tr>";
+      }).join("") || '<tr><td colspan="4" class="dim">Nothing flagged yet.</td></tr>');
+
+    $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
+    document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
+    preview();
+  }
+
+  // Hot-take assignment: stance "agree" -> must argue AGAINST; "disagree" -> must argue FOR.
+  function assignment(tid) {
+    var out = { argueFor: [], argueAgainst: [], open: [] };
+    list().forEach(function (g) {
+      var s = (g.picks || {})[tid];
+      if (!s) { out.open.push(g.name); return; }
+      var side = opposite(s);
+      (side === "agree" ? out.argueFor : out.argueAgainst).push({ name: g.name, real: s });
+    });
+    return out;
+  }
+  function preview() {
+    var a = assignment(takeId);
+    function col(cls, title, arr) {
+      return '<div class="side ' + cls + '"><h3>' + title + " (" + arr.length + ')</h3><ul>' +
+        (arr.map(function (p) { return "<li>" + esc(p.name) + ' <span class="dim">(really ' + (p.real === "agree" ? "agrees" : "disagrees") + ")</span></li>"; }).join("") || '<li class="dim">nobody</li>') + "</ul></div>";
+    }
+    $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
+      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";
+    document.querySelectorAll("#takepick button").forEach(function (b) { b.classList.toggle("on", b.dataset.t === takeId); });
+  }
+
+  $("takepick").innerHTML = TAKES.map(function (t, i) { return '<button data-t="' + t.id + '">' + (i + 1) + ". " + esc(t.text) + "</button>"; }).join("");
+  $("takepick").addEventListener("click", function (e) { var t = e.target.dataset && e.target.dataset.t; if (t) { takeId = t; preview(); } });
+
+  function setState(o) { state = o; return store.set("state", o); }
+  $("modes").addEventListener("click", function (e) { var m = e.target.dataset && e.target.dataset.m; if (m) setState({ mode: m }).then(render); });
+  $("kback").onclick = function () { setState({ mode: "home" }).then(render); };
+  $("surprise").onclick = function () {
+    var pool = list().filter(function (g) { return g.song && !g.performed; });
+    if (!pool.length) { $("kinfo").textContent = "Everyone with a song has performed."; return; }
+    var g = pool[Math.floor(Math.random() * pool.length)];
+    store.update("guests/" + g.id, { performed: true });
+    setState({ mode: "karaoke", name: g.name, song: g.song }).then(render);
+  };
+  $("tshow").onclick = function () {
+    var t = TAKES.filter(function (x) { return x.id === takeId; })[0];
+    setState({ mode: "hottake", takeId: t.id, text: t.text, reveal: false }).then(render);
+  };
+  $("treveal").onclick = function () {
+    var t = TAKES.filter(function (x) { return x.id === takeId; })[0], a = assignment(takeId);
+    setState({ mode: "hottake", takeId: t.id, text: t.text, reveal: true,
+      argueFor: a.argueFor.map(function (p) { return p.name; }), argueAgainst: a.argueAgainst.map(function (p) { return p.name; }) }).then(render);
+  };
+
+  $("csv").onclick = function () {
+    var rows = [["name", "song", "bee", "allergies", "diet", "other"].concat(TAKES.map(function (t) { return t.id; }))];
+    list().forEach(function (g) { rows.push([g.name, g.song, g.bee, g.allergies, dietText(g), g.other].concat(TAKES.map(function (t) { return (g.picks || {})[t.id] || ""; }))); });
+    var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "guests.csv"; a.click();
+  };
+
+  store.subscribe("guests", function (v) { guests = v || {}; render(); });
+  store.subscribe("state", function (v) { state = v || {}; render(); });
+})();
+</script>
+</body>
+</html>

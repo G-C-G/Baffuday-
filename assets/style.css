@@ -1,0 +1,23 @@
+/* Shared look: same language as Doctors Games Night (navy, yellow, mint; Bebas + italic serif + mono). */
+:root {
+  --bg:#08183E; --card:#0F2560; --yellow:#F5D76E; --mint:#3DBFA0; --white:#F0EDE4; --red:#D94050;
+  --muted:#8AAAC0; --dim:#4A6080; --border:rgba(255,255,255,.14);
+  --bebas:"Bebas Neue",Impact,sans-serif; --serif:"DM Serif Display",Georgia,serif; --mono:"DM Mono",ui-monospace,monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font:14px/1.6 var(--mono);
+  padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-weight:400;margin:0}
+h1{font-family:var(--serif);font-style:italic;font-size:clamp(34px,8vw,64px);line-height:.95;text-wrap:balance}
+h1 span{color:var(--yellow)}
+.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mint);margin:0 0 8px}
+.lede{color:var(--muted);max-width:56ch;margin:12px 0 0}
+.btn{font:inherit;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:12px 22px;border:1px solid var(--mint);background:var(--mint);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--white);border-color:var(--border)}
+.btn.ghost:hover,.btn.ghost.on{border-color:var(--yellow);color:var(--yellow)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+input[type=text],textarea,select{background:var(--bg);color:var(--white);border:1px solid var(--border);padding:11px 12px;font:inherit;width:100%}
+textarea{min-height:76px;resize:vertical}
+label.k,.k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow);display:block;margin-bottom:6px}

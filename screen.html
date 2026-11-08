@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Projector</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+html,body{height:100%}
+body{padding:0;overflow:hidden;cursor:none;
+  background:radial-gradient(ellipse at center,transparent 30%,rgba(4,10,28,.85) 100%),
+  linear-gradient(rgba(61,191,160,.05) 1px,transparent 1px) 0 0/52px 52px,
+  linear-gradient(90deg,rgba(61,191,160,.05) 1px,transparent 1px) 0 0/52px 52px,var(--bg)}
+#stage{height:100%;display:grid;place-items:center;text-align:center;padding:4vw;animation:in .45s ease}
+@keyframes in{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.big{font-family:var(--serif);font-style:italic;font-size:clamp(40px,8vw,120px);line-height:.95;text-wrap:balance}
+.big span{color:var(--yellow)}
+.tag{font-size:clamp(10px,1.3vw,16px);letter-spacing:.32em;text-transform:uppercase;color:var(--mint);margin:0 0 2vw}
+.badge{font-family:var(--bebas);font-size:clamp(20px,3.4vw,44px);letter-spacing:.26em;color:var(--yellow);border:1px solid rgba(245,215,110,.4);background:rgba(245,215,110,.06);padding:.2em .9em;display:inline-block;margin-bottom:2vw}
+.sub{font-family:var(--mono);font-size:clamp(14px,2.4vw,32px);color:var(--muted);margin-top:2vw}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:5vw;text-align:left;margin-top:2vw}
+.cols h2{font-family:var(--bebas);letter-spacing:.24em;font-size:clamp(16px,2.4vw,32px);color:var(--yellow);border-bottom:1px solid var(--border);padding-bottom:.6vw;margin-bottom:1.2vw}
+.cols li{list-style:none;font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.8vw,52px);line-height:1.15}
+.cols ul{margin:0;padding:0;display:grid;gap:.8vw}
+.red{color:var(--red)}
+.note{font-size:clamp(11px,1.7vw,22px);border:1px solid rgba(61,191,160,.35);background:rgba(61,191,160,.08);padding:1vw 2vw;margin-top:3vw;text-align:left}
+.note b{font-family:var(--bebas);font-weight:400;letter-spacing:.2em;color:var(--mint);font-size:1.5em;margin-right:1em}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:5vw;margin-top:3vw;text-align:left}
+.sides h2{font-family:var(--bebas);letter-spacing:.24em;font-size:clamp(20px,3vw,40px);margin-bottom:1vw}
+.sides .f h2{color:var(--mint)}.sides .a h2{color:var(--red)}
+.sides li{list-style:none;font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.2vw,44px);line-height:1.15}
+.sides ul{margin:0;padding:0}
+.fs{position:fixed;right:12px;bottom:10px;font:11px var(--mono);color:var(--dim);cursor:pointer;background:none;border:0}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<button class="fs" id="fs">fullscreen</button>
+<script src="config.js"></script>
+<script src="assets/store.js"></script>
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var title = window.GCG_CONFIG.TITLE || "";
+  var last = "";
+  function li(a) { return (a || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") || '<li style="color:var(--dim)">nobody</li>'; }
+  function view(s) {
+    if (s.mode === "menu") return '<div><p class="tag">' + esc(title) + '</p><div class="big">What\'s on the <span>table</span></div>' +
+      '<div class="cols"><div><h2>FOOD</h2><ul><li>Vege noodles</li><li>Beef goulash</li><li>Potato salad</li><li>Chicken wings</li></ul></div>' +
+      '<div><h2>DRINKS</h2><ul><li class="red">Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div></div>' +
+      '<div class="note"><b>ALLERGIES</b>Tell Hinda or the host before you eat. Any dish can be checked.</div></div>';
+    if (s.mode === "karaoke") return '<div><span class="badge">SURPRISE KARAOKE</span><div class="big">' + esc(s.name) + '</div>' +
+      '<div class="sub">Your song has been selected: <span style="color:var(--yellow)">' + esc(s.song) + '</span></div><div class="big" style="font-size:clamp(30px,5vw,70px);margin-top:3vw;color:var(--mint)">You\'re up.</div></div>';
+    if (s.mode === "hottake") return '<div style="max-width:1300px"><span class="badge">HOT TAKE</span><div class="big" style="font-size:clamp(32px,5.6vw,84px)">' + esc(s.text) + '</div>' +
+      (s.reveal ? '<div class="sub" style="color:var(--yellow);letter-spacing:.2em;text-transform:uppercase">Tonight you argue the opposite</div><div class="sides"><div class="f"><h2>ARGUE FOR</h2><ul>' + li(s.argueFor) + '</ul></div><div class="a"><h2>ARGUE AGAINST</h2><ul>' + li(s.argueAgainst) + '</ul></div></div>' : "") + '</div>';
+    return '<div><p class="tag">The game night</p><div class="big">' + esc(title).replace(/^(\S+)/, "<span>$1</span>") + '</div></div>';
+  }
+  store.subscribe("state", function (s) {
+    s = s || { mode: "home" };
+    var k = JSON.stringify(s); if (k === last) return; last = k;
+    var el = document.getElementById("stage"); el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+    el.innerHTML = view(s);
+  });
+  document.getElementById("fs").onclick = function () { (document.documentElement.requestFullscreen || function () {}).call(document.documentElement); };
+})();
+</script>
+</body>
+</html>

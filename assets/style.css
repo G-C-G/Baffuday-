@@ -1,9 +1,11 @@
 /* Shared look: same language as Doctors Games Night (navy, yellow, mint; Bebas + italic serif + mono). */
 :root {
-  --bg:#08183E; --card:#0F2560; --yellow:#F5D76E; --mint:#3DBFA0; --white:#F0EDE4; --red:#D94050;
-  --muted:#8AAAC0; --dim:#4A6080; --border:rgba(255,255,255,.14);
+  /* Yellow interface: yellow ground, navy ink. Token names kept from the dark theme so pages stay unchanged.
+     --yellow and --mint are the accent (navy here); screen.html overrides these back to the dark projector look. */
+  --bg:#F5D76E; --card:#FBE9A6; --yellow:#08183E; --mint:#08183E; --white:#08183E; --red:#A8182E;
+  --muted:#2F4268; --dim:#5A5F6E; --border:rgba(8,24,62,.28);
   --bebas:"Bebas Neue",Impact,sans-serif; --serif:"DM Serif Display",Georgia,serif; --mono:"DM Mono",ui-monospace,monospace;
-  color-scheme: dark;
+  color-scheme: light;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--white);font:14px/1.6 var(--mono);
@@ -18,6 +20,6 @@ h1 span{color:var(--yellow)}
 .btn.ghost:hover,.btn.ghost.on{border-color:var(--yellow);color:var(--yellow)}
 .btn.red{background:var(--red);border-color:var(--red);color:#fff}
 .btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
-input[type=text],textarea,select{background:var(--bg);color:var(--white);border:1px solid var(--border);padding:11px 12px;font:inherit;width:100%}
+input[type=text],textarea,select{background:#FFF4C9;color:var(--white);border:1px solid var(--border);padding:11px 12px;font:inherit;width:100%}
 textarea{min-height:76px;resize:vertical}
 label.k,.k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow);display:block;margin-bottom:6px}

@@ -56,3 +56,7 @@ Last one standing wins. The rules slide, a "still standing" count and a winner s
 Rounds advance by pass: everyone still standing gets one turn per round, then the next, harder round starts
 (prompts 1-10 easy through 41-50 hardest). "Next prompt" calls the next person up on the projector by name;
 "Show sentence" then puts their sentence on screen. Correct / Incorrect updates the table; wrong sits them down.
+
+The projector shows the sentence plus the possible spellings (in a random order). The contestant spells their answer
+out loud; the host taps the spelling they gave (or types something else) and the system marks it right or wrong
+against the correct word. Correct / Incorrect buttons remain as a manual override if the host mishears.

@@ -80,6 +80,12 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     </div>
     <div class="bar"><button class="btn ghost" id="bload">Load sign-ups onto stage</button>
       <span class="note">Puts everyone who chose "rather do" the bee on stage in a random order. Use the table to add or remove people.</span></div>
+    <div id="bpick" style="display:none">
+      <span class="k">Which spelling did they give?</span>
+      <div class="bar" id="bopts"></div>
+      <div class="bar" style="margin-top:8px"><input type="text" id="bother" placeholder="Something else, type it" style="max-width:260px" autocomplete="off">
+        <button class="btn ghost" id="bcheck">Check</button></div>
+    </div>
     <div class="tbl"><table id="bt"></table></div>
   </section>
 
@@ -339,9 +345,15 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   $("bstage").onclick = function () { var c = curGuest(); setState({ mode: "beestage", standing: alive().length, next: c ? c.name : "" }); };
   $("bshow").onclick = function () {
     var e = entry(), c = curGuest(); scored = false;
-    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], contestant: c ? c.name : "", standing: alive().length });
+    var opts = e[4].slice(); for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
+    $("bopts").innerHTML = opts.map(function (w) { return '<button class="btn ghost" data-said="' + esc(w) + '">' + esc(w) + "</button>"; }).join("");
+    $("bother").value = ""; $("bpick").style.display = "block";
+    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], options: opts, contestant: c ? c.name : "", standing: alive().length });
   };
-  function result(ok) {
+  // The host taps the spelling the contestant gave; the system judges it against the right word.
+  $("bopts").addEventListener("click", function (e) { var w = e.target.dataset && e.target.dataset.said; if (w) result(w === entry()[3], w); });
+  $("bcheck").onclick = function () { var w = $("bother").value.trim().toLowerCase(); if (w) result(w === entry()[3], w); };
+  function result(ok, said) {
     if (scored) return; var e = entry(), c = curGuest(); scored = true;
     if (c) {
       var s = c.beeStat || { on: true }; s.turns = (s.turns || 0) + 1; if (ok) s.score = (s.score || 0) + 1; else s.out = true;
@@ -349,7 +361,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       store.update("guests/" + c.id, { beeStat: s, took: c.took });
       bee.passDone = (bee.passDone || []).concat(c.id); saveBee();
     }
-    setState({ mode: "bee", phase: "result", ok: ok, round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], contestant: c ? c.name : "",
+    $("bpick").style.display = "none";
+    setState({ mode: "bee", phase: "result", ok: ok, said: said || "", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], contestant: c ? c.name : "",
       answer: e[3], alts: e[4].map(function (w) { return { w: w, m: BEE_W[w] || "", right: w === e[3] }; }), standing: alive().length }).then(function () { render(); renderBee(); });
   }
   $("bok").onclick = function () { result(true); };
@@ -357,6 +370,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   // Everyone still on stage gets one turn per round; when they have all gone, the next round (harder) starts.
   function callUp() { var c = curGuest(); return setState({ mode: "beecall", name: c ? c.name : "", round: bee.round || 1, standing: alive().length }); }
   $("bnext").onclick = function () {
+    $("bpick").style.display = "none";
     var done = bee.passDone || [], left = alive().filter(function (g) { return done.indexOf(g.id) < 0; });
     if (!left.length) {
       bee.passDone = []; bee.round = Math.min((bee.round || 1) + 1, 5);

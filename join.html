@@ -92,13 +92,13 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <p class="label">03 / Courage</p>
       <h2 class="q">How do you feel about <em>performing it?</em></h2>
       <div class="opts" id="sing"></div>
-      <p class="micro" style="margin-top:var(--s2)">Be honest. We will find out anyway.</p>
+      <p class="micro" style="margin-top:var(--s2)">It&rsquo;s okay. This is a safe space. 💀</p>
     </section>
 
     <section class="step" data-s="4">
       <p class="label">04 / Hot takes</p>
       <h2 class="q">Pick a side. <em>Where you actually have one.</em></h2>
-      <p class="lede" style="margin:0 0 var(--s4)">Answer the ones you feel something about, then say how strongly. Skip the rest. Answer honestly. What could go wrong?</p>
+      <p class="lede" style="margin:0 0 var(--s4)">Answer the ones you feel something about, then say how strongly. Skip the rest.</p>
       <div id="takes"></div>
     </section>
 
@@ -230,7 +230,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   function check(n) {
     if (n === 1 && !$("name").value.trim()) return "Tell us your name.";
     if (n === 2 && !$("song").value.trim()) return "We need a song. Everyone has one.";
-    if (n === 3 && !document.querySelector("input[name=sing]:checked")) return "Pick one. Honesty is encouraged.";
+    if (n === 3 && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
     if (n === 4) { var m = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; })[0]; if (m) { $("take-" + m.id).scrollIntoView({ block: "center" }); return "Say how strongly you feel about: " + m.q; } }
     return "";
   }

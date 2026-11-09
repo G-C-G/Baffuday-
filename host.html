@@ -426,7 +426,18 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     }
     return out + esc(raw.slice(last));
   }
-  function entry() { return BEE[Math.min(bee.n || 0, BEE.length - 1)]; }
+  // The answer is chosen at random per prompt (seeded once when you load the stage, so a refresh keeps it). This removes any
+  // tell, such as the answer being the word that appears most in the sentence.
+  function pickIdx(seed, n, len) {
+    var x = (seed ^ Math.imul(n + 1, 0x9E3779B1)) >>> 0; x ^= x >>> 16; x = Math.imul(x, 0x85EBCA6B) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0xC2B2AE35) >>> 0; x ^= x >>> 16;
+    return (x >>> 0) % len;
+  }
+  function entry() {
+    var e = BEE[Math.min(bee.n || 0, BEE.length - 1)];
+    if ((window.GCG_CONFIG || {}).BEE_RANDOM_ANSWER === false) return e;
+    var w = e[4][pickIdx(bee.seed || 1, bee.n || 0, e[4].length)];
+    return [e[0], e[1], "Spell the word meaning " + (BEE_W[w] || "") + ".", w, e[4]];
+  }
 
   function renderBee() {
     var L = list(), a = alive(), e = entry(), c = curGuest();
@@ -457,7 +468,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var ids = list().filter(function (g) { return pref(g, "bee") === "want"; }).map(function (g) { return g.id; });
     for (var i = ids.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
     list().forEach(function (g) { var s = ids.indexOf(g.id) >= 0 ? { on: true, out: false, score: 0, turns: 0 } : { on: false }; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); });
-    bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids, winner: null }; scored = false; saveBee(); renderBee();
+    bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids, winner: null, seed: Math.floor(Math.random() * 1e9) + 1 }; scored = false; saveBee(); renderBee();
   };
   $("brules").onclick = function () { setState({ mode: "beerules" }); };
   $("bstage").onclick = function () { var c = curGuest(); setState({ mode: "beestage", standing: alive().length, next: c ? c.name : "" }); };

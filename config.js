@@ -8,6 +8,9 @@ window.GCG_CONFIG = {
   KARAOKE_TARGET: 15,
   // Spelling bee: when this many (or fewer) people are left, nobody can be eliminated; the first correct guess wins
   BEE_SUDDEN_DEATH_AT: 2,
+  // Spelling bee: pick which word of each pair is "the answer" at random every game (no tell from how often a word appears).
+  // Set to false to use the fixed answer written in assets/bee.js.
+  BEE_RANDOM_ANSWER: true,
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

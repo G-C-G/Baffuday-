@@ -115,3 +115,9 @@ Wrong guesses sit people down until only two are left (`BEE_SUDDEN_DEATH_AT` in 
 eliminated: they keep taking turns, round after round, and the first correct guess wins the whole game. The projector labels
 those screens "Sudden death", a wrong guess says nobody is out, and the winning guess gets the biggest celebration. The host's
 "Show winner" button then shows the champion. This also means the bee can never end with nobody standing.
+
+## Random answers (no tells)
+Each prompt's answer is chosen at random from its word set (`BEE_RANDOM_ANSWER` in `config.js`; set it to `false` to use the fixed
+answer in `assets/bee.js`). It is seeded when you press "Load sign-ups onto stage", so a refresh keeps the same answer for each prompt
+but every game is different. This removes tells such as the answer being the word that appears most often in the sentence. The
+host panel shows the chosen word and underlines it in the sentence; the "for arguments only" meaning follows the chosen word.

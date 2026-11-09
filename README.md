@@ -174,3 +174,8 @@ and then the food menu. The activity question (rather do / either way / rather n
 any more. Karaoke order is rather do first, then either way; rather not is never called. The Tonight step opens with "This is a safe space. If you say no, we will RESPEKK it."
 
 Order now: intro (what is happening, 6:30 PM, the halal certified menu) > allergies and diet (optional, so people can list anything they cannot eat straight after seeing the menu) > name > the three activities > song (if karaoke) > Twisted hot takes.
+
+## Ratings
+The Tonight question is now a 1-5 rating per activity (5 Put me on first, 4 I'm happy to do it, 3 I'll do it if called, 2 Rather not, 1 Please no).
+4 and 5 count as "rather do"; 3 is "either way"; 1 and 2 are a no, which we respect (never called for karaoke, last in line for hot takes, not put on the bee stage by default).
+Karaoke is called 5 first, then 4, then 3. Older answers saved as want / ok / not still work (they read as 4 / 3 / 2).

@@ -79,7 +79,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <section class="panel" id="p-food"><div class="tbl"><table id="ft"></table></div></section>
 
   <section class="panel" id="p-people">
-    <p class="note">Interaction score is 0-10, from what people said they would rather do, their karaoke willingness and how many hot takes they picked. Everyone should be in at least one game. People not yet in one are listed first, lowest score first, with the game they are least against.</p>
+    <p class="note">Interaction score is 0-10, from how they rated the three activities, and how many hot takes they picked. Everyone should be in at least one game. People not yet in one are listed first, lowest score first, with the game they are least against.</p>
     <div class="stats" id="pstats"></div>
     <div class="tbl"><table id="pt"></table></div>
   </section>
@@ -100,7 +100,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <button class="btn ghost" id="bwin">Show winner</button>
     </div>
     <div class="bar"><button class="btn ghost" id="bload">Load sign-ups onto stage</button>
-      <span class="note">Puts everyone who chose "rather do" the bee on stage in a random order. Use the table to add or remove people.</span></div>
+      <span class="note">Puts everyone who rated the bee 4 or 5 on stage in a random order. Use the table to add or remove people.</span></div>
     <div id="bpick" style="display:none">
       <div id="bchoose">
         <span class="k">Which one did they pick?</span>
@@ -183,9 +183,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf + " / " + (window.GCG_CONFIG.KARAOKE_TARGET || 15), "Performed / target"], [L.filter(function (g) { return pref(g, "karaoke") === "want"; }).length, "Want to sing"], [bee, "Want the bee"], [L.filter(function (g) { return pref(g, "takes") === "want"; }).length, "Want hot takes"], [withAll, "Allergies"]]
       .map(function (s) { return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
 
-    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Rather (+) / not (-)</th><th>Takes picked</th><th>Done</th></tr>" +
+    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Ratings (1-5)</th><th>Takes picked</th><th>Done</th></tr>" +
       (L.map(function (g) {
-        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + INVOLVE.map(function (o) { var p = pref(g, o.id); return p === "ok" ? "" : (p === "want" ? "+ " : "- ") + o.label; }).filter(Boolean).join(", ")  + "</td><td>" +
+        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + INVOLVE.map(function (o) { return o.short + " " + level(g, o.id); }).join(" &middot; ")  + "</td><td>" +
           Object.keys(g.picks || {}).length + '</td><td>' + (g.performed ? '<span class="ok">sung</span>' : '<span class="dim">-</span>') + "</td></tr>";
       }).join("") || '<tr><td colspan="5" class="dim">No guests yet. Send them the join link.</td></tr>');
 
@@ -224,7 +224,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   });
 
   // Karaoke: call the most willing people first, random within the best remaining tier.
-  function tier(g) { return pref(g, "karaoke") === "want" ? "A: rather do" : "B: either way"; }
+  function tier(g) { var n = level(g, "karaoke"); return n >= 5 ? "A: put me on first" : n === 4 ? "B: happy to do it" : "C: if called"; }
   function pool() {
     var left = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); });
     var best = left.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
@@ -236,7 +236,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var target = window.GCG_CONFIG.KARAOKE_TARGET || 15, done = list().filter(function (g) { return g.performed; }).length;
     var willing = left.length;
     $("kqueue").innerHTML = "Still to call: " + (Object.keys(t).sort().map(function (k) { return k + ": " + t[k]; }).join(" · ") || "none") +
-      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are up for karaoke (rather do or either way), below your target of " + target + ". Nobody who said rather not will be called.</span>" : "") +
+      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are up for karaoke (3 or higher), below your target of " + target + ". Anyone who said rather not or please no will not be called.</span>" : "") +
       (optedOut ? '<br><span class="note">' + optedOut + " opted out of karaoke and will not be called. That promise is built in.</span>" : "");
   }
 
@@ -461,7 +461,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       (L.slice().sort(function (x, y) { return rk[pref(x, "bee")] - rk[pref(y, "bee")]; }).map(function (g) {
         var s = bs(g), st = !s.on ? '<span class="dim">not on stage</span>' : s.out ? '<span class="flag">out</span>' : '<span class="ok">standing</span>';
         var btn = !s.on ? '<button class="btn ghost" data-badd="' + g.id + '" style="padding:6px 10px">Add</button>' : s.out ? '<button class="btn ghost" data-brev="' + g.id + '" style="padding:6px 10px">Bring back</button>' : '<button class="btn ghost" data-brem="' + g.id + '" style="padding:6px 10px">Remove</button>';
-        return "<tr><td>" + esc(g.name) + "</td><td>" + ({ want: "+ rather do", ok: "either way", not: "- rather not" }[pref(g, "bee")]) + "</td><td>" + st + "</td><td>" + (s.score || 0) + "</td><td>" + btn + "</td></tr>";
+        return "<tr><td>" + esc(g.name) + "</td><td>" + ratingLabel(level(g, "bee")) + " (" + level(g, "bee") + ")" + "</td><td>" + st + "</td><td>" + (s.score || 0) + "</td><td>" + btn + "</td></tr>";
       }).join("") || '<tr><td colspan="5" class="dim">No guests yet.</td></tr>');
   }
   $("bt").addEventListener("click", function (e) {

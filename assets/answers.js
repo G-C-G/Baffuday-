@@ -22,8 +22,7 @@
     if (pref(rec, "karaoke") === "not") line("Karaoke Roulette: no, thank you", 12, false, 5);
     else line("Karaoke song: " + rec.song, 12, false, 5);
     line("What I'd rather do tonight", 13, true, 1);
-    var lab = { want: "I'd rather do this", ok: "Either way", not: "I'd rather not" };
-    INVOLVE.forEach(function (o) { line(o.label + ": " + lab[pref(rec, o.id)], 11, false, 0); }); y += 4;
+        INVOLVE.forEach(function (o) { line(o.label + ": " + ratingLabel(level(rec, o.id)) + " (" + level(rec, o.id) + "/5)", 11, false, 0); }); y += 4;
     line("Twisted hot takes", 13, true, 1);
     var any = false;
     TAKES.forEach(function (t) {

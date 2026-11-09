@@ -36,19 +36,29 @@ window.SING = [
 // Not ticking Karaoke sends someone to the bottom tier (still reachable as a last resort).
 // Activities. Each guest says, at the end of the form, which they'd rather do and which they'd rather not.
 window.INVOLVE = [
-  { id: "bee", label: "The Evil Spelling Bee", desc: "A spelling bee that is not really about spelling." },
-  { id: "karaoke", label: "Karaoke Roulette", desc: "Your song, at a moment of our choosing." },
-  { id: "takes", label: "Twisted Hot Takes", desc: "Strong opinions, said out loud, with a twist." }
+  { id: "bee", short: "Bee", label: "The Evil Spelling Bee", desc: "A spelling bee that is not really about spelling." },
+  { id: "karaoke", short: "Karaoke", label: "Karaoke Roulette", desc: "Your song, at a moment of our choosing." },
+  { id: "takes", short: "Takes", label: "Twisted Hot Takes", desc: "Strong opinions, said out loud, with a twist." }
 ];
 // Returns "want", "ok" (either way) or "not". Old records: bee from the old field, true = want, else ok.
-window.pref = function (g, k) {
-  var v = g && g.involve ? g.involve[k] : (k === "bee" && g && g.bee === "yes" ? "want" : "ok");
-  return v === true ? "want" : v === "want" || v === "not" ? v : "ok";
+// The answer to "what would you rather do tonight" is a 1-5 rating per activity.
+window.RATING = [
+  { n: 5, label: "Put me on first" }, { n: 4, label: "I'm happy to do it" }, { n: 3, label: "I'll do it if called" },
+  { n: 2, label: "Rather not" }, { n: 1, label: "Please no" }
+];
+window.ratingLabel = function (n) { var r = RATING.filter(function (o) { return o.n === n; })[0]; return r ? r.label : ""; };
+// 1-5 for a guest and an activity. Older records stored "want" / "ok" / "not" (or true): those map to 4 / 3 / 2.
+window.level = function (g, k) {
+  var v = g && g.involve ? g.involve[k] : (k === "bee" && g && g.bee === "yes" ? 4 : 3);
+  if (v === true) return 4; if (typeof v === "number") return Math.max(1, Math.min(5, Math.round(v)));
+  return v === "want" ? 4 : v === "not" ? 2 : 3;
 };
+// Three-way view used by the host tools: "want" (4-5), "ok" (3), "not" (1-2, which we respect: never called, last in line).
+window.pref = function (g, k) { var n = level(g, k); return n >= 4 ? "want" : n === 3 ? "ok" : "not"; };
 // Taking part = not "rather not".
 window.into = function (g, k) { return pref(g, k) !== "not"; };
 // Karaoke order: willingness scale, raised to 4 if they'd rather do karaoke, dropped to 1 if they'd rather not.
-window.singOf = function (g) { var p = pref(g, "karaoke"); return p === "want" ? 5 : p === "not" ? 1 : 3; };
+window.singOf = function (g) { var n = level(g, "karaoke"); return n >= 3 ? n : 1; };
 // Interaction score 0-10: activity preferences (0-6) + karaoke willingness (0-2) + how many takes they picked (0-2).
 window.engagement = function (g) {
   var pv = { want: 2, ok: 1, not: 0 }, s = 0;

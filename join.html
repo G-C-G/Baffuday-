@@ -32,9 +32,9 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
 .pac{display:inline-block;height:.66em;width:.66em;vertical-align:-.03em;margin:0 .06em 0 .1em;fill:var(--ink);font-style:normal}
 .pac .eye{fill:var(--cream)}.pac .pupil{fill:var(--ink)}
 .ate{position:relative;display:inline-block}
-/* a bite out of the e, and a few crumbs */
-.ate .e{display:inline-block;clip-path:polygon(0 0,100% 0,100% 28%,80% 36%,94% 44%,74% 51%,92% 59%,78% 67%,100% 73%,100% 100%,0 100%)}
-.crumbs{position:absolute;right:-.34em;top:.12em;height:.7em;width:.35em;fill:var(--ink);animation:crumb 1.4s ease-in-out infinite alternate}
+/* a bite out of the A (the side Pac-Man is biting), and a few crumbs falling out of the bite */
+.ate .a{display:inline-block;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 74%,22% 66%,8% 58%,28% 51%,10% 43%,24% 35%,0 28%)}
+.crumbs{position:absolute;left:-.3em;top:.1em;height:.7em;width:.35em;fill:var(--ink);animation:crumb 1.4s ease-in-out infinite alternate}
 @keyframes crumb{from{transform:translate(0,0) rotate(0)}to{transform:translate(.06em,-.05em) rotate(8deg)}}
 .pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
 @keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
@@ -91,7 +91,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
     <!-- 1. The invitation: the birthday title dominates -->
     <section class="step on" data-k="intro">
       <p class="lab">You're invited</p>
-      <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate">At<span class="e">e</span><svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
+      <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
       <p class="welcome">A game night. Some of it is voluntary.</p>
       <p class="when" id="when"></p>
       <p class="tiny" style="margin-top:0">A few short questions, about four minutes.</p>

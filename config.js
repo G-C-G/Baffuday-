@@ -5,6 +5,7 @@ window.GCG_CONFIG = {
   DB_URL: "",
   ROOT: "baffuday28",
   TITLE: "Hinda's 28th",
+  START_TIME: "6:30 PM",
   KARAOKE_TARGET: 15,
   // Spelling bee: when this many (or fewer) people are left, nobody can be eliminated; the first correct guess wins
   BEE_SUDDEN_DEATH_AT: 2,

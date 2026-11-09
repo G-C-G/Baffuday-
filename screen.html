@@ -148,7 +148,7 @@ body.flashred{animation:flashred .6s ease 2}
       return { theme: "cream", html: frame(esc(brand), '<span class="lab">Tonight</span><div>' + items.map(function (t, i) { return '<div class="row3"><span class="n">' + pad(i + 1) + '</span><span class="t">' + esc(t) + "</span></div>"; }).join("") + "</div>", micro("Subject to chaos.")) };
     }
     if (m === "menu") {
-      return { theme: "cream", html: frame(esc(brand), '<span class="lab">The menu</span><div class="cols"><div><h3 class="lab">To eat</h3>' + ul(["Vege noodles", "Beef goulash", "Potato salad", "Chicken wings"]) + '</div><div><h3 class="lab">To drink</h3>' + ul(["Sobolo", "Ginger and pineapple", "Water"]) + "</div></div>",
+      return { theme: "cream", html: frame(esc(brand), '<div style="display:flex;gap:2vw;align-items:center"><span class="lab">The menu</span><span class="chip">Halal certified</span></div><div class="cols"><div><h3 class="lab">To eat</h3>' + ul(["Vege noodles", "Beef goulash", "Potato salad", "Chicken wings"]) + '</div><div><h3 class="lab">To drink</h3>' + ul(["Sobolo", "Ginger and pineapple", "Water"]) + "</div></div>",
         '<span class="second" style="font-family:var(--sans);font-size:var(--micro)"><span class="lab" style="margin-right:1.2em">Allergies</span>Tell Hinda or the host before you eat. Every dish can be checked. Please do.</span>') };
     }
     if (m === "karaoke") {

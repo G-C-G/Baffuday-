@@ -59,6 +59,10 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 .demo{font:500 12px var(--sans);color:var(--stone);border:1px dashed var(--stone);padding:var(--s1) var(--s2);border-radius:var(--r);margin-top:var(--s3)}
 .done h1{margin-bottom:var(--s3)}
 .btns{display:flex;gap:var(--s1);flex-wrap:wrap;margin-top:var(--s4)}
+.halal{display:inline-block;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--ink);border-radius:2px;padding:7px 10px;margin:calc(var(--s3) * -1 + var(--s1)) 0 var(--s4)}
+.events{display:grid;gap:var(--s2);margin-bottom:var(--s4)}
+.events h3{font:400 clamp(28px,8vw,36px)/1 var(--serif);letter-spacing:-.015em}
+.events p{margin:2px 0 0}
 .hero{font:400 clamp(64px,22vw,136px)/.88 var(--serif);letter-spacing:-.03em;margin:var(--s3) 0}.hero em{color:var(--wine)}
 </style>
 </head>
@@ -71,8 +75,19 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     <section class="step on" data-k="intro">
       <p class="label">You're invited</p>
       <div class="hero" id="hero"></div>
-      <p class="q" style="font-size:clamp(26px,7vw,34px);line-height:1.1;color:var(--ink);margin-bottom:var(--s4)">A game night. Some of it is voluntary.</p>
-      <p class="lede" style="margin-top:0">A few short questions so the night is built around you. About four minutes. You can come back and change anything. You never have to do anything you do not want to.</p>
+      <p class="k" id="when" style="margin:var(--s2) 0 var(--s1)"></p>
+      <div class="events">
+        <div><h3>The Evil Spelling Bee</h3><p class="micro">A spelling bee that is not really about spelling.</p></div>
+        <div><h3>Karaoke Roulette</h3><p class="micro">Your song, at a moment of our choosing.</p></div>
+        <div><h3>Twisted Hot Takes</h3><p class="micro">Strong opinions, said out loud, with a twist.</p></div>
+      </div>
+      <div class="menu intro-menu">
+        <div><p class="k">On the table</p><ul><li>Vege noodles</li><li>Beef goulash</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
+        <div><p class="k">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div>
+      </div>
+      <p class="halal">Halal certified</p>
+      <p class="q" style="font-size:clamp(24px,6.5vw,32px);line-height:1.1;color:var(--ink);margin-bottom:var(--s2)">A game night. Some of it is voluntary.</p>
+      <p class="lede" style="margin-top:0">A few short questions so the night is built around you. About four minutes. You can come back and change anything.</p>
       <div class="demo" id="demo" hidden>Demo mode: answers stay in this browser. You will download them as a PDF at the end.</div>
     </section>
 
@@ -86,7 +101,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     <section class="step" data-k="tonight" data-title="Tonight">
       <p class="label stp"></p>
       <h2 class="q">What would you <em>rather do tonight?</em></h2>
-      <p class="lede" style="margin:0 0 var(--s3)">Please pick more than one. But you can say no: nobody is forced, and no to Karaoke Roulette means you will not be asked to sing.</p>
+      <p class="lede" style="margin:0 0 var(--s3)">This is a safe space. If you say no, we will RESPEKK it. But please pick more than one if you can.</p>
       <div id="inv"></div>
     </section>
 
@@ -94,13 +109,6 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <p class="label stp"></p>
       <h2 class="q">Gun to your head, you have to sing. <em>What song do you pick?</em></h2>
       <div class="field"><label class="k" for="song">Song and artist</label><input class="big" type="text" id="song" maxlength="100" placeholder="Song title and artist" autocomplete="off"></div>
-    </section>
-
-    <section class="step" data-k="feel" data-title="Courage">
-      <p class="label stp"></p>
-      <h2 class="q">How do you feel about <em>performing it?</em></h2>
-      <div class="opts" id="sing"></div>
-      <p class="micro" style="margin-top:var(--s2)">It&rsquo;s okay. This is a safe space. 💀</p>
     </section>
 
     <section class="step" data-k="takes" data-title="Twisted hot takes">
@@ -116,6 +124,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <h2 class="q">What's on the table, and <em>what can't you eat?</em></h2>
       <div class="menu"><div><p class="k">To eat</p><ul><li>Vege noodles</li><li>Beef goulash</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
         <div><p class="k">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div></div>
+      <p class="halal">Halal certified</p>
       <div class="field"><label class="k" for="allergy">Any allergies?</label><textarea id="allergy" maxlength="300" placeholder="e.g. eggs, peanuts, shellfish. Leave blank if none."></textarea></div>
       <div class="field"><span class="k">Dietary needs</span>
         <div class="chips" id="diet">
@@ -154,14 +163,8 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   $("ttl").textContent = title;
   $("hero").innerHTML = title.replace(/^(\S+)\s*(.*)$/, function (m, a, b) { return a + "<br><em>" + b + "</em>"; });
   if (store.demo) $("demo").hidden = false;
+  $("when").textContent = "What's happening \u00b7 " + (window.GCG_CONFIG.START_TIME || "6:30 PM");
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
-
-  // 03: performing scale
-  SING.forEach(function (o) {
-    var l = document.createElement("label"); l.className = "opt";
-    l.innerHTML = '<input type="radio" name="sing" value="' + o.n + '"><span>' + o.label + "<small>" + pad(o.n) + "</small></span>";
-    $("sing").appendChild(l);
-  });
 
   // 04: hot takes
   var box = $("takes");
@@ -211,16 +214,15 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   if (gid) store.get("guests/" + gid).then(function (g) {
     if (!g) return;
     $("name").value = g.name || ""; $("song").value = g.song || ""; $("allergy").value = g.allergies || ""; $("other").value = g.other || "";
-    if (g.sing) document.querySelector("input[name=sing][value=\"" + g.sing + "\"]").checked = true;
     INVOLVE.forEach(function (o) { document.querySelector("input[name=inv-" + o.id + "][value=" + pref(g, o.id) + "]").checked = true; });
     document.querySelectorAll("#diet input").forEach(function (c) { c.checked = !!(g.diet && g.diet[c.value]); });
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
   });
 
-  // stepper. The activity question comes right after the name; saying no to Karaoke Roulette skips the song and the courage question.
+  // stepper. The activity question comes right after the name; saying no to Karaoke Roulette skips the song.
   function seq() {
     var k = document.querySelector("input[name=inv-karaoke]:checked"), s = ["name", "tonight"];
-    if (!k || k.value !== "not") s.push("song", "feel");
+    if (!k || k.value !== "not") s.push("song");
     s.push("takes", "food"); return s;
   }
   function show(key) {
@@ -238,7 +240,6 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   function check(key) {
     if (key === "name" && !$("name").value.trim()) return "Tell us your name.";
     if (key === "song" && !$("song").value.trim()) return "We need a song. Everyone has one.";
-    if (key === "feel" && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
     if (key === "tonight") {
       var yes = INVOLVE.filter(function (o) { return document.querySelector("input[name=inv-" + o.id + "]:checked").value !== "not"; }).length;
       if (yes < 2 && !nudged) {
@@ -274,7 +275,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
     var noK = involve.karaoke === "not"; // no karaoke: no song and no courage answer
     var rec = {
-      name: $("name").value.trim(), song: noK ? "" : $("song").value.trim(), sing: noK ? 0 : +document.querySelector("input[name=sing]:checked").value,
+      name: $("name").value.trim(), song: noK ? "" : $("song").value.trim(),
       involve: involve, bee: involve.bee === "not" ? "watch" : "yes",
       allergies: $("allergy").value.trim(), diet: diet, other: $("other").value.trim(),
       picks: picks, updatedAt: Date.now()

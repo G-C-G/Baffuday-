@@ -167,3 +167,8 @@ Copy update: the form asks guests to pick more than one activity ("But you can s
 the form nudges once and then lets them continue.
 
 A prompt can be marked "fixed" (a sixth item in its entry in `assets/bee.js`) so it always uses the answer written for it instead of a random one. The capital / capitol prompt is fixed to "Capitol".
+
+## Onboarding, latest
+The first screen shows what is happening tonight (The Evil Spelling Bee, Karaoke Roulette, Twisted Hot Takes, starting at `START_TIME` in `config.js`, 6:30 PM)
+and then the food menu. The activity question (rather do / either way / rather not) is the whole basis: there is no separate "how do you feel about performing" question
+any more. Karaoke order is rather do first, then either way; rather not is never called. The Tonight step opens with "This is a safe space. If you say no, we will RESPEKK it."

@@ -180,14 +180,14 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var songs = L.filter(function (g) { return g.song; }).length;
     var perf = L.filter(function (g) { return g.performed; }).length;
     var bee = L.filter(function (g) { return pref(g, "bee") === "want"; }).length;
-    $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf + " / " + (window.GCG_CONFIG.KARAOKE_TARGET || 15), "Performed / target"], [L.filter(function (g) { return singOf(g) >= 4; }).length, "Want to sing"], [bee, "Want the bee"], [L.filter(function (g) { return pref(g, "takes") === "want"; }).length, "Want hot takes"], [withAll, "Allergies"]]
+    $("stats").innerHTML = [[L.length, "Guests"], [songs, "Songs"], [perf + " / " + (window.GCG_CONFIG.KARAOKE_TARGET || 15), "Performed / target"], [L.filter(function (g) { return pref(g, "karaoke") === "want"; }).length, "Want to sing"], [bee, "Want the bee"], [L.filter(function (g) { return pref(g, "takes") === "want"; }).length, "Want hot takes"], [withAll, "Allergies"]]
       .map(function (s) { return '<div class="stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
 
-    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Sing</th><th>Rather (+) / not (-)</th><th>Takes picked</th><th>Done</th></tr>" +
+    $("gt").innerHTML = "<tr><th>Name</th><th>Song</th><th>Rather (+) / not (-)</th><th>Takes picked</th><th>Done</th></tr>" +
       (L.map(function (g) {
-        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + singOf(g) + "/5</td><td>" + INVOLVE.map(function (o) { var p = pref(g, o.id); return p === "ok" ? "" : (p === "want" ? "+ " : "- ") + o.label; }).filter(Boolean).join(", ")  + "</td><td>" +
+        return "<tr><td>" + esc(g.name) + "</td><td>" + esc(g.song) + "</td><td>" + INVOLVE.map(function (o) { var p = pref(g, o.id); return p === "ok" ? "" : (p === "want" ? "+ " : "- ") + o.label; }).filter(Boolean).join(", ")  + "</td><td>" +
           Object.keys(g.picks || {}).length + '</td><td>' + (g.performed ? '<span class="ok">sung</span>' : '<span class="dim">-</span>') + "</td></tr>";
-      }).join("") || '<tr><td colspan="6" class="dim">No guests yet. Send them the join link.</td></tr>');
+      }).join("") || '<tr><td colspan="5" class="dim">No guests yet. Send them the join link.</td></tr>');
 
     var need = L.filter(function (g) { return g.allergies || g.other || Object.keys(g.diet || {}).length; });
     $("ft").innerHTML = "<tr><th>Name</th><th>Allergies</th><th>Diet</th><th>Other</th></tr>" +
@@ -224,7 +224,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   });
 
   // Karaoke: call the most willing people first, random within the best remaining tier.
-  function tier(g) { var n = singOf(g); return n >= 4 ? "A (4-5)" : n === 3 ? "B (3)" : n === 2 ? "C (2)" : "D (1)"; }
+  function tier(g) { return pref(g, "karaoke") === "want" ? "A: rather do" : "B: either way"; }
   function pool() {
     var left = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); });
     var best = left.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
@@ -234,9 +234,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var left = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }), t = {}, optedOut = list().filter(function (g) { return g.song && !g.performed && noKaraoke(g); }).length;
     left.forEach(function (g) { t[tier(g)] = (t[tier(g)] || 0) + 1; });
     var target = window.GCG_CONFIG.KARAOKE_TARGET || 15, done = list().filter(function (g) { return g.performed; }).length;
-    var willing = left.filter(function (g) { return singOf(g) >= 3; }).length;
-    $("kqueue").innerHTML = "Still to call by willingness: " + (Object.keys(t).sort().map(function (k) { return k + ": " + t[k]; }).join(" · ") || "none") +
-      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are willing to sing (3 or higher), below your target of " + target + ". The next tiers are people who said 'rather not' (2); they can still be called as a last resort.</span>" : "") +
+    var willing = left.length;
+    $("kqueue").innerHTML = "Still to call: " + (Object.keys(t).sort().map(function (k) { return k + ": " + t[k]; }).join(" · ") || "none") +
+      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are up for karaoke (rather do or either way), below your target of " + target + ". Nobody who said rather not will be called.</span>" : "") +
       (optedOut ? '<br><span class="note">' + optedOut + " opted out of karaoke and will not be called. That promise is built in.</span>" : "");
   }
 

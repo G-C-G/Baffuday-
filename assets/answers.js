@@ -20,8 +20,7 @@
     doc.setTextColor(245, 215, 110); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(ascii(title).toUpperCase(), M, 9); y = 28; doc.setTextColor(8, 24, 62); line(title + ": my answers", 18, true, 5);
     line("Name: " + rec.name, 12, true, 1);
     if (pref(rec, "karaoke") === "not") line("Karaoke Roulette: no, thank you", 12, false, 5);
-    else { line("Karaoke song: " + rec.song, 12, false, 1);
-      var sg = SING.filter(function (o) { return o.n === +rec.sing; })[0]; line("About performing it: " + (sg ? sg.label : "-"), 12, false, 5); }
+    else line("Karaoke song: " + rec.song, 12, false, 5);
     line("What I'd rather do tonight", 13, true, 1);
     var lab = { want: "I'd rather do this", ok: "Either way", not: "I'd rather not" };
     INVOLVE.forEach(function (o) { line(o.label + ": " + lab[pref(rec, o.id)], 11, false, 0); }); y += 4;

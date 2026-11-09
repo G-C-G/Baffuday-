@@ -6,7 +6,7 @@ window.TAKES = [
   { id: "onread",    text: "It's acceptable to leave someone on read for three days.", q: "Leaving someone on read for three days?", a: "Acceptable", b: "Not acceptable" },
   { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof.", q: "Whose jollof wins?", a: "Nigerian", b: "Ghanaian" },
   { id: "dramatic",  text: "Men are actually more dramatic than women.", q: "Who is more dramatic?", a: "Men", b: "Women" },
-  { id: "firstmove", text: "Women should make the first move.", q: "Who should make the first move?", a: "Women should", b: "Women shouldn't have to" },
+  { id: "firstmove", text: "Women should make the first move.", q: "Who should make the first move?", a: "Women", b: "Men" },
   { id: "leaders",   text: "Women are better leaders than men.", q: "Who are better leaders?", a: "Women", b: "Men" },
   { id: "homemaker", text: "A woman can be the sole breadwinner and the man should be the primary homemaker.", q: "Woman as sole breadwinner, man as primary homemaker?", a: "Works for me", b: "Not for me" },
   { id: "partners",  text: "Men make better partners than women.", q: "Who make better partners?", a: "Men", b: "Women" },
@@ -34,12 +34,11 @@ window.SING = [
   { n: 1, label: "Please no" }
 ];
 // Not ticking Karaoke sends someone to the bottom tier (still reachable as a last resort).
-window.singOf = function (g) { return g && g.involve && !g.involve.karaoke ? 1 : g && g.sing ? +g.sing : 3; };
 // Activities. Each guest says, at the end of the form, which they'd rather do and which they'd rather not.
 window.INVOLVE = [
   { id: "bee", label: "The Evil Spelling Bee", desc: "A spelling bee that is not really about spelling." },
-  { id: "takes", label: "Twisted Hot Takes", desc: "Strong opinions, said out loud, with a twist." },
-  { id: "karaoke", label: "Karaoke Roulette", desc: "Your song, at a moment of our choosing." }
+  { id: "karaoke", label: "Karaoke Roulette", desc: "Your song, at a moment of our choosing." },
+  { id: "takes", label: "Twisted Hot Takes", desc: "Strong opinions, said out loud, with a twist." }
 ];
 // Returns "want", "ok" (either way) or "not". Old records: bee from the old field, true = want, else ok.
 window.pref = function (g, k) {
@@ -49,15 +48,12 @@ window.pref = function (g, k) {
 // Taking part = not "rather not".
 window.into = function (g, k) { return pref(g, k) !== "not"; };
 // Karaoke order: willingness scale, raised to 4 if they'd rather do karaoke, dropped to 1 if they'd rather not.
-window.singOf = function (g) {
-  var p = pref(g, "karaoke"), n = g && g.sing ? +g.sing : 3;
-  return p === "not" ? 1 : p === "want" ? Math.max(n, 4) : n;
-};
+window.singOf = function (g) { var p = pref(g, "karaoke"); return p === "want" ? 5 : p === "not" ? 1 : 3; };
 // Interaction score 0-10: activity preferences (0-6) + karaoke willingness (0-2) + how many takes they picked (0-2).
 window.engagement = function (g) {
   var pv = { want: 2, ok: 1, not: 0 }, s = 0;
   INVOLVE.forEach(function (o) { s += pv[pref(g, o.id)]; });
-  var sing = ((g.sing ? +g.sing : 3) - 1) / 4 * 2;
+  var sing = { want: 2, ok: 1, not: 0 }[pref(g, "karaoke")];
   var np = Math.min(Object.keys(g.picks || {}).length, 4) / 4 * 2;
   return Math.round((s + sing + np) * 10) / 10;
 };
@@ -86,4 +82,4 @@ window.takeRank = function (n, pf) {
 };
 window.RANK_LABEL = ["strong + keen", "strong", "strong, rather not", "medium", "medium, rather not", "weak feelings"];
 // Guests who said "rather not" to karaoke, or "Please no" to performing, are never called by Surprise me. We promised them.
-window.noKaraoke = function (g) { return pref(g, "karaoke") === "not" || (g && g.sing && +g.sing === 1); };
+window.noKaraoke = function (g) { return pref(g, "karaoke") === "not"; };

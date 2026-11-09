@@ -137,7 +137,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
       if (s.phase !== "result") {
         var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
-        return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">&ldquo;' + hl(s.sentence, s.marks) + '&rdquo;</p>' +
+        return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + '</p>' +
           '<div class="opts">' + (s.options || []).map(function (o) { return "<span>" + esc(o) + "</span>"; }).join("") + "</div>", '<span class="lab">Guess.</span>' + foot) };
       }
       var ok = !!s.ok, alts = (s.alts || []).map(function (a) { return "<p><b>" + esc(a.w) + "</b>" + esc(a.m) + "</p>"; }).join("");

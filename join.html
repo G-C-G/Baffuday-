@@ -68,43 +68,51 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   <div class="prog"><i id="fill"></i></div>
 
   <main id="steps">
-    <section class="step on" data-s="0">
+    <section class="step on" data-k="intro">
       <p class="label">You're invited</p>
       <div class="hero" id="hero"></div>
       <p class="q" style="font-size:clamp(26px,7vw,34px);line-height:1.1;color:var(--ink);margin-bottom:var(--s4)">A game night. Some of it is voluntary.</p>
-      <p class="lede" style="margin-top:0">Six short questions so the night is built around you. About four minutes. You can come back and change anything. You never have to do anything you do not want to.</p>
+      <p class="lede" style="margin-top:0">A few short questions so the night is built around you. About four minutes. You can come back and change anything. You never have to do anything you do not want to.</p>
       <div class="demo" id="demo" hidden>Demo mode: answers stay in this browser. You will download them as a PDF at the end.</div>
     </section>
 
-    <section class="step" data-s="1">
-      <p class="label">01 / Name</p>
+    <section class="step" data-k="name" data-title="Name">
+      <p class="label stp"></p>
       <h2 class="q">Who are we dealing with?</h2>
       <div class="field"><label class="k" for="name">Your name</label><input class="big" type="text" id="name" maxlength="40" placeholder="Name or nickname" autocomplete="off"></div>
       <p class="micro">Nicknames welcome. You'll be called by it, <strong>loudly</strong>.</p>
     </section>
 
-    <section class="step" data-s="2">
-      <p class="label">02 / Karaoke</p>
+    <section class="step" data-k="tonight" data-title="Tonight">
+      <p class="label stp"></p>
+      <h2 class="q">What would you <em>rather do tonight?</em></h2>
+      <p class="lede" style="margin:0 0 var(--s3)">Nobody is forced. Say no to Karaoke Roulette and you will not be asked to sing. We would like you to try at least one thing tonight, and if you do all three, we will be delighted.</p>
+      <div id="inv"></div>
+    </section>
+
+    <section class="step" data-k="song" data-title="Karaoke Roulette">
+      <p class="label stp"></p>
       <h2 class="q">Gun to your head, you have to sing. <em>What song do you pick?</em></h2>
       <div class="field"><label class="k" for="song">Song and artist</label><input class="big" type="text" id="song" maxlength="100" placeholder="Song title and artist" autocomplete="off"></div>
     </section>
 
-    <section class="step" data-s="3">
-      <p class="label">03 / Courage</p>
+    <section class="step" data-k="feel" data-title="Courage">
+      <p class="label stp"></p>
       <h2 class="q">How do you feel about <em>performing it?</em></h2>
       <div class="opts" id="sing"></div>
       <p class="micro" style="margin-top:var(--s2)">It&rsquo;s okay. This is a safe space. 💀</p>
     </section>
 
-    <section class="step" data-s="4">
-      <p class="label">04 / Hot takes</p>
+    <section class="step" data-k="takes" data-title="Twisted hot takes">
+      <p class="label stp"></p>
       <h2 class="q">Pick a side. <em>Where you actually have one.</em></h2>
-      <p class="lede" style="margin:0 0 var(--s4)">Answer the ones you feel something about, then say how strongly. Skip the rest.</p>
+      <p class="lede" style="margin:0 0 var(--s2)">Answer the ones you feel something about, then say how strongly. Skip the rest.</p>
+      <p class="lede" style="margin:0 0 var(--s4)">Answer these even if you said rather not to Twisted Hot Takes. We still use them.</p>
       <div id="takes"></div>
     </section>
 
-    <section class="step" data-s="5">
-      <p class="label">05 / Food</p>
+    <section class="step" data-k="food" data-title="Food">
+      <p class="label stp"></p>
       <h2 class="q">What's on the table, and <em>what can't you eat?</em></h2>
       <div class="menu"><div><p class="k">To eat</p><ul><li>Vege noodles</li><li>Beef goulash</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
         <div><p class="k">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div></div>
@@ -117,14 +125,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <div class="field"><label class="k" for="other">Anything else?</label><input type="text" id="other" maxlength="150" placeholder="Optional"></div>
     </section>
 
-    <section class="step" data-s="6">
-      <p class="label">06 / Tonight</p>
-      <h2 class="q">What would you <em>rather do?</em></h2>
-      <div id="inv"></div>
-      <p class="micro" style="margin-top:var(--s2)">Nobody is forced. Say no to karaoke and you will not be asked to sing. We would like you to try at least one thing tonight, and if you do all three, we will be delighted.</p>
-    </section>
-
-    <section class="step done" id="done" data-s="7">
+    <section class="step done" id="done" data-k="done">
       <p class="label">Done</p>
       <h1>You're on<br>the <em>list.</em></h1>
       <p class="micro" style="margin:0 0 var(--s2)">Unfortunately.</p>
@@ -147,7 +148,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 <script>
 (function () {
   var ID_KEY = "gcg-guest-id-" + (window.GCG_CONFIG.ROOT || "");
-  var picks = {}, gid = null, cur = 0, LAST = 6, nudged = false;
+  var picks = {}, gid = null, curKey = "intro", nudged = false;
   var $ = function (id) { return document.getElementById(id); };
   var title = window.GCG_CONFIG.TITLE || "";
   $("ttl").textContent = title;
@@ -166,7 +167,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   var box = $("takes");
   TAKES.forEach(function (t, i) {
     var d = document.createElement("div"); d.className = "take"; d.id = "take-" + t.id;
-    d.innerHTML = '<p class="k" style="margin:0">Hot take ' + pad(i + 1) + '</p><h3></h3><div class="two"><button type="button" class="pick" data-s="agree"></button><button type="button" class="pick" data-s="disagree"></button></div>' +
+    d.innerHTML = '<p class="k" style="margin:0">Twisted hot take ' + pad(i + 1) + '</p><h3></h3><div class="two"><button type="button" class="pick" data-s="agree"></button><button type="button" class="pick" data-s="disagree"></button></div>' +
       '<div class="sc"><p class="k" style="margin:0">How strongly do you feel?</p><div class="nums scale"></div><p class="says"></p></div>';
     d.querySelector("h3").textContent = t.q;
     d.querySelector("[data-s=agree]").textContent = t.a; d.querySelector("[data-s=disagree]").textContent = t.b;
@@ -202,7 +203,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     r.innerHTML = '<h3></h3><div class="seg"><label><input type="radio" name="inv-' + o.id + '" value="want"><span>Rather do</span></label>' +
       '<label><input type="radio" name="inv-' + o.id + '" value="ok" checked><span>Either way</span></label>' +
       '<label><input type="radio" name="inv-' + o.id + '" value="not"><span>Rather not</span></label></div>';
-    r.querySelector("h3").textContent = o.label; $("inv").appendChild(r);
+    r.querySelector("h3").textContent = o.label; var dsc = document.createElement("p"); dsc.className = "micro"; dsc.style.margin = "0"; dsc.textContent = o.desc || ""; r.insertBefore(dsc, r.querySelector(".seg")); $("inv").appendChild(r);
   });
 
   // returning guest: load their answers
@@ -216,34 +217,42 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
   });
 
-  // stepper
-  function show(n) {
-    cur = n;
-    document.querySelectorAll(".step").forEach(function (s) { s.classList.toggle("on", +s.dataset.s === n); });
-    var onForm = n >= 1 && n <= LAST, fin = n > LAST;
-    $("count").textContent = onForm ? pad(n) + " / " + pad(LAST) : "";
-    $("fill").style.width = (fin ? 100 : n / LAST * 100) + "%";
-    $("back").hidden = !onForm; $("nav").style.display = fin ? "none" : "flex";
-    $("next").textContent = n === 0 ? "Begin" : n === LAST ? "Lock it in." : "Continue";
-    $("err").textContent = ""; window.scrollTo(0, 0);
-    if (onForm) { var f = document.querySelector('.step[data-s="' + n + '"] input[type=text]'); if (f && n <= 2) f.focus({ preventScroll: true }); }
+  // stepper. The activity question comes right after the name; saying no to Karaoke Roulette skips the song and the courage question.
+  function seq() {
+    var k = document.querySelector("input[name=inv-karaoke]:checked"), s = ["name", "tonight"];
+    if (!k || k.value !== "not") s.push("song", "feel");
+    s.push("takes", "food"); return s;
   }
-  function check(n) {
-    if (n === 1 && !$("name").value.trim()) return "Tell us your name.";
-    if (n === 2 && !$("song").value.trim()) return "We need a song. Everyone has one.";
-    if (n === 3 && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
-    if (n === 6) {
+  function show(key) {
+    curKey = key; var sq = seq(), i = sq.indexOf(key), onForm = i >= 0, fin = key === "done";
+    document.querySelectorAll(".step").forEach(function (s) { s.classList.toggle("on", s.dataset.k === key); });
+    var sec = document.querySelector('.step[data-k="' + key + '"]'), lab = sec && sec.querySelector(".stp");
+    if (lab && onForm) lab.textContent = pad(i + 1) + " / " + sec.dataset.title;
+    $("count").textContent = onForm ? pad(i + 1) + " / " + pad(sq.length) : "";
+    $("fill").style.width = (fin ? 100 : onForm ? (i + 1) / sq.length * 100 : 0) + "%";
+    $("back").hidden = !onForm; $("nav").style.display = fin ? "none" : "flex";
+    $("next").textContent = key === "intro" ? "Begin" : i === sq.length - 1 ? "Lock it in." : "Continue";
+    $("err").textContent = ""; window.scrollTo(0, 0);
+    if (key === "name" || key === "song") { var f = sec.querySelector("input[type=text]"); if (f) f.focus({ preventScroll: true }); }
+  }
+  function check(key) {
+    if (key === "name" && !$("name").value.trim()) return "Tell us your name.";
+    if (key === "song" && !$("song").value.trim()) return "We need a song. Everyone has one.";
+    if (key === "feel" && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
+    if (key === "tonight") {
       var all = INVOLVE.every(function (o) { return document.querySelector("input[name=inv-" + o.id + "]:checked").value === "not"; });
-      if (all && !nudged) { nudged = true; return "All three on rather not? That is allowed. But please pick at least one to try, even the gentlest. Tap Lock it in again if you really mean it."; }
+      if (all && !nudged) { nudged = true; return "All three on rather not? That is allowed. But please pick at least one to try, even the gentlest. Tap Continue again if you really mean it."; }
     }
-    if (n === 4) { var m = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; })[0]; if (m) { $("take-" + m.id).scrollIntoView({ block: "center" }); return "Say how strongly you feel about: " + m.q; } }
+    if (key === "takes") { var m = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; })[0]; if (m) { $("take-" + m.id).scrollIntoView({ block: "center" }); return "Say how strongly you feel about: " + m.q; } }
     return "";
   }
   $("inv").addEventListener("change", function () { nudged = false; });
-  $("back").onclick = function () { show(cur - 1); };
+  $("back").onclick = function () { var sq = seq(), i = sq.indexOf(curKey); show(i <= 0 ? "intro" : sq[i - 1]); };
   $("next").onclick = function () {
-    var e = check(cur); if (e) { $("err").textContent = e; return; }
-    if (cur < LAST) show(cur + 1); else submit();
+    var e = check(curKey); if (e) { $("err").textContent = e; return; }
+    if (curKey === "intro") { show("name"); return; }
+    var sq = seq(), i = sq.indexOf(curKey);
+    if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };
   document.querySelectorAll("input[type=text]").forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("next").click(); } }); });
 
@@ -259,17 +268,18 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     $("err").textContent = ""; $("next").disabled = true;
     var involve = {}; INVOLVE.forEach(function (o) { involve[o.id] = document.querySelector("input[name=inv-" + o.id + "]:checked").value; });
     var diet = {}; document.querySelectorAll("#diet input:checked").forEach(function (c) { diet[c.value] = true; });
+    var noK = involve.karaoke === "not"; // no karaoke: no song and no courage answer
     var rec = {
-      name: $("name").value.trim(), song: $("song").value.trim(), sing: +document.querySelector("input[name=sing]:checked").value,
+      name: $("name").value.trim(), song: noK ? "" : $("song").value.trim(), sing: noK ? 0 : +document.querySelector("input[name=sing]:checked").value,
       involve: involve, bee: involve.bee === "not" ? "watch" : "yes",
       allergies: $("allergy").value.trim(), diet: diet, other: $("other").value.trim(),
       picks: picks, updatedAt: Date.now()
     };
     var p = gid ? store.update("guests/" + gid, rec) : (rec.createdAt = Date.now(), store.push("guests", rec).then(function (id) { gid = id; try { localStorage.setItem(ID_KEY, id); } catch (e) {} }));
-    Promise.resolve(p).then(function () { rec._id = gid; makePdfButtons(rec); show(LAST + 1); })
+    Promise.resolve(p).then(function () { rec._id = gid; makePdfButtons(rec); show("done"); })
       .catch(function () { $("err").textContent = "Could not save. Check your connection and try again."; $("next").disabled = false; });
   }
-  show(0);
+  show("intro");
 })();
 </script>
 </body>

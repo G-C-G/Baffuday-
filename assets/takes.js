@@ -37,9 +37,9 @@ window.SING = [
 window.singOf = function (g) { return g && g.involve && !g.involve.karaoke ? 1 : g && g.sing ? +g.sing : 3; };
 // Activities. Each guest says, at the end of the form, which they'd rather do and which they'd rather not.
 window.INVOLVE = [
-  { id: "bee", label: "Spelling bee" },
-  { id: "takes", label: "Hot takes" },
-  { id: "karaoke", label: "Karaoke" }
+  { id: "bee", label: "The Evil Spelling Bee", desc: "A spelling bee that is not really about spelling." },
+  { id: "takes", label: "Twisted Hot Takes", desc: "Strong opinions, said out loud, with a twist." },
+  { id: "karaoke", label: "Karaoke Roulette", desc: "Your song, at a moment of our choosing." }
 ];
 // Returns "want", "ok" (either way) or "not". Old records: bee from the old field, true = want, else ok.
 window.pref = function (g, k) {

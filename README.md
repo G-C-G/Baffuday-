@@ -103,3 +103,9 @@ to / too / two correctly; "insure" and "waste" were added to the ensure and wais
 and the questions for too, sole, current and hoard were rewritten to match how those words are used in the new sentences.
 On the host panel the word being asked for is underlined in the sentence and the other homophones are bold, so you know where
 to lean in as you read. The projector highlights the whole set without saying which one is the answer.
+
+## No meanings (the chaos rule)
+The meaning is never given. The projector shows only the sentence (homophones highlighted) and the spellings; the host reads the
+sentence leaning on the target word (underlined on the host panel) and the contestant has to guess the spelling. The host can tap
+the spelling they gave and the system says right or wrong. The meanings only appear in the reveal afterwards. The host panel
+keeps a dimmed "for arguments only" meaning line; the meaning is never sent to the projector before the answer.

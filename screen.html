@@ -121,7 +121,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
         '<div class="team b"><span class="lab">Team B</span><p class="major">Against</p><ul class="names">' + (s.argueAgainst || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></div></div></div>" };
     }
     if (m === "beerules") {
-      return { theme: "cream", html: frame("The rules", bee("clamp(48px,5vw,90px)") + '<p class="major">The Evil<br><em>Spelling Bee.</em></p><div class="cols" style="grid-template-columns:1fr 1fr"><div><h3 class="lab">You may ask for</h3>' + ul(["Definition", "Sentence", "Part of speech"], "sm") + '</div><div><h3 class="lab">You may not ask for</h3><ul class="list sm" style="text-decoration:line-through;text-decoration-thickness:.06em"><li>The first letter</li><li>The number of letters</li><li>Another sentence</li><li>The word in a different context</li></ul></div></div>', micro("Asking anyway is a personal choice.")) };
+      return { theme: "cream", html: frame("The rules", bee("clamp(48px,5vw,90px)") + '<p class="major">The Evil<br><em>Spelling Bee.</em></p><div class="cols" style="grid-template-columns:1fr 1fr"><div><h3 class="lab">You may ask for</h3>' + ul(["Part of speech", "The sentence, once more"], "sm") + '</div><div><h3 class="lab">You may not ask for</h3><ul class="list sm" style="text-decoration:line-through;text-decoration-thickness:.06em"><li>The meaning</li><li>The first letter</li><li>The number of letters</li><li>Another sentence</li><li>The word in a different context</li></ul></div></div>', micro("Asking anyway is a personal choice.")) };
     }
     if (m === "beestage") {
       return { theme: "cream", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.7);line-height:.8">' + esc(s.standing) + '</p><span class="lab">Still standing</span>' + (s.next ? '<p class="second">Up next: <em>' + esc(s.next) + "</em></p>" : ""), micro("It gets worse.")) };
@@ -138,7 +138,6 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       if (s.phase !== "result") {
         var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
         return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">&ldquo;' + hl(s.sentence, s.marks) + '&rdquo;</p>' +
-          (s.meaning ? '<div><span class="lab">Meaning</span><p class="second" style="font-style:italic">' + esc(s.meaning) + "</p></div>" : "") +
           '<div class="opts">' + (s.options || []).map(function (o) { return "<span>" + esc(o) + "</span>"; }).join("") + "</div>", '<span class="lab">Spell it.</span>' + foot) };
       }
       var ok = !!s.ok, alts = (s.alts || []).map(function (a) { return "<p><b>" + esc(a.w) + "</b>" + esc(a.m) + "</p>"; }).join("");

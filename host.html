@@ -128,7 +128,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <div class="note" id="kqueue"></div>
     </div>
     <div>
-      <span class="k">Hot takes</span>
+      <span class="k">Twisted hot takes</span>
       <div class="takepick" id="takepick"></div>
       <div class="bar" style="margin-top:10px">
         <label class="k" for="perside" style="margin:0">People per side (0 = everyone)</label>
@@ -189,7 +189,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
     $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
-    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), hottake: "Hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
+    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
     $("livetxt").textContent = lt[mm] || "Name screen";
     queue();
     people(L);

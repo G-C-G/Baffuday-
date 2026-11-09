@@ -7,5 +7,5 @@ window.GCG_CONFIG = {
   TITLE: "Hinda's 28th",
   KARAOKE_TARGET: 15,
   // The running order shown on the "Tonight" projector screen
-  LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Hot Takes", "???", "Cake"]
+  LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

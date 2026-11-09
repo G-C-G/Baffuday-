@@ -138,7 +138,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       if (s.phase !== "result") {
         var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
         return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">&ldquo;' + hl(s.sentence, s.marks) + '&rdquo;</p>' +
-          '<div class="opts">' + (s.options || []).map(function (o) { return "<span>" + esc(o) + "</span>"; }).join("") + "</div>", '<span class="lab">Spell it.</span>' + foot) };
+          '<div class="opts">' + (s.options || []).map(function (o) { return "<span>" + esc(o) + "</span>"; }).join("") + "</div>", '<span class="lab">Guess.</span>' + foot) };
       }
       var ok = !!s.ok, alts = (s.alts || []).map(function (a) { return "<p><b>" + esc(a.w) + "</b>" + esc(a.m) + "</p>"; }).join("");
       return { theme: ok ? "acid" : "wine", level: s.level || 1, html: frame(rd, '<p class="res" style="--lv:' + (s.level || 1) + '">' + (ok ? "Correct." : "Wrong.") + '</p><div><span class="lab" style="color:inherit;opacity:.7">The correct answer was</span><p class="major">' + esc(s.answer) + '</p></div><div class="alts">' + alts + "</div>",
@@ -150,7 +150,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
   }
   function spellView(s) {
     var L = String(s.said).toUpperCase().split("");
-    return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They spelled</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
+    return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They guessed</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
   }
 
   var stage = document.getElementById("stage"), last = "", timer = 0, firstLoad = true;

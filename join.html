@@ -91,6 +91,18 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <div class="demo" id="demo" hidden>Demo mode: answers stay in this browser. You will download them as a PDF at the end.</div>
     </section>
 
+    <section class="step" data-k="food" data-title="Allergies">
+      <p class="label stp"></p>
+      <h2 class="q">Anything on the table <em>you can't eat?</em></h2>
+      <p class="lede" style="margin:0 0 var(--s3)">Optional. Skip it if there is nothing we should know.</p>
+      <div class="field"><label class="k" for="allergy">Any allergies?</label><textarea id="allergy" maxlength="300" placeholder="e.g. eggs, peanuts, shellfish. Leave blank if none."></textarea></div>
+      <div class="field"><span class="k">Dietary needs</span>
+        <div class="chips" id="diet">
+          <label><input type="checkbox" value="vegetarian"><span>Vegetarian</span></label><label><input type="checkbox" value="vegan"><span>Vegan</span></label>
+        </div></div>
+      <div class="field"><label class="k" for="other">Anything else?</label><input type="text" id="other" maxlength="150" placeholder="Optional"></div>
+    </section>
+
     <section class="step" data-k="name" data-title="Name">
       <p class="label stp"></p>
       <h2 class="q">Who are we dealing with?</h2>
@@ -117,21 +129,6 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <p class="lede" style="margin:0 0 var(--s2)">Answer the ones you feel something about, then say how strongly. Skip the rest.</p>
       <p class="lede" style="margin:0 0 var(--s4)">Answer these even if you said rather not to Twisted Hot Takes. We still use them.</p>
       <div id="takes"></div>
-    </section>
-
-    <section class="step" data-k="food" data-title="Food">
-      <p class="label stp"></p>
-      <h2 class="q">What's on the table, and <em>what can't you eat?</em></h2>
-      <div class="menu"><div><p class="k">To eat</p><ul><li>Vege noodles</li><li>Beef goulash</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
-        <div><p class="k">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div></div>
-      <p class="halal">Halal certified</p>
-      <div class="field"><label class="k" for="allergy">Any allergies?</label><textarea id="allergy" maxlength="300" placeholder="e.g. eggs, peanuts, shellfish. Leave blank if none."></textarea></div>
-      <div class="field"><span class="k">Dietary needs</span>
-        <div class="chips" id="diet">
-          <label><input type="checkbox" value="vegetarian"><span>Vegetarian</span></label><label><input type="checkbox" value="vegan"><span>Vegan</span></label>
-          <label><input type="checkbox" value="halal"><span>Halal only</span></label><label><input type="checkbox" value="nopork"><span>No pork</span></label>
-        </div></div>
-      <div class="field"><label class="k" for="other">Anything else?</label><input type="text" id="other" maxlength="150" placeholder="Optional"></div>
     </section>
 
     <section class="step done" id="done" data-k="done">
@@ -221,9 +218,9 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 
   // stepper. The activity question comes right after the name; saying no to Karaoke Roulette skips the song.
   function seq() {
-    var k = document.querySelector("input[name=inv-karaoke]:checked"), s = ["name", "tonight"];
+    var k = document.querySelector("input[name=inv-karaoke]:checked"), s = ["food", "name", "tonight"];
     if (!k || k.value !== "not") s.push("song");
-    s.push("takes", "food"); return s;
+    s.push("takes"); return s;
   }
   function show(key) {
     curKey = key; var sq = seq(), i = sq.indexOf(key), onForm = i >= 0, fin = key === "done";
@@ -255,7 +252,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   $("back").onclick = function () { var sq = seq(), i = sq.indexOf(curKey); show(i <= 0 ? "intro" : sq[i - 1]); };
   $("next").onclick = function () {
     var e = check(curKey); if (e) { $("err").textContent = e; return; }
-    if (curKey === "intro") { show("name"); return; }
+    if (curKey === "intro") { show(seq()[0]); return; }
     var sq = seq(), i = sq.indexOf(curKey);
     if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };

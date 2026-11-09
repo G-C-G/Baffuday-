@@ -94,7 +94,7 @@ window.BEE = [
   [4, "By morning some will be celebrating victory, others will be mourning their reputations.", "Spell the word associated with grief after someone's death.", "mourning", ["morning", "mourning"]],
   [4, "He showed off his spelling muscle all evening, but give him the word mussel and suddenly we're back to square one.", "Spell the word meaning the edible shellfish.", "mussel", ["muscle", "mussel"]],
   [4, "Pore over the question carefully before you pour all your confidence into the wrong answer.", "Spell the word meaning to study something carefully.", "pore", ["pore", "pour"]],
-  [4, "You may have passed the previous round, but that is now in the past and absolutely irrelevant.", "Spell the past tense of pass.", "passed", ["passed", "past"]],
+  [4, "Some of you passed the last round, while others are still trying to move past it. Are you not embarazzed?", "Spell the past tense of pass.", "passed", ["passed", "past"]],
   [5, "Her language was a little coarse, but at least she knew exactly which course she was supposed to be taking.", "Spell the word meaning a route or class of instruction.", "course", ["coarse", "course"]],
   [5, "The current problem is that someone has mistaken a currant for something much more important.", "Spell the word meaning happening now.", "current", ["currant", "current"]],
   [5, "She painted the canvas beautifully while the others went around to canvass support for her victory.", "Spell the word meaning the material used for painting.", "canvas", ["canvas", "canvass"]],

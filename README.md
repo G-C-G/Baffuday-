@@ -149,3 +149,6 @@ answer cuts instantly to black with a punch flash, the word is struck through, t
 Update: the bee sentence screen has the sentence on the left, the spelling options big and bold at the bottom centre, a small "Final answer?" under
 a selected option and a small "Locked in" once locked. The "1 / 45" counter is gone (only "still standing" stays). On the host panel one tap selects a
 spelling and only a quick double tap on the same spelling (within about 0.9s) locks it in; a slower second tap does not lock.
+
+Balance pass (projector): announcement screens are centred (name screen, karaoke, hot-take statement, bee stage count, call-up, champion); lists and
+rules stay left-aligned; the bee sentence sits top-left and a little wider, with the options a little higher at the bottom centre; the Tonight list fits at 16:9, 4:3 and 1080p.

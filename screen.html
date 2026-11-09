@@ -40,11 +40,11 @@ body.t-acid #stage{box-shadow:inset 0 0 0 calc(1vw + var(--lv,1)*.6vw) var(--ink
 .list{list-style:none;margin:0;padding:0;display:grid;gap:1.4vh}
 .list li{font:400 var(--major)/1 var(--serif);letter-spacing:-.015em}
 .list.sm li{font-size:var(--second);line-height:1.2}
-.row3{display:grid;grid-template-columns:auto 1fr;gap:3vw;align-items:baseline;border-top:1px solid rgba(8,24,62,.3);padding-block:1.6vh}
+.row3{display:grid;grid-template-columns:auto 1fr;gap:3vw;align-items:baseline;border-top:1px solid rgba(8,24,62,.3);padding-block:1.9vh}
 .row3 .n{font:600 var(--lab) var(--sans);letter-spacing:.18em;color:var(--ink)}
-.row3 .t{font:400 var(--major)/1 var(--serif);letter-spacing:-.02em}
+.row3 .t{font:400 calc(var(--major)*.92)/1 var(--serif);letter-spacing:-.02em}
 .opts{display:flex;gap:2.4vw;flex-wrap:wrap}
-.optbar{position:fixed;left:0;right:0;bottom:13vh;display:flex;flex-direction:column;align-items:center;gap:1.6vh;pointer-events:none}
+.optbar{position:fixed;left:0;right:0;bottom:17vh;display:flex;flex-direction:column;align-items:center;gap:1.6vh;pointer-events:none}
 .optbar .opts{justify-content:center;gap:2.2vw}
 .optbar .opts span{font:700 calc(var(--second)*.9) var(--sans);letter-spacing:.1em;border-width:2px;padding:.5em 1.15em}
 .optnote{font:600 calc(var(--lab)*.9) var(--sans);letter-spacing:.22em;text-transform:uppercase;opacity:.75;min-height:1.4em}
@@ -152,11 +152,11 @@ body.flashred{animation:flashred .6s ease 2}
         '<span class="second" style="font-family:var(--sans);font-size:var(--micro)"><span class="lab" style="margin-right:1.2em">Allergies</span>Tell Hinda or the host before you eat. Every dish can be checked. Please do.</span>') };
     }
     if (m === "karaoke") {
-      return { theme: "ink", html: frame("Karaoke", '<span class="lab">Unfortunately</span><p class="hero">You\'re<br>up.</p><p class="major" style="font-style:italic;text-decoration:underline;text-decoration-thickness:.04em;text-underline-offset:.12em">' + esc(s.name) + '</p><p class="second" style="opacity:.85">' + esc(s.song) + "</p>", micro("There is no appeal process."), "") };
+      return { theme: "ink", html: frame("Karaoke", '<span class="lab">Unfortunately</span><p class="hero">You\'re up.</p><p class="major" style="font-style:italic;text-decoration:underline;text-decoration-thickness:.04em;text-underline-offset:.12em">' + esc(s.name) + '</p><p class="second" style="opacity:.85">' + esc(s.song) + "</p>", micro("There is no appeal process."), "c") };
     }
     if (m === "hottake") {
       var num = pad(s.num || 1), tot = s.total ? " / " + pad(s.total) : "";
-      if (!s.reveal) return { theme: "cream", html: frame("Twisted hot take " + num + tot, '<p class="major" style="font-size:calc(var(--major)*1.15);max-width:20ch">' + esc(s.text) + "</p>", micro("Pick a side. Quietly.")) };
+      if (!s.reveal) return { theme: "cream", html: frame("Twisted hot take " + num + tot, '<p class="major" style="font-size:calc(var(--major)*1.15);max-width:20ch">' + esc(s.text) + "</p>", micro("Pick a side. Quietly."), "c") };
       return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + '</p><div><span class="chip" style="font-size:calc(var(--lab)*1.4)">Defend the opposite.</span></div></div>' +
         '<div class="teams"><div class="team a"><span class="lab">Team A</span><p class="major">For</p><ul class="names">' + (s.argueFor || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + '</ul></div>' +
         '<div class="team b"><span class="lab">Team B</span><p class="major">Against</p><ul class="names">' + (s.argueAgainst || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></div></div></div>" };
@@ -165,13 +165,13 @@ body.flashred{animation:flashred .6s ease 2}
       return { theme: "cream", html: frame("The rules", bee("clamp(48px,5vw,90px)") + '<p class="major">The Evil<br><em>Spelling Bee.</em></p><div class="cols" style="grid-template-columns:1fr 1fr"><div><h3 class="lab">You may ask for</h3>' + ul(["Part of speech", "The sentence, once more"], "sm") + '</div><div><h3 class="lab">You may not ask for</h3><ul class="list sm" style="text-decoration:line-through;text-decoration-thickness:.06em"><li>The meaning</li><li>The first letter</li><li>The number of letters</li><li>Another sentence</li><li>The word in a different context</li></ul></div></div>', micro("Asking anyway is a personal choice.")) };
     }
     if (m === "beestage") {
-      return { theme: "cream", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.7);line-height:.8">' + esc(s.standing) + '</p><span class="lab">Still standing</span>' + (s.next ? '<p class="second">Up next: <em>' + esc(s.next) + "</em></p>" : ""), micro("It gets worse.")) };
+      return { theme: "cream", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.7);line-height:.8">' + esc(s.standing) + '</p><span class="lab">Still standing</span>' + (s.next ? '<p class="second">Up next: <em>' + esc(s.next) + "</em></p>" : ""), micro("It gets worse."), "c") };
     }
     if (m === "beecall") {
-      return { theme: "ink", html: frame("Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">Unfortunately. To the stage, please.</p>', micro(esc(s.standing) + " still standing")) };
+      return { theme: "ink", html: frame("Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">Unfortunately. To the stage, please.</p>', micro(esc(s.standing) + " still standing"), "c") };
     }
     if (m === "beewin") {
-      return { theme: "ink", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.25)">Champion.</p><p class="major">' + esc(s.name) + "</p>", micro("Absurdly important.")) };
+      return { theme: "ink", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.25)">Champion.</p><p class="major">' + esc(s.name) + "</p>", micro("Absurdly important."), "c") };
     }
     if (m === "bee") {
       var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
@@ -180,13 +180,13 @@ body.flashred{animation:flashred .6s ease 2}
     }
     // home
     var parts = title.match(/^(\S+)\s*(.*)$/) || [title, title, ""];
-    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)">' + esc(parts[1]) + (parts[2] ? "<br><em>" + esc(parts[2]) + "</em>" : "") + "</p>", micro("Some of it is voluntary.")) };
+    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)">' + esc(parts[1]) + (parts[2] ? "<br><em>" + esc(parts[2]) + "</em>" : "") + "</p>", micro("Some of it is voluntary."), "c") };
   }
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
   function beeSentenceView(s, mode) {
     var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
     var foot = micro(esc(s.contestant)) + micro(esc(s.standing) + " still standing");
-    var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
+    var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "36ch" : "28ch";
     var chosen = mode === "confirm" || mode === "lock" ? (s.chosen || s.said) : "", seen = false, cls = mode === "lock" ? "sel throb" : "sel";
     var opts = (s.options || []).map(function (o) {
       var hit = chosen && String(o).toLowerCase() === String(chosen).toLowerCase(); if (hit) seen = true;

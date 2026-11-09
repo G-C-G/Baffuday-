@@ -137,3 +137,7 @@ on a dark blue screen. The X is a bold, sharp-cornered red X with no curves.
 Update: nothing says "Correct" or "Wrong" any more. After the pause, a right answer fires confetti from the left and right edges (a little in
 round 1, the most at the finale) and the chosen option stays selected (no green). A wrong answer turns the screen black with the red X. In both
 cases the screen that follows shows the correct word, large, with the other spellings and their meanings underneath.
+
+Update: the answer screen is now just the word. Right: the correct word, front and centre, with the side confetti and the win sound.
+Wrong: a black screen with the red X on the left; on the right the word they said, crossed out, and the correct word under it. The
+other spellings and their meanings no longer appear on the projector. The screen stays until you press Next prompt.

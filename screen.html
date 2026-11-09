@@ -74,6 +74,15 @@ body.t-ink .opts span.sel{background:var(--cream);color:var(--ink);border-color:
 .opts span.throb{animation:throb .55s ease-in-out infinite}
 @keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.fin-word{font:400 min(calc(var(--hero)*1.35),calc(176vw / var(--n,6)))/.95 var(--serif);letter-spacing:-.02em;margin:0;animation:pop .45s ease-out}
+.said{font:400 min(calc(var(--hero)*.9),calc(120vw / var(--n,6)))/1 var(--serif);letter-spacing:-.02em;text-decoration:line-through;text-decoration-color:#FF1F3D;text-decoration-thickness:.07em;margin:0;opacity:.9}
+.wrongword{position:relative;display:inline-block;padding:.1em .3em}
+.wrongrow{display:flex;align-items:center;justify-content:center;gap:5vw;text-align:left;width:100%}
+.xbadge{flex:0 0 auto;height:min(48vh,30vw);aspect-ratio:1}
+.xbadge svg{width:100%;height:100%;filter:drop-shadow(0 0 2.4vh rgba(255,31,61,.55));animation:stamp .4s cubic-bezier(.2,1.4,.4,1) both}
+.wrongcol{display:grid;gap:1.4vh;min-width:0;justify-items:start}
+.wrongcol .said{font-size:min(calc(var(--hero)*.8),calc(105vw / var(--n,6)))}
+.wrongcol .fin-word{font-size:min(calc(var(--hero)*1.25),calc(105vw / var(--n,6)))}
 .xstamp{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:40}
 .xstamp svg{width:min(78vh,66vw);height:auto;filter:drop-shadow(0 0 3vh rgba(255,31,61,.55));animation:stamp .38s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes stamp{0%{transform:scale(3.6) rotate(-14deg);opacity:0}50%{opacity:1}100%{transform:scale(1) rotate(-7deg);opacity:1}}
@@ -155,9 +164,7 @@ body.flashred{animation:flashred .6s ease 2}
       var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
       var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
       if (s.phase !== "result") return beeSentenceView(s, s.phase === "confirm" ? "confirm" : "prompt");
-      var ok = !!s.ok, alts = (s.alts || []).map(function (a) { return "<p><b>" + esc(a.w) + "</b>" + esc(a.m) + "</p>"; }).join("");
-      return { theme: ok ? "acid" : "black", level: s.level || 1, html: frame(rd, '<div><span class="lab" style="color:inherit;opacity:.7">The word</span><p class="res" style="--lv:' + (s.level || 1) + ';font-size:calc(var(--hero)*.95)">' + esc(s.answer) + '</p></div><div class="alts">' + alts + "</div>",
-        micro(s.final ? "That's the game." : ok ? "We'll allow it." : s.sudden ? "Nobody is out. This continues until someone gets it right." : "Yes, those words are deliberately annoying.") + micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing")) };
+      return beeFinal(s);
     }
     // home
     var parts = title.match(/^(\S+)\s*(.*)$/) || [title, title, ""];
@@ -179,6 +186,15 @@ body.flashred{animation:flashred .6s ease 2}
     return { theme: mode === "reveal" && !s.ok ? "black" : mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + '</p><div class="opts">' + opts + "</div>" + banner,
       '<span class="lab">' + (mode === "confirm" ? "Final answer?" : mode === "reveal" || mode === "lock" ? "Final answer" : "Guess.") + "</span>" + foot) + stamp };
   }
+  var X_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg>';
+  function beeFinal(s) {
+    var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), ok = !!s.ok, lv = s.level || 1;
+    var foot = micro(s.final ? "That's the game." : ok ? "We'll allow it." : s.sudden ? "Nobody is out. This continues until someone gets it right." : "Yes, those words are deliberately annoying.") + micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing");
+    if (ok) return { theme: "acid", level: lv, html: frame(rd, '<p class="fin-word" style="--n:' + String(s.answer).length + '">' + esc(s.answer) + "</p>", foot, "c") };
+    // Wrong: the X on the left; on the right the word they said, crossed out, with the right word under it.
+    var said = s.said ? '<p class="said" style="--n:' + String(s.said).length + '">' + esc(s.said) + "</p>" : "";
+    return { theme: "black", level: lv, html: frame(rd, '<div class="wrongrow"><div class="xbadge">' + X_SVG + '</div><div class="wrongcol">' + said + '<span class="lab" style="color:inherit;opacity:.7">The word was</span><p class="fin-word" style="--n:' + String(s.answer).length + '">' + esc(s.answer) + "</p></div></div>", foot, "c") };
+  }
   function spellView(s) {
     var L = String(s.said).toUpperCase().split("");
     return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They guessed</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
@@ -198,8 +214,7 @@ body.flashred{animation:flashred .6s ease 2}
       var pause = suspenseMs(s); s.big = pause >= 4500;
       draw(beeSentenceView(s, "lock")); drumroll(pause);
       timer = setTimeout(function () {
-        draw(beeSentenceView(s, "reveal")); revealFx(s);
-        timer = setTimeout(function () { draw(view(s)); react(s, false); }, s.ok ? 3600 : 3200);
+        draw(beeFinal(s)); revealFx(s);
       }, pause);
     } else { draw(view(s)); react(s, fresh); }
   });

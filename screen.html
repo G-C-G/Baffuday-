@@ -103,8 +103,8 @@ body.shake #stage{animation:shake .4s linear 3}
     }
     if (m === "hottake") {
       var num = pad(s.num || 1), tot = s.total ? " / " + pad(s.total) : "";
-      if (!s.reveal) return { theme: "cream", html: frame("Hot take " + num + tot, '<p class="major" style="font-size:calc(var(--major)*1.15);max-width:20ch">' + esc(s.text) + "</p>", micro("Pick a side. Quietly.")) };
-      return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + '</p><div><span class="chip" style="font-size:calc(var(--lab)*1.4)">Defend the opposite.</span></div></div>' +
+      if (!s.reveal) return { theme: "cream", html: frame("Twisted hot take " + num + tot, '<p class="major" style="font-size:calc(var(--major)*1.15);max-width:20ch">' + esc(s.text) + "</p>", micro("Pick a side. Quietly.")) };
+      return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + '</p><div><span class="chip" style="font-size:calc(var(--lab)*1.4)">Defend the opposite.</span></div></div>' +
         '<div class="teams"><div class="team a"><span class="lab">Team A</span><p class="major">For</p><ul class="names">' + (s.argueFor || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + '</ul></div>' +
         '<div class="team b"><span class="lab">Team B</span><p class="major">Against</p><ul class="names">' + (s.argueAgainst || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></div></div></div>" };
     }

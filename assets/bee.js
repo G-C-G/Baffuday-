@@ -68,7 +68,7 @@ window.BEE = [
   [1, "I know you think you know the answer, but no, you don't.", "Spell the word meaning to have knowledge of.", "know", ["know", "no"]],
   [1, "Walk by the other contestants, buy yourself some confidence, and also say bye to your confidence.", "Spell the word meaning purchase.", "buy", ["by", "buy", "bye"]],
   [1, "You only need one correct answer, but if you get it right, you'll have won absolutely nothing except our respect.", "Spell the word meaning the number after zero.", "one", ["one", "won"]],
-  [1, "I gave you four chances to prepare for this, but apparently that was four chances too many.", "Spell the word meaning the number after three.", "four", ["for", "four"]],
+  [1, "Four chose Dauntless for the thrill of it; you chose Hinda's birthday. Frankly, you may be more courageous than Four for being here.", "Spell the word meaning intended to benefit, or because of.", "for", ["for", "four"], "fixed"],
   [2, "She brought a flower to the table, but somehow there is flour everywhere, and nobody is taking responsibility.", "Spell the word used for baking.", "flour", ["flower", "flour"]],
   [2, "All I wanted was some peace, but apparently everyone wants a piece of the argument.", "Spell the word meaning a portion of something.", "piece", ["peace", "piece"]],
   [2, "Take a break if you need one, but please don't hit the brake on your thinking.", "Spell the word used to slow down a vehicle.", "brake", ["break", "brake"]],

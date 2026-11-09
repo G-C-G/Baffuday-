@@ -162,9 +162,13 @@ main{min-height:0;overflow-y:auto}
     </section>
 
     <!-- One rating screen per activity: the promise first, then the activity, then the five answers. No scrolling. -->
+    <section class="step" data-k="r-intro">
+      <p class="lab">On the day</p>
+      <h2 class="huge">If you say no, we will <em>RESPEKK</em> it.</h2>
+      <p class="sup" style="max-width:26ch">But please pick more than one of the three.</p>
+    </section>
     <section class="step" data-k="r-bee" data-act="bee">
       <p class="lab" data-t></p>
-      <p class="safe">If you say no, we will RESPEKK it. But please pick more than one if you can.</p>
       <h2 class="act-title"></h2>
       <div class="opts" data-rate></div>
     </section>
@@ -285,12 +289,12 @@ main{min-height:0;overflow-y:auto}
 
   // flow
   function seq() {
-    var s = ["food", "name", "r-bee", "r-karaoke", "r-takes"];
+    var s = ["food", "name", "r-intro", "r-bee", "r-karaoke", "r-takes"];
     if ((rates.karaoke || 3) >= 3) s.push("song");     // rather not / please no: no song needed
     for (var i = 0; i < TAKES.length; i++) s.push("take-" + i);
     return s;
   }
-  var QUIET = { food: "Allergies", name: "Name", song: "Karaoke Roulette", "r-bee": "On the day", "r-karaoke": "On the day", "r-takes": "On the day" };
+  var QUIET = { food: "Allergies", name: "Name", song: "Karaoke Roulette", "r-intro": "On the day", "r-bee": "1 of 3", "r-karaoke": "2 of 3", "r-takes": "3 of 3" };
   function labelFor(key, i, sq) {
     if (key.indexOf("take-") === 0) return "Twisted hot take " + pad(+key.slice(5) + 1) + " of " + pad(TAKES.length);
     return QUIET[key] || "";
@@ -316,7 +320,7 @@ main{min-height:0;overflow-y:auto}
   function check(key) {
     if (key === "name" && !$("name").value.trim()) return "Tell us your name.";
     if (key === "song" && !$("song").value.trim()) return "We need a song. Everyone has one.";
-    if (key.indexOf("r-") === 0) {
+    if (key.indexOf("r-") === 0 && key !== "r-intro") {
       var id = key.slice(2);
       if (!rates[id]) return "Pick one. No judgement.";
       if (key === "r-takes") {

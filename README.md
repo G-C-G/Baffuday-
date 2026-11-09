@@ -125,7 +125,7 @@ host panel shows the chosen word and underlines it in the sentence; the "for arg
 ## Game-show flow ("Is that your final answer?")
 On the host panel, tapping a spelling no longer judges it. The projector highlights the chosen option and asks "Is that your final answer?",
 and the host panel offers "Yes, final answer" or "No, let them think" (No clears the choice and returns to the sentence). Yes judges it:
-a right answer turns that option green with a little confetti and a cheer (bigger in later rounds); a wrong answer flashes red, slams a big
-red X stamp on the screen and plays a long talent-show buzzer. Then the normal Correct / Wrong screen follows with the real answer.
+a right answer turns that option green with a little confetti and a cheer (bigger in later rounds); a wrong answer turns the whole screen black, slams a big
+red X stamp on it and plays a long talent-show buzzer. Then the normal Correct / Wrong screen follows with the real answer.
 Green and red appear only in these answer moments; the rest of the app stays yellow and blue. The old Correct / Incorrect override buttons
 still judge instantly (no confirm step) for when you mishear.

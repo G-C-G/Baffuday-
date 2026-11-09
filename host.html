@@ -442,7 +442,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   }
   function entry() {
     var e = BEE[Math.min(bee.n || 0, BEE.length - 1)];
-    if ((window.GCG_CONFIG || {}).BEE_RANDOM_ANSWER === false) return e;
+    if ((window.GCG_CONFIG || {}).BEE_RANDOM_ANSWER === false || e[5] === "fixed") return e; // a prompt marked "fixed" always uses the answer written for it
     var w = e[4][pickIdx(bee.seed || 1, bee.n || 0, e[4].length)];
     return [e[0], e[1], "Spell the word meaning " + (BEE_W[w] || "") + ".", w, e[4]];
   }

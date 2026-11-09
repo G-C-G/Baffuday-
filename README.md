@@ -165,3 +165,5 @@ count adapts (06 steps, or 04 when karaoke is skipped).
 
 Copy update: the form asks guests to pick more than one activity ("But you can say no"). If fewer than two activities are on "rather do" or "either way",
 the form nudges once and then lets them continue.
+
+A prompt can be marked "fixed" (a sixth item in its entry in `assets/bee.js`) so it always uses the answer written for it instead of a random one. The capital / capitol prompt is fixed to "Capitol".

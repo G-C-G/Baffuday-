@@ -78,7 +78,7 @@ window.BEE = [
   [2, "At night, every knight looks impressive until you remember he still has to explain where he parked.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
   [2, "Her son came home looking like he had personally offended the sun.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
-  [2, "You're allowed to think it, but saying it aloud may create a completely different problem.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
+  [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
   [3, "The party site looks cool, the sight of this spelling bee is already concerning, and nobody better cite Hinda as a source of their misfortune. Y'all signed up for this one.", "Spell the word meaning a location.", "site", ["site", "sight", "cite"]],
   [3, "The stationery is beautiful, but you've been stationary for so long that we may need to send help.", "Spell the word meaning writing materials.", "stationery", ["stationary", "stationery"]],
   [3, "Please be discreet about your strategy; there are already discrete groups of people hoping you lose.", "Spell the word meaning careful not to attract attention.", "discreet", ["discreet", "discrete"]],

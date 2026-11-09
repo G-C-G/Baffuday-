@@ -75,7 +75,7 @@ window.BEE = [
   [2, "He came with bare confidence, which is almost as intimidating as a bear.", "Spell the word meaning uncovered.", "bare", ["bare", "bear"]],
   [2, "Rick Ross said shout-out to all the pear; tonight, a pair of contestants have clearly taken that personally.", "Spell the fruit.", "pear", ["pair", "pear"]],
   [2, "The male contestant received the mail first, which is not evidence of superiority, despite what he may tell you.", "Spell the word meaning a letter or package delivery.", "mail", ["mail", "male"]],
-  [2, "At night, every knight looks impressive until you remember he still has to explain where he parked.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
+  [2, "Tonight defend your family's honour. Be the knight, or lady knight, who rides away victorious into the night.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
   [2, "Her son came home looking like he had personally offended the sun.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
   [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],

@@ -86,7 +86,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     <section class="step" data-k="tonight" data-title="Tonight">
       <p class="label stp"></p>
       <h2 class="q">What would you <em>rather do tonight?</em></h2>
-      <p class="lede" style="margin:0 0 var(--s3)">Nobody is forced. Say no to Karaoke Roulette and you will not be asked to sing. We would like you to try at least one thing tonight, and if you do all three, we will be delighted.</p>
+      <p class="lede" style="margin:0 0 var(--s3)">Please pick more than one thing tonight. But you can say no: nobody is forced, and if you say no to Karaoke Roulette you will not be asked to sing. If you do all three, we will be delighted.</p>
       <div id="inv"></div>
     </section>
 
@@ -240,8 +240,12 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     if (key === "song" && !$("song").value.trim()) return "We need a song. Everyone has one.";
     if (key === "feel" && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
     if (key === "tonight") {
-      var all = INVOLVE.every(function (o) { return document.querySelector("input[name=inv-" + o.id + "]:checked").value === "not"; });
-      if (all && !nudged) { nudged = true; return "All three on rather not? That is allowed. But please pick at least one to try, even the gentlest. Tap Continue again if you really mean it."; }
+      var yes = INVOLVE.filter(function (o) { return document.querySelector("input[name=inv-" + o.id + "]:checked").value !== "not"; }).length;
+      if (yes < 2 && !nudged) {
+        nudged = true;
+        return yes === 0 ? "All three on rather not? That is allowed. But please pick more than one if you can. Tap Continue again if you really mean it."
+          : "Just the one? Please pick more than one if you can. You can say no, so tap Continue again if you really mean it.";
+      }
     }
     if (key === "takes") { var m = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; })[0]; if (m) { $("take-" + m.id).scrollIntoView({ block: "center" }); return "Say how strongly you feel about: " + m.q; } }
     return "";

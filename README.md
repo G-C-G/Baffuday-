@@ -162,3 +162,6 @@ choose that. Form error messages now sit above the buttons so they are not hidde
 Name, then Tonight (the three activities: The Evil Spelling Bee, Twisted Hot Takes, Karaoke Roulette), then the song and the courage question
 (skipped if the guest says no to Karaoke Roulette), then the Twisted hot takes (always asked, even if they said rather not), then food. The progress
 count adapts (06 steps, or 04 when karaoke is skipped).
+
+Copy update: the form asks guests to pick more than one activity ("But you can say no"). If fewer than two activities are on "rather do" or "either way",
+the form nudges once and then lets them continue.

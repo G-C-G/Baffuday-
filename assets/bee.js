@@ -73,7 +73,7 @@ window.BEE = [
   [2, "All I wanted was some peace, but apparently everyone wants a piece of the argument.", "Spell the word meaning a portion of something.", "piece", ["peace", "piece"]],
   [2, "Take a break if you need one, but please don't hit the brake on your thinking.", "Spell the word used to slow down a vehicle.", "brake", ["break", "brake"]],
   [2, "He came with bare confidence, which is almost as intimidating as a bear.", "Spell the word meaning uncovered.", "bare", ["bare", "bear"]],
-  [2, "I asked for a pair of shoes and received a pear, so clearly someone in customer service is having a difficult day.", "Spell the fruit.", "pear", ["pair", "pear"]],
+  [2, "Rick Ross said shout-out to all the pear; tonight, a pair of contestants have clearly taken that personally.", "Spell the fruit.", "pear", ["pair", "pear"]],
   [2, "The male contestant received the mail first, which is not evidence of superiority, despite what he may tell you.", "Spell the word meaning a letter or package delivery.", "mail", ["mail", "male"]],
   [2, "At night, every knight looks impressive until you remember he still has to explain where he parked.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
   [2, "Her son came home looking like he had personally offended the sun.", "Spell the word meaning a male child.", "son", ["son", "sun"]],

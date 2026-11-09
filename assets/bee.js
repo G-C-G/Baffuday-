@@ -83,7 +83,7 @@ window.BEE = [
   [3, "The stationery is beautiful, but you've been stationary for so long that we may need to send help.", "Spell the word meaning writing materials.", "stationery", ["stationary", "stationery"]],
   [3, "Please be discreet about your strategy; there are already discrete groups of people hoping you lose.", "Spell the word meaning careful not to attract attention.", "discreet", ["discreet", "discrete"]],
   [3, "The question was designed to elicit an answer, not an illicit attempt to copy your neighbour.", "Spell the word meaning illegal or forbidden.", "illicit", ["elicit", "illicit"]],
-  [3, "Please ensure you know the answer, because nobody will insure that much confidence.", "Spell the word meaning to make certain.", "ensure", ["ensure", "insure"]],
+  [3, "We can ensure everyone gets a fair chance, but nobody here is prepared to insure your dignity.", "Spell the word meaning to make certain.", "ensure", ["ensure", "insure"]],
   [3, "The spelling mistake will affect your score, but the effect on your confidence may be permanent.", "Spell the word meaning the result or consequence.", "effect", ["affect", "effect"]],
   [4, "Whether you like it or not, the weather has already decided what your hair is doing tonight.", "Spell the word meaning atmospheric conditions.", "weather", ["weather", "whether"]],
   [4, "She tied her belt at her waist and still found a way to waste the evening.", "Spell the word meaning the part of the body between the ribs and hips.", "waist", ["waist", "waste"]],

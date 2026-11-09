@@ -182,7 +182,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
   <footer class="nav" id="nav">
     <p class="err" id="err" role="alert"></p>
     <div class="navbtns"><button class="btn ghost" type="button" id="back" hidden>Back</button>
-    <button class="btn" type="button" id="next">Begin</button></div>
+    <button class="btn" type="button" id="next">Begin to RSVP</button></div>
   </footer>
 </div>
 <script src="config.js"></script>
@@ -285,7 +285,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
     $("fill").style.width = (fin ? 100 : onForm ? (i + 1) / sq.length * 100 : 0) + "%";
     $("ttl").style.visibility = key === "intro" ? "hidden" : "visible";
     $("back").hidden = !onForm; $("nav").style.display = fin ? "none" : "flex";
-    $("next").textContent = key === "intro" ? "Begin" : i === sq.length - 1 ? "Lock it in." : "Continue";
+    $("next").textContent = key === "intro" ? "Begin to RSVP" : i === sq.length - 1 ? "Lock it in." : "Continue";
     if (key.indexOf("take-") === 0) setNext();
     $("err").textContent = ""; window.scrollTo(0, 0);
     if (key === "name" || key === "song") { var f = sec.querySelector("input[type=text]"); if (f) f.focus({ preventScroll: true }); }

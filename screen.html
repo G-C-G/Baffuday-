@@ -267,7 +267,7 @@ body.flashred{animation:flashred .6s ease 2}
   // Reveal moment: right = the option turns green with a little confetti; wrong = red flash, a big red X stamp and the X sound.
   function revealFx(s) {
     var lv = s.level || 1;
-    if (s.ok) { confetti(CONF[lv]); cheer(lv); } else { xfactor(); document.body.classList.add("shake"); }
+    if (s.ok) { confetti(CONF[lv]); winSound(lv); } else { xfactor(); document.body.classList.add("shake"); }
   }
   function cheer(level) {
     var notes = [523, 659, 784, 1047, 1319, 1568, 2093], count = 3 + level * 2, step = Math.max(.07, .16 - level * .015);
@@ -275,15 +275,31 @@ body.flashred{animation:flashred .6s ease 2}
     noise(.4 + level * .35, .08 + level * .05);
     if (level >= 4) { tone(262, count * step, 1.2, "sawtooth", .25); tone(392, count * step, 1.2, "sawtooth", .2); tone(523, count * step, 1.2, "sawtooth", .2); }
   }
+  // The win sound is the supplied children's "yay" clip. Round 1 plays it once at a modest volume; it gets louder, then layered
+  // (several copies, slightly staggered and pitched) toward the finale, which is the biggest. Falls back to a synthesised cheer.
+  var YAY_SRC = "assets/sounds/yay.mp3", YAY_LAYERS = [0, 1, 1, 1, 2, 2, 4], YAY_VOL = [0, .5, .6, .7, .8, .9, 1];
+  try { var preload = new Audio(YAY_SRC); preload.preload = "auto"; } catch (e) {}
+  function winSound(level) {
+    level = Math.max(1, Math.min(6, level || 1));
+    for (var i = 0; i < YAY_LAYERS[level]; i++) (function (i) {
+      setTimeout(function () {
+        try {
+          var a = new Audio(YAY_SRC); a.volume = Math.min(1, YAY_VOL[level] * (1 - i * .08)); a.playbackRate = 1 + i * .035;
+          a.onerror = function () { if (i === 0) cheer(level); };
+          var p = a.play(); if (p && p.catch) p.catch(function () { if (i === 0) cheer(level); });
+        } catch (e) { if (i === 0) cheer(level); }
+      }, i * 150);
+    })(i);
+  }
   function levelFor(s) { return s.mode === "beewin" || s.final ? 6 : Math.min(5, (s.round || 1) + ((s.standing || 9) <= 3 ? 1 : 0)); }
   function react(s, fresh) {
     document.body.classList.remove("shake");
     if (!fresh) return;
-    if (s.mode === "bee" && s.phase === "result") { if (s.ok) { cheer(s.level || 1); confetti(CONF[s.level || 1]); } else { buzzer(); document.body.classList.add("shake"); } }
-    if (s.mode === "beewin") { cheer(6); confetti(CONF[6]); document.body.classList.add("shake"); }
+    if (s.mode === "bee" && s.phase === "result") { if (s.ok) { winSound(s.level || 1); confetti(CONF[s.level || 1]); } else { buzzer(); document.body.classList.add("shake"); } }
+    if (s.mode === "beewin") { winSound(6); confetti(CONF[6]); document.body.classList.add("shake"); }
   }
-  // Test keys: 1-5 cheer sizes, 6 champion, b buzzer
-  document.addEventListener("keydown", function (e) { if (e.key >= "1" && e.key <= "6") { cheer(+e.key); confetti(CONF[+e.key]); } if (e.key === "b") buzzer(); });
+  // Test keys: 1-5 win sound + confetti sizes, 6 the finale, b the X buzzer
+  document.addEventListener("keydown", function (e) { if (e.key >= "1" && e.key <= "6") { winSound(+e.key); confetti(CONF[+e.key]); } if (e.key === "b") buzzer(); });
   document.getElementById("fs").onclick = function () { (document.documentElement.requestFullscreen || function () {}).call(document.documentElement); };
 })();
 </script>

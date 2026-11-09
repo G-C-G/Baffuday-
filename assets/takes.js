@@ -1,16 +1,16 @@
-// The 11 hot takes, in the order they will be played (easy warm-ups first).
+// The 11 hot takes, in the order they are asked: the ones most likely to cause outrage first, easy ones last.
 window.TAKES = [
-  { id: "pineapple", text: "Pineapple belongs on pizza.", q: "Pineapple on pizza?", a: "Belongs on it", b: "Never" },
-  { id: "shower",    text: "Showering at night is better than showering in the morning.", q: "When should you shower?", a: "Night", b: "Morning" },
-  { id: "cereal",    text: "Cereal is better eaten dry than with milk.", q: "How do you eat cereal?", a: "Dry", b: "With milk" },
-  { id: "onread",    text: "It's acceptable to leave someone on read for three days.", q: "Leaving someone on read for three days?", a: "Acceptable", b: "Not acceptable" },
-  { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof.", q: "Whose jollof wins?", a: "Nigerian", b: "Ghanaian" },
-  { id: "dramatic",  text: "Men are actually more dramatic than women.", q: "Who is more dramatic?", a: "Men", b: "Women" },
-  { id: "firstmove", text: "Women should make the first move.", q: "Who should make the first move?", a: "Women", b: "Men" },
-  { id: "leaders",   text: "Women are better leaders than men.", q: "Who are better leaders?", a: "Women", b: "Men" },
-  { id: "homemaker", text: "A woman can be the sole breadwinner and the man should be the primary homemaker.", q: "Woman as sole breadwinner, man as primary homemaker?", a: "Works for me", b: "Not for me" },
   { id: "partners",  text: "Men make better partners than women.", q: "Who make better partners?", a: "Men", b: "Women" },
-  { id: "president", text: "The next President of Ghana should be under 40.", q: "The next President of Ghana?", a: "Under 40", b: "40 or older" }
+  { id: "leaders",   text: "Women are better leaders than men.", q: "Who are better leaders?", a: "Women", b: "Men" },
+  { id: "dramatic",  text: "Men are actually more dramatic than women.", q: "Who is more dramatic?", a: "Men", b: "Women" },
+  { id: "homemaker", text: "A woman can be the sole breadwinner and the man should be the primary homemaker.", q: "Woman as sole breadwinner, man as primary homemaker?", a: "Works for me", b: "Not for me" },
+  { id: "firstmove", text: "Women should make the first move.", q: "Who should make the first move?", a: "Women", b: "Men" },
+  { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof.", q: "Whose jollof wins?", a: "Nigerian", b: "Ghanaian" },
+  { id: "president", text: "The next President of Ghana should be under 40.", q: "The next President of Ghana?", a: "Under 40", b: "40 or older" },
+  { id: "onread",    text: "It's acceptable to leave someone on read for three days.", q: "Leaving someone on read for three days?", a: "Acceptable", b: "Not acceptable" },
+  { id: "cereal",    text: "Cereal goes in the bowl before the milk.", q: "Cereal first or milk first?", a: "Cereal first", b: "Milk first" },
+  { id: "shower",    text: "Showering at night is better than showering in the morning.", q: "When should you shower?", a: "Night", b: "Morning" },
+  { id: "pineapple", text: "Pineapple belongs on pizza.", q: "Pineapple on pizza?", a: "Belongs on it", b: "Never" }
 ];
 // Each take is asked as a question with two answers. a = the side the take text states (stored "agree"), b = the other ("disagree").
 // A guest's stored pick is "agree" or "disagree". The game gives them the OPPOSITE side.

@@ -17,6 +17,8 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .step{display:none}.step.on{display:flex;flex-direction:column;flex:1;animation:in .4s ease}
 @keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 /* type roles */
+/* Section titles on the invitation: a touch bolder and larger than the small labels, so the three blocks read as sections */
+.block>.lab{font-weight:700;font-size:13px;opacity:1;letter-spacing:.18em;margin-bottom:var(--s3)}
 .lab{font:600 11px/1.4 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);opacity:.7;margin:0 0 clamp(var(--s2),2.4vh,var(--s3))}
 .q{font:400 clamp(36px,11vw,56px)/.98 var(--serif);letter-spacing:-.02em;margin:0 0 clamp(var(--s2),3vh,var(--s4));text-wrap:balance}
 .q em{color:var(--ink)}

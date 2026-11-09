@@ -127,13 +127,13 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       return { theme: "cream", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.7);line-height:.8">' + esc(s.standing) + '</p><span class="lab">Still standing</span>' + (s.next ? '<p class="second">Up next: <em>' + esc(s.next) + "</em></p>" : ""), micro("It gets worse.")) };
     }
     if (m === "beecall") {
-      return { theme: "ink", html: frame("Round " + pad(s.round || 1), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">Unfortunately. To the stage, please.</p>', micro(esc(s.standing) + " still standing")) };
+      return { theme: "ink", html: frame("Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">Unfortunately. To the stage, please.</p>', micro(esc(s.standing) + " still standing")) };
     }
     if (m === "beewin") {
       return { theme: "ink", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.25)">Champion.</p><p class="major">' + esc(s.name) + "</p>", micro("Absurdly important.")) };
     }
     if (m === "bee") {
-      var rd = "Round " + pad(s.round || 1);
+      var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
       var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
       if (s.phase !== "result") {
         var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
@@ -142,7 +142,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       }
       var ok = !!s.ok, alts = (s.alts || []).map(function (a) { return "<p><b>" + esc(a.w) + "</b>" + esc(a.m) + "</p>"; }).join("");
       return { theme: ok ? "acid" : "wine", level: s.level || 1, html: frame(rd, '<p class="res" style="--lv:' + (s.level || 1) + '">' + (ok ? "Correct." : "Wrong.") + '</p><div><span class="lab" style="color:inherit;opacity:.7">The correct answer was</span><p class="major">' + esc(s.answer) + '</p></div><div class="alts">' + alts + "</div>",
-        micro(ok ? "We'll allow it." : "Yes, those words are deliberately annoying.") + micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing")) };
+        micro(s.final ? "That's the game." : ok ? "We'll allow it." : s.sudden ? "Nobody is out. This continues until someone gets it right." : "Yes, those words are deliberately annoying.") + micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing")) };
     }
     // home
     var parts = title.match(/^(\S+)\s*(.*)$/) || [title, title, ""];
@@ -190,7 +190,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
     noise(.4 + level * .35, .08 + level * .05);
     if (level >= 4) { tone(262, count * step, 1.2, "sawtooth", .25); tone(392, count * step, 1.2, "sawtooth", .2); tone(523, count * step, 1.2, "sawtooth", .2); }
   }
-  function levelFor(s) { return s.mode === "beewin" ? 6 : Math.min(5, (s.round || 1) + ((s.standing || 9) <= 3 ? 1 : 0)); }
+  function levelFor(s) { return s.mode === "beewin" || s.final ? 6 : Math.min(5, (s.round || 1) + ((s.standing || 9) <= 3 ? 1 : 0)); }
   function react(s, fresh) {
     document.body.classList.remove("shake");
     if (!fresh) return;

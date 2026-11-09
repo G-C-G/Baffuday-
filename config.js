@@ -6,6 +6,8 @@ window.GCG_CONFIG = {
   ROOT: "baffuday28",
   TITLE: "Hinda's 28th",
   KARAOKE_TARGET: 15,
+  // Spelling bee: when this many (or fewer) people are left, nobody can be eliminated; the first correct guess wins
+  BEE_SUDDEN_DEATH_AT: 2,
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

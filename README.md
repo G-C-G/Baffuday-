@@ -109,3 +109,9 @@ The meaning is never given. The projector shows only the sentence (homophones hi
 sentence leaning on the target word (underlined on the host panel) and the contestant has to guess the spelling. The host can tap
 the spelling they gave and the system says right or wrong. The meanings only appear in the reveal afterwards. The host panel
 keeps a dimmed "for arguments only" meaning line; the meaning is never sent to the projector before the answer.
+
+## Sudden death (spelling bee)
+Wrong guesses sit people down until only two are left (`BEE_SUDDEN_DEATH_AT` in `config.js`). From then on nobody can be
+eliminated: they keep taking turns, round after round, and the first correct guess wins the whole game. The projector labels
+those screens "Sudden death", a wrong guess says nobody is out, and the winning guess gets the biggest celebration. The host's
+"Show winner" button then shows the champion. This also means the bee can never end with nobody standing.

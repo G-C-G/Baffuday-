@@ -91,7 +91,7 @@ window.BEE = [
   [4, "Your role tonight is contestant, although if you keep singing like that, someone may roll you gently toward the exit.", "Spell the word meaning a part played by an actor.", "role", ["role", "roll"]],
   [4, "The sole purpose of this round is to test your spelling; please save your soul for karaoke later tonight.", "Spell the word meaning only.", "sole", ["sole", "soul"]],
   [4, "You might know the answer, but if you don't, we'll blame the tiny mite that apparently lives in your brain.", "Spell the word meaning a very small creature.", "mite", ["might", "mite"]],
-  [4, "By morning, some people will be celebrating their victory and others will be mourning their spelling.", "Spell the word associated with grief after someone's death.", "mourning", ["morning", "mourning"]],
+  [4, "By morning some will be celebrating victory, others will be mourning their reputations.", "Spell the word associated with grief after someone's death.", "mourning", ["morning", "mourning"]],
   [4, "He showed off his spelling muscle all evening, but give him the word mussel and suddenly we're back to square one.", "Spell the word meaning the edible shellfish.", "mussel", ["muscle", "mussel"]],
   [4, "Pore over the question carefully before you pour all your confidence into the wrong answer.", "Spell the word meaning to study something carefully.", "pore", ["pore", "pour"]],
   [4, "You may have passed the previous round, but that is now in the past and absolutely irrelevant.", "Spell the past tense of pass.", "passed", ["passed", "past"]],

@@ -25,7 +25,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .safe{font:500 14px/1.5 var(--sans);color:var(--ink);max-width:32ch;margin:0 0 clamp(var(--s3),4vh,var(--s5))}
 @media (max-height:760px){
   .lab{margin-bottom:4px}
-  .ico{display:inline-block;width:1em;height:1em;margin-left:.3em;vertical-align:-.05em;color:var(--ink)}.ico svg{width:100%;height:100%;display:block}
+  .ico{display:inline-block;width:1em;height:1em;margin-right:.3em;vertical-align:-.05em;color:var(--ink)}.ico svg{width:100%;height:100%;display:block}
 .act-title{font-size:30px}
   main{padding-top:var(--s2)}
   .lab{margin-bottom:var(--s1)}
@@ -166,19 +166,16 @@ main{min-height:0;overflow-y:auto}
       <p class="lab" data-t></p>
       <p class="safe">If you say no, we will RESPEKK it. But please pick more than one if you can.</p>
       <h2 class="act-title"></h2>
-      <p class="sup" data-d></p>
       <div class="opts" data-rate></div>
     </section>
     <section class="step" data-k="r-karaoke" data-act="karaoke">
       <p class="lab" data-t></p>
             <h2 class="act-title"></h2>
-      <p class="sup" data-d></p>
       <div class="opts" data-rate></div>
     </section>
     <section class="step" data-k="r-takes" data-act="takes">
       <p class="lab" data-t></p>
             <h2 class="act-title"></h2>
-      <p class="sup" data-d></p>
       <div class="opts" data-rate></div>
     </section>
 
@@ -233,7 +230,7 @@ main{min-height:0;overflow-y:auto}
   document.querySelectorAll("[data-act]").forEach(function (sec) {
     var id = sec.dataset.act;
     var at = sec.querySelector(".act-title"); at.textContent = ACT[id][0];
-    var ic = document.createElement("span"); ic.className = "ico"; ic.setAttribute("aria-hidden", "true"); ic.innerHTML = ICON[id]; at.appendChild(ic); sec.querySelector("[data-d]").textContent = ACT[id][1];
+    var ic = document.createElement("span"); ic.className = "ico"; ic.setAttribute("aria-hidden", "true"); ic.innerHTML = ICON[id]; at.insertBefore(ic, at.firstChild);
     RATING.forEach(function (o) {
       var l = document.createElement("label"); l.className = "opt";
       l.innerHTML = '<input type="radio" name="rate-' + id + '" value="' + o.n + '"><span>' + o.label + "<small>" + pad(o.n) + "</small></span>";

@@ -38,8 +38,11 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
 @keyframes crumb{from{transform:translate(0,0) rotate(0)}to{transform:translate(.06em,-.05em) rotate(8deg)}}
 .pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
 @keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
-.welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0 0 var(--s8);max-width:18ch}
-.when{font:italic 400 clamp(40px,12vw,56px)/1 var(--serif);margin:0 0 var(--s10)}
+.hero-screen{min-height:calc(100vh - 270px);min-height:calc(100svh - 270px);display:flex;flex-direction:column;justify-content:flex-start}
+.cue{margin:auto 0 0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
+.block{margin-bottom:var(--s12)}
+.welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:var(--s8) 0 var(--s8);max-width:18ch}
+.when{font:italic 400 clamp(40px,12vw,56px)/1 var(--serif);margin:0}
 /* programme and menu */
 .prog-list{display:grid;gap:var(--s5)}
 .prog-list h3{font:400 clamp(32px,9.5vw,42px)/1 var(--serif);letter-spacing:-.015em}
@@ -88,36 +91,35 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
   <div class="prog"><i id="fill"></i></div>
 
   <main id="steps">
-    <!-- 1. The invitation: the birthday title dominates -->
+    <!-- The invitation. The first screen is only the title; scroll for everything else. -->
     <section class="step on" data-k="intro">
-      <p class="lab">You're invited</p>
-      <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
-      <p class="welcome">A game night. Some of it is voluntary.</p>
-      <p class="when" id="when"></p>
+      <div class="hero-screen">
+        <p class="lab">You're invited</p>
+        <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
+        <p class="cue">Scroll for the details</p>
+      </div>
+      <div class="block">
+        <p class="welcome">A game night. Some of it is voluntary.</p>
+        <p class="when" id="when"></p>
+      </div>
+      <div class="block">
+        <p class="lab">What's happening</p>
+        <div class="prog-list">
+          <div><h3>The Evil Spelling Bee</h3><p>A spelling bee that is not really about spelling.</p></div>
+          <div><h3>Karaoke Roulette</h3><p>Your song, at a moment of our choosing.</p></div>
+          <div><h3>Twisted Hot Takes</h3><p>Strong opinions, said out loud, with a twist.</p></div>
+        </div>
+      </div>
+      <div class="block">
+        <p class="lab">On the table</p>
+        <div class="menu">
+          <div><p class="lab">To eat</p><ul><li>Vege chow mein</li><li>Stir fried beef</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
+          <div><p class="lab">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div>
+        </div>
+        <p class="halal">Halal certified</p>
+      </div>
       <p class="tiny" style="margin-top:0">A few short questions, about four minutes.</p>
       <p class="demo" id="demo" hidden>Demo mode: answers stay in this browser, and you will download them as a PDF at the end.</p>
-    </section>
-
-    <!-- 2. What is happening: a curated programme -->
-    <section class="step" data-k="programme">
-      <p class="lab">What's happening</p>
-      <h2 class="q">Three things <em>are happening.</em></h2>
-      <div class="prog-list" style="margin-top:var(--s5)">
-        <div><h3>The Evil Spelling Bee</h3><p>A spelling bee that is not really about spelling.</p></div>
-        <div><h3>Karaoke Roulette</h3><p>Your song, at a moment of our choosing.</p></div>
-        <div><h3>Twisted Hot Takes</h3><p>Strong opinions, said out loud, with a twist.</p></div>
-      </div>
-    </section>
-
-    <!-- 3. And there will be food -->
-    <section class="step" data-k="menu">
-      <p class="lab">On the table</p>
-      <h2 class="q">And there <em>will be food.</em></h2>
-      <div class="menu" style="margin-top:var(--s5)">
-        <div><p class="lab">To eat</p><ul><li>Vege chow mein</li><li>Stir fried beef</li><li>Potato salad</li><li>Chicken wings</li></ul></div>
-        <div><p class="lab">To drink</p><ul><li>Sobolo</li><li>Ginger and pineapple</li><li>Water</li></ul></div>
-      </div>
-      <p class="halal">Halal certified</p>
     </section>
 
     <!-- 4. Allergies: one question, optional -->
@@ -261,7 +263,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
 
   // flow
   function seq() {
-    var s = ["programme", "menu", "food", "name", "r-bee", "r-karaoke", "r-takes"];
+    var s = ["food", "name", "r-bee", "r-karaoke", "r-takes"];
     if ((rates.karaoke || 3) >= 3) s.push("song");     // rather not / please no: no song needed
     for (var i = 0; i < TAKES.length; i++) s.push("take-" + i);
     return s;

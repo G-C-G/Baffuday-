@@ -61,7 +61,7 @@ window.BEE_W = {
 window.BEE = [
   [1, "They're already comparing their answers over there, which is a bold strategy for people who were specifically told not to.", "Spell the word meaning belonging to them.", "their", ["there", "their", "they're"]],
   [1, "I told two people to arrive early, but apparently 'early' is too flexible a concept.", "Spell the word meaning excessively.", "too", ["to", "too", "two"]],
-  [1, "You're responsible for your own answer, so please don't look at the person who clearly knows less than you.", "Spell the word meaning belonging to you.", "your", ["your", "you're"]],
+  [1, "You're responsible for your own answer, so please don't look at the person who clearly knows less than you.", "Spell the word meaning you are.", "you're", ["your", "you're"]],
   [1, "If you can hear the answer from here, you are probably standing much too close to your opponent.", "Spell the word meaning in this place.", "here", ["hear", "here"]],
   [1, "See, she's selling sea shells on the sea shore.", "Spell the word meaning the large body of salt water.", "sea", ["see", "sea"]],
   [1, "You don't need to write anything, just tell us the right answer.", "Spell the word meaning correct.", "right", ["right", "write"]],

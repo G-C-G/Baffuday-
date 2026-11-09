@@ -1,6 +1,5 @@
-// The 10 hot takes, in the order they are asked: spiciest first, but never two men-versus-women takes back to back; easy ones last.
+// The 9 hot takes, in the order they are asked: spiciest first, but never two men-versus-women takes back to back; easy ones last.
 window.TAKES = [
-  { id: "partners",  text: "Men make better partners than women.", q: "Who make better partners?", a: "Men", b: "Women" },
   { id: "jollof",    text: "Nigerian jollof is better than Ghanaian jollof.", q: "Whose jollof wins?", a: "Nigerian", b: "Ghanaian" },
   { id: "leaders",   text: "Women are better leaders than men.", q: "Who are better leaders?", a: "Women", b: "Men" },
   { id: "onread",    text: "It's acceptable to leave someone on read for three days.", q: "Leaving someone on read for three days?", a: "Acceptable", b: "Not acceptable" },

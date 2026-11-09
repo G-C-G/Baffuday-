@@ -6,7 +6,7 @@ window.GCG_CONFIG = {
   ROOT: "baffuday28",
   TITLE: "Hinda's 28th",
   // The party date, shown on the invitation above the time, e.g. "Saturday 14 March". Leave empty to show the time only.
-  DATE: "Saturday",
+  DATE: "Saturday 14 November",
   // Where it is, shown under the time on the invitation.
   VENUE: "Sid Apartments, Blohum Road, Dzorwulu",
   START_TIME: "6:30 PM",

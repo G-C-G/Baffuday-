@@ -340,7 +340,7 @@ main{min-height:0;overflow-y:auto}
     if (key === "song" && !$("song").value.trim()) return "We need a song. Everyone has one.";
     if (key.indexOf("r-") === 0 && key !== "r-intro") {
       var id = key.slice(2);
-      if (!rates[id]) return "Pick one. No judgement.";
+      if (!rates[id]) return "Pick any. No judgement.";
       if (key === "r-takes") {
         var yes = INVOLVE.filter(function (o) { return rates[o.id] >= 3; }).length;
         if (yes < 2 && !nudged) { nudged = true; return yes === 0 ? "All three on no? That is allowed. But please pick more than one if you can. Tap Continue again if you really mean it." : "Just the one? Please pick more than one if you can. You can say no, so tap Continue again if you really mean it."; }

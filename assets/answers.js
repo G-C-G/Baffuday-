@@ -16,8 +16,8 @@
       doc.splitTextToSize(ascii(txt), W - 2 * M).forEach(function (l) { need(size * .5); doc.text(l, M, y); y += size * .45; });
       y += gap || 0;
     }
-    doc.setFillColor(245, 215, 110); doc.rect(0, 0, W, 14, "F");
-    doc.setTextColor(8, 24, 62); line(title + ": my answers", 18, true, 5);
+    doc.setFillColor(100, 31, 45); doc.rect(0, 0, W, 14, "F");
+    doc.setTextColor(245, 240, 230); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(ascii(title).toUpperCase(), M, 9); y = 28; doc.setTextColor(11, 18, 32); line(title + ": my answers", 18, true, 5);
     line("Name: " + rec.name, 12, true, 1);
     line("Karaoke song: " + rec.song, 12, false, 1);
     var sg = SING.filter(function (o) { return o.n === +rec.sing; })[0]; line("About performing it: " + (sg ? sg.label : "-"), 12, false, 5);

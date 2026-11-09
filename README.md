@@ -81,3 +81,12 @@ Paste your expected guests, one per line (optional phone after a comma). Importe
 by name; "Ama K." matches "Ama Kwarteng" automatically, and anything uncertain goes into a small "does not match
 anyone" list where you pick who it is or mark it as a plus-one. The table shows who has sent and who has not, and a
 chase list of the rest can be copied.
+
+## Design system (redesign)
+Luxury editorial meets ridiculous game show. Cream `#F5F0E6`, charcoal `#0B1220`, wine `#641F2D`, and one outrageous
+accent, chartreuse `#D7F000`, reserved for LIVE, round, active, correct and wrong moments. Instrument Serif for display,
+Inter for everything else, 8px spacing, 6px radius, almost no shadows. Tokens live in `assets/style.css`.
+The guest form is one question per screen (01 / 06 ... lock it in). The projector shows one idea per screen: cream for
+editorial states, charcoal for call-ups and champion, wine for WRONG, chartreuse for CORRECT. The running order on the
+"Tonight" screen is `LINEUP` in `config.js`. The bee screens use a monoline bee mark. Wrong answers buzz and shake the screen;
+correct answers cheer, louder in later rounds. No confetti.

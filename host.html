@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Host panel</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/style.css">
 <style>
 .wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
@@ -13,13 +13,16 @@
 .bar .sp{flex:1}
 .panel{display:none;gap:16px}.panel.on{display:grid}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-.stat{border:1px solid var(--border);padding:12px 14px}.stat b{display:block;font-family:var(--bebas);font-weight:400;font-size:34px;color:var(--yellow);line-height:1}
+.stat{border:1px solid var(--border);padding:12px 14px}.stat b{display:block;font-family:var(--serif);font-weight:400;font-size:40px;color:var(--ink);line-height:1}
 .stat span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .tbl{overflow-x:auto;border:1px solid var(--border)}
 table{border-collapse:collapse;width:100%;min-width:640px}
 th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
 th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yellow);font-weight:400}
-.flag{color:var(--red)}.ok{color:var(--mint)}.dim{color:var(--dim)}
+.flag{color:var(--wine);font-weight:600}.ok{color:var(--ink);font-weight:600}.dim{color:var(--dim)}
+.xl{padding:20px 32px;font-size:14px}
+.livebar{display:flex;align-items:center;gap:var(--s2);border:1px solid var(--ink);border-radius:var(--r);padding:var(--s2) var(--s3);background:#FBF8F1}
+.livebar b{font:400 28px/1 var(--serif);letter-spacing:-.01em}
 .takepick{display:flex;gap:6px;flex-wrap:wrap}
 .takepick button{font:inherit;font-size:12px;padding:8px 12px;background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;text-align:left}
 .takepick .row{display:flex;gap:8px;align-items:stretch;width:100%}
@@ -40,6 +43,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 <main class="wrap">
   <header><p class="eyebrow" id="ttl"></p><h1>Host <span>panel</span></h1>
     <p class="note" id="demo" hidden>Demo mode: data is local to this browser. Add the database URL in config.js to go live.</p></header>
+
+  <div class="livebar"><span class="live">On screen</span><b id="livetxt">Name screen</b></div>
 
   <div class="stats" id="stats"></div>
 
@@ -87,7 +92,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <button class="btn ghost" id="brules">Rules on screen</button>
       <button class="btn ghost" id="bstage">Stage count on screen</button>
       <button class="btn ghost" id="bcall">Call up contestant</button>
-      <button class="btn" id="bshow">Show sentence</button>
+      <button class="btn xl" id="bshow">Show sentence</button>
       <button class="btn" id="bok">Correct ✓</button>
       <button class="btn red" id="bno">Incorrect ✕</button>
       <button class="btn ghost" id="bnext">Next prompt</button>
@@ -110,12 +115,13 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <div class="bar" id="modes">
         <button class="btn ghost" data-m="home">Home</button>
         <button class="btn ghost" data-m="menu">Menu</button>
+        <button class="btn ghost" data-m="tonight">Tonight</button>
       </div>
     </div>
     <div>
       <span class="k">Karaoke</span>
       <div class="bar">
-        <button class="btn" id="surprise">Surprise me</button>
+        <button class="btn xl" id="surprise">Next player: surprise me</button>
         <button class="btn ghost" id="kback">Hide</button>
         <span class="note" id="kinfo"></span>
       </div>
@@ -183,6 +189,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
     $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
+    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), hottake: "Hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
+    $("livetxt").textContent = lt[mm] || "Name screen";
     queue();
     people(L);
     renderRoster();
@@ -289,7 +297,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   };
   $("tshow").onclick = function () {
     var t = TAKES.filter(function (x) { return x.id === takeId; })[0];
-    setState({ mode: "hottake", takeId: t.id, text: t.text, reveal: false }).then(render);
+    setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: false }).then(render);
   };
   $("treveal").onclick = function () {
     var t = TAKES.filter(function (x) { return x.id === takeId; })[0], a = assignment(takeId);
@@ -300,7 +308,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         store.update("guests/" + p.id, { took: g.took });
       });
     }
-    setState({ mode: "hottake", takeId: t.id, text: t.text, reveal: true,
+    setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: true,
       argueFor: a.argueFor.map(function (p) { return p.name; }), argueAgainst: a.argueAgainst.map(function (p) { return p.name; }) }).then(render);
   };
 
@@ -403,6 +411,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   }
   function saveBee() { return store.set("setup/bee", bee); }
   function curGuest() { return list().filter(function (g) { return g.id === bee.cur; })[0]; }
+  function meaningOf(ask) { return String(ask || "").replace(/^Spell (the )?(word )?(meaning )?/i, "").replace(/\.$/, ""); }
   function entry() { return BEE[Math.min(bee.n || 0, BEE.length - 1)]; }
 
   function renderBee() {
@@ -442,7 +451,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var opts = e[4].slice(); for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
     $("bopts").innerHTML = opts.map(function (w) { return '<button class="btn ghost" data-said="' + esc(w) + '">' + esc(w) + "</button>"; }).join("");
     $("bother").value = ""; $("bpick").style.display = "block";
-    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], options: opts, contestant: c ? c.name : "", standing: alive().length });
+    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], meaning: meaningOf(e[2]), options: opts, contestant: c ? c.name : "", standing: alive().length });
   };
   // The host taps the spelling the contestant gave; the system judges it against the right word.
   $("bopts").addEventListener("click", function (e) { var w = e.target.dataset && e.target.dataset.said; if (w) result(w === entry()[3], w); });
@@ -457,7 +466,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     }
     $("bpick").style.display = "none";
     setState({ mode: "bee", phase: "result", ok: ok, said: said || "", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], contestant: c ? c.name : "",
-      answer: e[3], alts: e[4].map(function (w) { return { w: w, m: BEE_W[w] || "", right: w === e[3] }; }), standing: alive().length }).then(function () { render(); renderBee(); });
+      meaning: meaningOf(e[2]), answer: e[3], alts: e[4].map(function (w) { return { w: w, m: BEE_W[w] || "", right: w === e[3] }; }), standing: alive().length }).then(function () { render(); renderBee(); });
   }
   $("bok").onclick = function () { result(true); };
   $("bno").onclick = function () { result(false); };

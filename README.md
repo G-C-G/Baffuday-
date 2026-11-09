@@ -47,7 +47,7 @@ how many people picked it, the split between the two sides, how many feel strong
 Untick "Play" on the ones you are leaving out; that choice is saved.
 
 ## Spelling bee (host panel, "Spelling bee" tab)
-46 homophone prompts in 5 rounds (`assets/bee.js`). Everyone who chose "rather do" the bee starts on stage
+45 homophone prompts in 5 rounds (`assets/bee.js`). Everyone who chose "rather do" the bee starts on stage
 ("Load sign-ups onto stage"; add or remove people in the table). The contestant stands with their back to the
 screen. The projector shows only the sentence; the host sees the word, the question to ask and the sentence to read.
 Correct: they stay on. Incorrect: they sit down and the projector reveals all spellings with meanings.
@@ -95,7 +95,7 @@ screen; correct answers cheer, louder in later rounds. No confetti.
 ## Highlighted homophones
 On the projector the sentence shows every word from the spelling set in a highlighted block ("You're", "your"), so the audience
 can follow a long sentence. It highlights the whole set, so it never reveals which spelling is being asked for. Plural and
-past forms (insured, canvassed, currants) highlight too; checked against all 46 prompts.
+past forms (insured, canvassed, currants) highlight too; checked against all 45 prompts.
 
 ## Spelling bee sentences
 The sentences are the savage, dry-host version (`assets/bee.js`). Four were adjusted so the game still works: sentence 2 now uses

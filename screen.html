@@ -43,6 +43,10 @@ body.t-acid #stage{box-shadow:inset 0 0 0 calc(1vw + var(--lv,1)*.6vw) var(--ink
 .row3 .n{font:600 var(--lab) var(--sans);letter-spacing:.18em;color:var(--ink)}
 .row3 .t{font:400 var(--major)/1 var(--serif);letter-spacing:-.02em}
 .opts{display:flex;gap:2.4vw;flex-wrap:wrap}
+.optbar{position:fixed;left:0;right:0;bottom:13vh;display:flex;flex-direction:column;align-items:center;gap:1.6vh;pointer-events:none}
+.optbar .opts{justify-content:center;gap:2.2vw}
+.optbar .opts span{font:700 calc(var(--second)*1.15) var(--sans);letter-spacing:.1em;border-width:3px;padding:.55em 1.3em}
+.optnote{font:600 calc(var(--lab)*.9) var(--sans);letter-spacing:.22em;text-transform:uppercase;opacity:.75;min-height:1.4em}
 .opts span{font:600 var(--lab) var(--sans);letter-spacing:.16em;text-transform:uppercase;border:1px solid currentColor;padding:.8em 1.4em;border-radius:2px}
 .alts{display:flex;gap:3vw;flex-wrap:wrap;margin-top:1vh}
 .alts p{margin:0;font:400 calc(var(--micro)*1.1)/1.35 var(--sans);opacity:.9;max-width:24vw}.alts b{font:400 calc(var(--micro)*1.7) var(--serif);display:block}
@@ -170,7 +174,6 @@ body.flashred{animation:flashred .6s ease 2}
     }
     if (m === "bee") {
       var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
-      var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
       if (s.phase !== "result") return beeSentenceView(s, s.phase === "confirm" ? "confirm" : "prompt");
       return beeFinal(s);
     }
@@ -181,18 +184,18 @@ body.flashred{animation:flashred .6s ease 2}
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
   function beeSentenceView(s, mode) {
     var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
-    var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
+    var foot = micro(esc(s.contestant)) + micro(esc(s.standing) + " still standing");
     var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
-    var chosen = mode === "confirm" ? s.chosen : mode === "lock" || mode === "reveal" ? (s.chosen || s.said) : "", cls = mode === "confirm" || mode === "lock" ? "sel" + (mode === "lock" ? " throb" : "") : s.ok ? "sel" : "bad", seen = false;
+    var chosen = mode === "confirm" || mode === "lock" ? (s.chosen || s.said) : "", seen = false, cls = mode === "lock" ? "sel throb" : "sel";
     var opts = (s.options || []).map(function (o) {
       var hit = chosen && String(o).toLowerCase() === String(chosen).toLowerCase(); if (hit) seen = true;
       return '<span class="' + (hit ? cls : "") + '">' + esc(o) + "</span>";
     }).join("");
     if (chosen && !seen) opts += '<span class="' + cls + '">' + esc(chosen) + "</span>";
-    var banner = mode === "confirm" ? '<p class="major final-q" style="font-size:calc(var(--major)*.8)">Is that your final answer?</p>' : mode === "lock" ? '<p class="major final-q slow" style="font-size:calc(var(--major)*.8)">' + (s.big ? "Final answer. Locked in." : "Locked in.") + "</p>" : "";
-    var stamp = mode === "reveal" && !s.ok ? '<div class="xstamp"><svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg></div>' : "";
-    return { theme: mode === "reveal" && !s.ok ? "black" : mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + '</p><div class="opts">' + opts + "</div>" + banner,
-      '<span class="lab">' + (mode === "confirm" ? "Final answer?" : mode === "reveal" || mode === "lock" ? "Final answer" : "Guess.") + "</span>" + foot) + stamp };
+    var note = mode === "lock" ? "Locked in" : mode === "confirm" ? "Final answer?" : "";
+    // The sentence sits on the left; the choices are big and bold, bottom centre; "Locked in" is small.
+    var bar = '<div class="optbar"><div class="opts">' + opts + '</div><div class="optnote">' + note + "</div></div>";
+    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot) + bar };
   }
   var X_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg>';
   function beeFinal(s) {

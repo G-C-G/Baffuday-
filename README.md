@@ -145,3 +145,7 @@ other spellings and their meanings no longer appear on the projector. The screen
 The fake-out: after "Yes, final answer" and the drumroll, the word they said appears in the middle exactly like a winning answer (yellow, blue
 frame). Right and wrong look identical for a beat (longer at the finale). Then the truth: a right answer fires the confetti and win sound; a wrong
 answer cuts instantly to black with a punch flash, the word is struck through, the red X slams down, the buzzer sounds and the correct word drops in underneath.
+
+Update: the bee sentence screen has the sentence on the left, the spelling options big and bold at the bottom centre, a small "Final answer?" under
+a selected option and a small "Locked in" once locked. The "1 / 45" counter is gone (only "still standing" stays). On the host panel one tap selects a
+spelling and only a quick double tap on the same spelling (within about 0.9s) locks it in; a slower second tap does not lock.

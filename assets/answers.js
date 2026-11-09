@@ -24,7 +24,7 @@
     line("What I'd rather do tonight", 13, true, 1);
     var lab = { want: "I'd rather do this", ok: "Either way", not: "I'd rather not" };
     INVOLVE.forEach(function (o) { line(o.label + ": " + lab[pref(rec, o.id)], 11, false, 0); }); y += 4;
-    line("Twisted hot takes", 13, true, 1);
+    line("Hot takes", 13, true, 1);
     var any = false;
     TAKES.forEach(function (t) {
       var p = pick((rec.picks || {})[t.id]); if (!p) return; any = true;

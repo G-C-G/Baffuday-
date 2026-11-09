@@ -387,7 +387,7 @@ main{min-height:0;overflow-y:auto}
   function reveal() {
     if (seenAll || curKey !== "intro") return;
     var m = document.querySelector("main");
-    if (m.scrollTop + m.clientHeight >= m.scrollHeight - 24) { seenAll = true; $("nav").style.display = "flex"; }
+    if (m.scrollTop + m.clientHeight >= m.scrollHeight - 24) { seenAll = true; $("nav").style.display = "flex"; m.scrollTop = m.scrollHeight; }
   }
   document.querySelector("main").addEventListener("scroll", reveal, { passive: true });
   show("intro"); fitHero(); addEventListener("resize", fitHero);

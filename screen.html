@@ -27,6 +27,7 @@ body.t-acid #stage{box-shadow:inset 0 0 0 calc(1vw + var(--lv,1)*.6vw) var(--ink
 .micro{font:400 var(--micro)/1.4 var(--sans);opacity:.85;color:inherit}
 .main{display:flex;flex-direction:column;justify-content:center;gap:3vh;min-height:0}
 .main.c{align-items:center;text-align:center}
+.main.high{justify-content:flex-start;padding-top:5vh}
 .main>.chip{align-self:flex-start}.main.c>.chip{align-self:center}
 .hero{font:400 var(--hero)/.88 var(--serif);letter-spacing:-.025em;text-wrap:balance;margin:0}
 .major{font:400 var(--major)/.96 var(--serif);letter-spacing:-.02em;text-wrap:balance;margin:0}
@@ -45,7 +46,7 @@ body.t-acid #stage{box-shadow:inset 0 0 0 calc(1vw + var(--lv,1)*.6vw) var(--ink
 .opts{display:flex;gap:2.4vw;flex-wrap:wrap}
 .optbar{position:fixed;left:0;right:0;bottom:13vh;display:flex;flex-direction:column;align-items:center;gap:1.6vh;pointer-events:none}
 .optbar .opts{justify-content:center;gap:2.2vw}
-.optbar .opts span{font:700 calc(var(--second)*1.15) var(--sans);letter-spacing:.1em;border-width:3px;padding:.55em 1.3em}
+.optbar .opts span{font:700 calc(var(--second)*.9) var(--sans);letter-spacing:.1em;border-width:2px;padding:.5em 1.15em}
 .optnote{font:600 calc(var(--lab)*.9) var(--sans);letter-spacing:.22em;text-transform:uppercase;opacity:.75;min-height:1.4em}
 .opts span{font:600 var(--lab) var(--sans);letter-spacing:.16em;text-transform:uppercase;border:1px solid currentColor;padding:.8em 1.4em;border-radius:2px}
 .alts{display:flex;gap:3vw;flex-wrap:wrap;margin-top:1vh}
@@ -195,7 +196,7 @@ body.flashred{animation:flashred .6s ease 2}
     var note = mode === "lock" ? "Locked in" : mode === "confirm" ? "Final answer?" : "";
     // The sentence sits on the left; the choices are big and bold, bottom centre; "Locked in" is small.
     var bar = '<div class="optbar"><div class="opts">' + opts + '</div><div class="optnote">' + note + "</div></div>";
-    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot) + bar };
+    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot, "high") + bar };
   }
   var X_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg>';
   function beeFinal(s) {

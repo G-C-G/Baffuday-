@@ -31,6 +31,7 @@
       line(t.q + " " + (p.s === "agree" ? t.a : t.b) + "  (" + p.n + "/5, " + (sc ? sc.label : "") + ")", 11, false, 0);
     });
     if (!any) line("No picks.", 11, false, 0);
+    if (rec.ownTake) { y += 2; line("My own hot take: " + rec.ownTake, 11, false, 0); }
     y += 4; line("Food", 13, true, 1);
     line("Allergies: " + (rec.allergies || "none"), 11, false, 0);
     var d = Object.keys(rec.diet || {}); line("Diet: " + (d.length ? d.join(", ") : "none"), 11, false, 0);

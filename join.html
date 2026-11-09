@@ -195,6 +195,14 @@ main{min-height:0;overflow-y:auto}
       <div class="field" style="margin-top:var(--s4)"><label class="lab" for="song" style="margin:0">Song and artist</label><input class="big" type="text" id="song" maxlength="100" placeholder="Song title and artist" autocomplete="off"></div>
     </section>
 
+    <!-- Their own hot take (optional); placed after the built-in takes in seq() -->
+    <section class="step" data-k="mytake">
+      <p class="lab" data-t></p>
+      <h2 class="huge">Got a hot take of your own? <em>Add it.</em></h2>
+      <div class="field" style="margin-top:var(--s4)"><label class="lab" for="mytake" style="margin:0">Your hot take, optional</label><textarea id="mytake" maxlength="160" placeholder="Something that will start a fight"></textarea></div>
+      <p class="tiny">We will decide if it is spicy enough.</p>
+    </section>
+
     <!-- 10-20. One hot take per screen (built in script) -->
     <div id="takes"></div>
 
@@ -288,7 +296,7 @@ main{min-height:0;overflow-y:auto}
   try { gid = localStorage.getItem(ID_KEY); } catch (e) {}
   if (gid) store.get("guests/" + gid).then(function (g) {
     if (!g) return;
-    $("name").value = g.name || ""; $("song").value = g.song || ""; $("allergy").value = g.allergies || "";
+    $("name").value = g.name || ""; $("song").value = g.song || ""; $("allergy").value = g.allergies || ""; $("mytake").value = g.ownTake || "";
     INVOLVE.forEach(function (o) { var n = level(g, o.id); rates[o.id] = n; var r = document.querySelector('input[name=rate-' + o.id + '][value="' + n + '"]'); if (r) r.checked = true; });
     document.querySelectorAll("#diet input").forEach(function (c) { c.checked = !!(g.diet && g.diet[c.value]); });
     picks = {}; Object.keys(g.picks || {}).forEach(function (k) { picks[k] = pick(g.picks[k]); }); paint();
@@ -299,9 +307,10 @@ main{min-height:0;overflow-y:auto}
     var s = ["food", "name", "r-intro", "r-bee", "r-karaoke", "r-takes"];
     if ((rates.karaoke || 3) >= 3) s.push("song");     // rather not / please no: no song needed
     for (var i = 0; i < TAKES.length; i++) s.push("take-" + i);
+    s.push("mytake");
     return s;
   }
-  var QUIET = { food: "Allergies", name: "Name", song: "Karaoke Roulette", "r-intro": "On the day", "r-bee": "1 of 3", "r-karaoke": "2 of 3", "r-takes": "3 of 3" };
+  var QUIET = { food: "Allergies", name: "Name", song: "Karaoke Roulette", mytake: "Last one", "r-intro": "On the day", "r-bee": "1 of 3", "r-karaoke": "2 of 3", "r-takes": "3 of 3" };
   function labelFor(key, i, sq) {
     if (key.indexOf("take-") === 0) return "Twisted hot take " + pad(+key.slice(5) + 1) + " of " + pad(TAKES.length);
     return QUIET[key] || "";
@@ -363,7 +372,7 @@ main{min-height:0;overflow-y:auto}
     var rec = {
       name: $("name").value.trim(), song: noK ? "" : $("song").value.trim(),
       involve: involve, bee: involve.bee <= 2 ? "watch" : "yes",
-      allergies: $("allergy").value.trim(), diet: diet, other: "",
+      allergies: $("allergy").value.trim(), diet: diet, other: "", ownTake: $("mytake").value.trim(),
       picks: picks, updatedAt: Date.now()
     };
     var p = gid ? store.update("guests/" + gid, rec) : (rec.createdAt = Date.now(), store.push("guests", rec).then(function (id) { gid = id; try { localStorage.setItem(ID_KEY, id); } catch (e) {} }));

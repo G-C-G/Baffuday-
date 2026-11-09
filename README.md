@@ -91,3 +91,8 @@ a yellow screen in a blue frame that thickens in later rounds. Instrument Serif 
 The guest form is one question per screen (01 / 06 ... lock it in). The projector shows one idea per screen. The running order
 on the "Tonight" screen is `LINEUP` in `config.js`. The bee screens use a monoline bee mark. Wrong answers buzz and shake the
 screen; correct answers cheer, louder in later rounds. No confetti.
+
+## Highlighted homophones
+On the projector the sentence shows every word from the spelling set in a highlighted block ("You're", "your"), so the audience
+can follow a long sentence. It highlights the whole set, so it never reveals which spelling is being asked for. Plural and
+past forms (insured, canvassed, currants) highlight too; checked against all 50 prompts.

@@ -451,7 +451,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     var opts = e[4].slice(); for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
     $("bopts").innerHTML = opts.map(function (w) { return '<button class="btn ghost" data-said="' + esc(w) + '">' + esc(w) + "</button>"; }).join("");
     $("bother").value = ""; $("bpick").style.display = "block";
-    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], meaning: meaningOf(e[2]), options: opts, contestant: c ? c.name : "", standing: alive().length });
+    setState({ mode: "bee", phase: "prompt", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], marks: e[4], meaning: meaningOf(e[2]), options: opts, contestant: c ? c.name : "", standing: alive().length });
   };
   // The host taps the spelling the contestant gave; the system judges it against the right word.
   $("bopts").addEventListener("click", function (e) { var w = e.target.dataset && e.target.dataset.said; if (w) result(w === entry()[3], w); });

@@ -25,7 +25,8 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .safe{font:500 14px/1.5 var(--sans);color:var(--ink);max-width:32ch;margin:0 0 clamp(var(--s3),4vh,var(--s5))}
 @media (max-height:760px){
   .lab{margin-bottom:4px}
-  .act-title{font-size:30px}
+  .ico{display:inline-block;width:1em;height:1em;margin-left:.3em;vertical-align:-.05em;color:var(--ink)}.ico svg{width:100%;height:100%;display:block}
+.act-title{font-size:30px}
   main{padding-top:var(--s2)}
   .lab{margin-bottom:var(--s1)}
   .safe,.sup{margin-bottom:var(--s2);font-size:13px;line-height:1.4}
@@ -224,10 +225,16 @@ main{min-height:0;overflow-y:auto}
   if (store.demo) $("demo").hidden = false;
 
   // rating screens: the activity is the headline, the five answers are the decision
+  var ICON = {
+    bee: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="29" rx="11" ry="9" fill="currentColor" stroke="none"/><path d="M17 26h14M16 31h16" stroke="#F5D76E"/><ellipse cx="15" cy="16" rx="6" ry="9" transform="rotate(-25 15 16)"/><ellipse cx="33" cy="16" rx="6" ry="9" transform="rotate(25 33 16)"/><path d="M21 21l-3-6M27 21l3-6"/></svg>',
+    karaoke: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="17" y="5" width="14" height="22" rx="7" fill="currentColor"/><path d="M11 22a13 13 0 0 0 26 0M24 35v8M17 43h14"/></svg>',
+    takes: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="20" width="36" height="22" rx="2"/><path d="M6 20l-1-8 36-6 1 8M13 14l4 6M23 12l4 6M33 10l4 6" fill="currentColor"/><path d="M13 31h22" /></svg>'
+  };
   var ACT = { bee: ["The Evil Spelling Bee", "A spelling bee that is not really about spelling."], karaoke: ["Karaoke Roulette", "Your song, at a moment of our choosing."], takes: ["Twisted Hot Takes", "Strong opinions, said out loud, with a twist."] };
   document.querySelectorAll("[data-act]").forEach(function (sec) {
     var id = sec.dataset.act;
-    sec.querySelector(".act-title").textContent = ACT[id][0]; sec.querySelector("[data-d]").textContent = ACT[id][1];
+    var at = sec.querySelector(".act-title"); at.textContent = ACT[id][0];
+    var ic = document.createElement("span"); ic.className = "ico"; ic.setAttribute("aria-hidden", "true"); ic.innerHTML = ICON[id]; at.appendChild(ic); sec.querySelector("[data-d]").textContent = ACT[id][1];
     RATING.forEach(function (o) {
       var l = document.createElement("label"); l.className = "opt";
       l.innerHTML = '<input type="radio" name="rate-' + id + '" value="' + o.n + '"><span>' + o.label + "<small>" + pad(o.n) + "</small></span>";

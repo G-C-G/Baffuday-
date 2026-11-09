@@ -96,7 +96,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     </section>
 
     <section class="step" data-s="4">
-      <p class="label">04 / Hot takes</p>
+      <p class="label">04 / Twisted hot takes</p>
       <h2 class="q">Pick a side. <em>Where you actually have one.</em></h2>
       <p class="lede" style="margin:0 0 var(--s4)">Answer the ones you feel something about, then say how strongly. Skip the rest. Answer honestly. What could go wrong?</p>
       <div id="takes"></div>
@@ -165,7 +165,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   var box = $("takes");
   TAKES.forEach(function (t, i) {
     var d = document.createElement("div"); d.className = "take"; d.id = "take-" + t.id;
-    d.innerHTML = '<p class="k" style="margin:0">Hot take ' + pad(i + 1) + '</p><h3></h3><div class="two"><button type="button" class="pick" data-s="agree"></button><button type="button" class="pick" data-s="disagree"></button></div>' +
+    d.innerHTML = '<p class="k" style="margin:0">Twisted hot take ' + pad(i + 1) + '</p><h3></h3><div class="two"><button type="button" class="pick" data-s="agree"></button><button type="button" class="pick" data-s="disagree"></button></div>' +
       '<div class="sc"><p class="k" style="margin:0">How strongly do you feel?</p><div class="nums scale"></div><p class="says"></p></div>';
     d.querySelector("h3").textContent = t.q;
     d.querySelector("[data-s=agree]").textContent = t.a; d.querySelector("[data-s=disagree]").textContent = t.b;

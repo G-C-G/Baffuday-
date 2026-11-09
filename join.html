@@ -217,7 +217,7 @@ main{min-height:0;overflow-y:auto}
 <script>
 (function () {
   var ID_KEY = "gcg-guest-id-" + (window.GCG_CONFIG.ROOT || "");
-  var picks = {}, rates = {}, gid = null, curKey = "intro", nudged = false;
+  var picks = {}, rates = {}, gid = null, curKey = "intro", nudged = false, seenAll = false;
   var $ = function (id) { return document.getElementById(id); };
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
   var title = window.GCG_CONFIG.TITLE || "";
@@ -312,10 +312,10 @@ main{min-height:0;overflow-y:auto}
     if (lab) lab.textContent = labelFor(key, i, sq);
     $("fill").style.width = (fin ? 100 : onForm ? (i + 1) / sq.length * 100 : 0) + "%";
     $("ttl").style.visibility = key === "intro" ? "hidden" : "visible";
-    $("back").hidden = !onForm; $("nav").style.display = fin ? "none" : "flex";
+    $("back").hidden = !onForm; $("nav").style.display = fin || (key === "intro" && !seenAll) ? "none" : "flex";
     $("next").textContent = key === "intro" ? "Begin to RSVP" : i === sq.length - 1 ? "Lock it in." : "Continue";
     if (key.indexOf("take-") === 0) setNext();
-    $("err").textContent = ""; window.scrollTo(0, 0);
+    $("err").textContent = ""; window.scrollTo(0, 0); var mn = document.querySelector("main"); mn.scrollTop = 0;
     if (key === "name" || key === "song") { var f = sec.querySelector("input[type=text]"); if (f) f.focus({ preventScroll: true }); }
   }
   function check(key) {
@@ -366,10 +366,17 @@ main{min-height:0;overflow-y:auto}
   }
   // The first screen is exactly the visible area above the button: title, the line under it, and the scroll cue at the bottom left.
   function fitHero() {
-    var h = document.querySelector(".hero-screen"); if (!h || curKey !== "intro") return;
-    h.style.minHeight = ""; var top = h.getBoundingClientRect().top + scrollY, nav = $("nav").getBoundingClientRect().height;
-    h.style.minHeight = Math.max(320, innerHeight - top - nav - 8) + "px";
+    var h = document.querySelector(".hero-screen"), m = document.querySelector("main"); if (!h || curKey !== "intro") return;
+    h.style.minHeight = ""; var pt = parseFloat(getComputedStyle(m).paddingTop) || 0;
+    h.style.minHeight = Math.max(320, m.clientHeight - pt - 8) + "px";
   }
+  /* The RSVP button only appears once they have scrolled to the end: what is happening, then the menu. */
+  function reveal() {
+    if (seenAll || curKey !== "intro") return;
+    var m = document.querySelector("main");
+    if (m.scrollTop + m.clientHeight >= m.scrollHeight - 24) { seenAll = true; $("nav").style.display = "flex"; }
+  }
+  document.querySelector("main").addEventListener("scroll", reveal, { passive: true });
   show("intro"); fitHero(); addEventListener("resize", fitHero);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHero);
 })();

@@ -96,6 +96,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <button class="btn" id="bok">Correct ✓</button>
       <button class="btn red" id="bno">Incorrect ✕</button>
       <button class="btn ghost" id="bnext">Next prompt</button>
+      <button class="btn ghost" id="bfinale">Jump to the finale</button>
       <button class="btn ghost" id="bwin">Show winner</button>
     </div>
     <div class="bar"><button class="btn ghost" id="bload">Load sign-ups onto stage</button>
@@ -495,6 +496,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     bee.cur = nextAfter(bee.cur); scored = false; saveBee(); callUp().then(renderBee);
   };
   $("bcall").onclick = function () { callUp(); };
+  // The finale sentence is the last prompt. Jump there when you want to end the round on it, whoever is still on stage.
+  $("bfinale").onclick = function () { bee.n = BEE.length - 1; bee.round = 5; bee.passDone = []; scored = false; saveBee(); renderBee(); };
   $("bwin").onclick = function () { var a = alive(); setState({ mode: "beewin", name: a.length === 1 ? a[0].name : a.map(function (g) { return g.name; }).join(" & ") }); };
   store.subscribe("setup/bee", function (v) { bee = v || { n: 0, cur: null, order: [] }; if (!bee.order) bee.order = []; if (!bee.passDone) bee.passDone = []; if (!bee.round) bee.round = 1; renderBee(); });
 

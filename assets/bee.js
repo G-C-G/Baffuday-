@@ -108,5 +108,5 @@ window.BEE = [
   [5, "He eats cereal while watching serial dramas, which is perhaps the least efficient way to start a morning.", "Spell the word meaning a food made from grains.", "cereal", ["cereal", "serial"]],
   [5, "Accra is the capital, but the Capitol is somewhere else entirely, so please do not confidently send us in the wrong direction.", "Spell the word meaning the city where a government sits.", "capital", ["capital", "capitol"]],
   [5, "The council asked for counsel, but unfortunately everyone had already decided they were right.", "Spell the word meaning a group of people chosen to make decisions.", "council", ["counsel", "council"]],
-  [5, "The principal explained the principle very clearly: if you don't know the answer, confidence is not a substitute for spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
+  [5, "The principal established one final principle: if you still can't spell after five rounds, we may have to accept that none of you were ever good at spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
 ];

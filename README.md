@@ -129,3 +129,7 @@ a right answer turns that option green with a little confetti and a cheer (bigge
 red X stamp on it and plays a long talent-show buzzer. Then the normal Correct / Wrong screen follows with the real answer.
 Green and red appear only in these answer moments; the rest of the app stays yellow and blue. The old Correct / Incorrect override buttons
 still judge instantly (no confirm step) for when you mishear.
+
+The moment between "Yes, final answer" and the reveal is held on purpose: the chosen option throbs, a drumroll speeds up, then a beat of
+silence. Round 1 waits about 2.4s; later rounds wait longer, sudden death adds 1.5s, and the finale (or the winning guess) waits about 6.5s
+on a dark blue screen. The X is a bold, sharp-cornered red X with no curves.

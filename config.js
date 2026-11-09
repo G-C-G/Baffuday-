@@ -5,6 +5,8 @@ window.GCG_CONFIG = {
   DB_URL: "",
   ROOT: "baffuday28",
   TITLE: "Hinda's 28th",
+  // The party date, shown on the invitation above the time, e.g. "Saturday 14 March". Leave empty to show the time only.
+  DATE: "",
   START_TIME: "6:30 PM",
   KARAOKE_TARGET: 15,
   // Spelling bee: when this many (or fewer) people are left, nobody can be eliminated; the first correct guess wins

@@ -120,6 +120,7 @@ main{min-height:0;overflow-y:auto}
         <p class="cue">Scroll for the details</p>
       </div>
       <div class="block">
+        <p class="lab" id="date" hidden></p>
         <p class="when" id="when"></p>
       </div>
       <div class="block">
@@ -222,6 +223,7 @@ main{min-height:0;overflow-y:auto}
   var title = window.GCG_CONFIG.TITLE || "";
   $("ttl").textContent = title;
   $("when").textContent = window.GCG_CONFIG.START_TIME || "6:30 PM";
+  if (window.GCG_CONFIG.DATE) { $("date").textContent = window.GCG_CONFIG.DATE; $("date").hidden = false; }
   if (store.demo) $("demo").hidden = false;
 
   // rating screens: the activity is the headline, the five answers are the decision

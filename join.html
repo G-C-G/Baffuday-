@@ -35,7 +35,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 .sc{display:none;gap:var(--s2)}.sc.show{display:grid}
 .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s1)}
 .num{font:400 28px/1 var(--serif);padding:var(--s2) 0;background:transparent;border:1px solid var(--line);border-radius:var(--r);cursor:pointer;color:var(--ink);font-variant-numeric:tabular-nums}
-.num.on{background:var(--wine);border-color:var(--wine);color:var(--cream)}.num.on[data-n="5"]{background:var(--acid);border-color:var(--acid);color:var(--ink)}
+.num.on{background:var(--wine);border-color:var(--wine);color:var(--cream)}.num.on[data-n="5"]{background:var(--white);border-color:var(--ink);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .says{font:italic 400 22px/1.2 var(--serif);color:var(--wine);min-height:1.2em;margin:0}
 .menu{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s4)}
 .menu ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}.menu li{font:400 22px/1.15 var(--serif)}
@@ -52,7 +52,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 .seg label:first-child span{margin-left:0;border-radius:var(--r) 0 0 var(--r)}.seg label:last-child span{border-radius:0 var(--r) var(--r) 0}
 .seg input:checked + span{background:var(--wine);border-color:var(--wine);color:var(--cream);position:relative;z-index:1}
 .seg input:focus-visible + span{outline:2px solid var(--wine);outline-offset:2px;z-index:2;position:relative}
-.nav{position:sticky;bottom:0;background:linear-gradient(to top,var(--cream) 70%,rgba(245,240,230,0));padding:var(--s3) 0 max(var(--s3),env(safe-area-inset-bottom,0px));display:flex;gap:var(--s1)}
+.nav{position:sticky;bottom:0;background:linear-gradient(to top,var(--cream) 70%,rgba(245,215,110,0));padding:var(--s3) 0 max(var(--s3),env(safe-area-inset-bottom,0px));display:flex;gap:var(--s1)}
 .nav .btn{flex:1}.nav .btn.ghost{flex:0 0 auto}
 .err{color:var(--wine);font:600 13px var(--sans);min-height:1.4em;margin:var(--s2) 0 0}
 .demo{font:500 12px var(--sans);color:var(--stone);border:1px dashed var(--stone);padding:var(--s1) var(--s2);border-radius:var(--r);margin-top:var(--s3)}

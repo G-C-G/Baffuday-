@@ -96,3 +96,10 @@ screen; correct answers cheer, louder in later rounds. No confetti.
 On the projector the sentence shows every word from the spelling set in a highlighted block ("You're", "your"), so the audience
 can follow a long sentence. It highlights the whole set, so it never reveals which spelling is being asked for. Plural and
 past forms (insured, canvassed, currants) highlight too; checked against all 50 prompts.
+
+## Spelling bee sentences
+The sentences are the savage, dry-host version (`assets/bee.js`). Four were adjusted so the game still works: sentence 2 now uses
+to / too / two correctly; "insure" and "waste" were added to the ensure and waist sentences (they were missing from the sets);
+and the questions for too, sole, current and hoard were rewritten to match how those words are used in the new sentences.
+On the host panel the word being asked for is underlined in the sentence and the other homophones are bold, so you know where
+to lean in as you read. The projector highlights the whole set without saying which one is the answer.

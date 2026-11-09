@@ -89,7 +89,7 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
   function hl(text, marks) {
     var raw = String(text == null ? "" : text); if (!marks || !marks.length) return esc(raw);
     var alts = marks.map(function (w) { var b = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), a = b + "(?:s|es|d|ed|ing|ly)?"; if (/e$/.test(w)) a += "|" + b.replace(/e$/, "") + "(?:ing|ed)"; return a; });
-    var re = new RegExp("(^|[^A-Za-z'])((?:" + alts.join("|") + "))(?![A-Za-z])", "gi"), out = "", last = 0, m;
+    var re = new RegExp("(^|[^A-Za-z])((?:" + alts.join("|") + "))(?![A-Za-z])", "gi"), out = "", last = 0, m;
     while ((m = re.exec(raw))) {
       var start = m.index + m[1].length;
       out += esc(raw.slice(last, start)) + "<mark>" + esc(m[2]) + "</mark>"; last = start + m[2].length; re.lastIndex = last;
@@ -136,8 +136,8 @@ mark{background:var(--chipbg);color:var(--chipfg);padding:0 .14em;border-radius:
       var rd = "Round " + pad(s.round || 1);
       var foot = micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing &middot; " + esc(s.n) + " / " + esc(s.total));
       if (s.phase !== "result") {
-        var big = (s.sentence || "").length > 80 ? "calc(var(--major)*.82)" : "var(--major)";
-        return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:22ch;line-height:1.2">&ldquo;' + hl(s.sentence, s.marks) + '&rdquo;</p>' +
+        var n = (s.sentence || "").length, big = n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "30ch" : "22ch";
+        return { theme: "cream", html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">&ldquo;' + hl(s.sentence, s.marks) + '&rdquo;</p>' +
           (s.meaning ? '<div><span class="lab">Meaning</span><p class="second" style="font-style:italic">' + esc(s.meaning) + "</p></div>" : "") +
           '<div class="opts">' + (s.options || []).map(function (o) { return "<span>" + esc(o) + "</span>"; }).join("") + "</div>", '<span class="lab">Spell it.</span>' + foot) };
       }

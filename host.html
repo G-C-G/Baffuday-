@@ -412,6 +412,18 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   function saveBee() { return store.set("setup/bee", bee); }
   function curGuest() { return list().filter(function (g) { return g.id === bee.cur; })[0]; }
   function meaningOf(ask) { return String(ask || "").replace(/^Spell (the )?(word )?(meaning )?/i, "").replace(/\.$/, ""); }
+  // Host reading aid: the word being asked for is underlined, the other homophones in the set are bold, so you know where to lean in.
+  function reading(e) {
+    var raw = e[1], set = e[4], target = e[3];
+    function alt(w) { var b = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), a = b + "(?:s|es|d|ed|ing|ly)?"; if (/e$/.test(w)) a += "|" + b.replace(/e$/, "") + "(?:ing|ed)"; return a; }
+    var re = new RegExp("(^|[^A-Za-z])((?:" + set.map(alt).join("|") + "))(?![A-Za-z])", "gi"), tre = new RegExp("^(?:" + alt(target) + ")$", "i"), out = "", last = 0, m;
+    while ((m = re.exec(raw))) {
+      var st = m.index + m[1].length; out += esc(raw.slice(last, st));
+      out += tre.test(m[2]) ? '<u style="text-decoration-thickness:3px;text-underline-offset:3px;font-weight:600">' + esc(m[2]) + "</u>" : "<b>" + esc(m[2]) + "</b>";
+      last = st + m[2].length; re.lastIndex = last;
+    }
+    return out + esc(raw.slice(last));
+  }
   function entry() { return BEE[Math.min(bee.n || 0, BEE.length - 1)]; }
 
   function renderBee() {
@@ -421,7 +433,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       .map(function (s) { return '<div class="stat"><b>' + esc(s[0]) + "</b><span>" + esc(s[1]) + "</span></div>"; }).join("");
     $("bcard").innerHTML = '<span class="k">Contestant</span><div style="font-size:22px;margin-bottom:12px">' + (c ? esc(c.name) : '<span class="dim">load sign-ups first</span>') +
       '</div><span class="k">The word (host only)</span><div style="font-family:var(--serif);font-style:italic;font-size:44px;line-height:1">' + esc(e[3]) + "</div>" +
-      '<p style="margin:12px 0 4px"><b>Ask:</b> ' + esc(e[2]) + '</p><p style="margin:0"><b>Read:</b> ' + esc(e[1]) + "</p>";
+      '<p style="margin:12px 0 4px"><b>Ask:</b> ' + esc(e[2]) + '</p><p style="margin:0"><b>Read:</b> ' + reading(e) + '</p><p class="micro" style="margin:8px 0 0">Underlined is the word you are asking for. Lean on it as you read.</p>';
     var rk = { want: 0, ok: 1, not: 2 };
     $("bt").innerHTML = "<tr><th>Name</th><th>Bee</th><th>Status</th><th>Score</th><th></th></tr>" +
       (L.slice().sort(function (x, y) { return rk[pref(x, "bee")] - rk[pref(y, "bee")]; }).map(function (g) {

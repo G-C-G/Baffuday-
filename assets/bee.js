@@ -85,8 +85,6 @@ window.BEE = [
   [3, "The question was designed to elicit an answer, not an illicit attempt to copy your neighbour.", "Spell the word meaning illegal or forbidden.", "illicit", ["elicit", "illicit"]],
   [3, "Please ensure you know the answer, because nobody will insure that much confidence.", "Spell the word meaning to make certain.", "ensure", ["ensure", "insure"]],
   [3, "The spelling mistake will affect your score, but the effect on your confidence may be permanent.", "Spell the word meaning the result or consequence.", "effect", ["affect", "effect"]],
-  [3, "A moment of silence will precede your answer, after which you may proceed to embarrass yourself.", "Spell the word meaning to come before.", "precede", ["precede", "proceed"]],
-  [3, "I would choose dessert over the desert, because at least one of them has something useful in it.", "Spell the word meaning the sweet course after a meal.", "dessert", ["desert", "dessert"]],
   [4, "Whether you like it or not, the weather has already decided what your hair is doing tonight.", "Spell the word meaning atmospheric conditions.", "weather", ["weather", "whether"]],
   [4, "She tied her belt at her waist and still found a way to waste the evening.", "Spell the word meaning the part of the body between the ribs and hips.", "waist", ["waist", "waste"]],
   [4, "Nobody said there would be a medal, so please stop trying to meddle with the rules when you realise you're losing.", "Spell the word meaning a prize awarded for achievement.", "medal", ["medal", "meddle"]],
@@ -104,7 +102,7 @@ window.BEE = [
   [5, "He likes to hoard snacks because apparently he is preparing for a horde that only exists in his imagination.", "Spell the word meaning to stockpile.", "hoard", ["hoard", "horde"]],
   [5, "She stood at the altar and immediately decided to alter the seating arrangement.", "Spell the word meaning the raised structure used in religious ceremonies.", "altar", ["altar", "alter"]],
   [5, "He eats cereal while watching serial dramas, which is perhaps the least efficient way to start a morning.", "Spell the word meaning a food made from grains.", "cereal", ["cereal", "serial"]],
-  [5, "Accra is the capital, but the Capitol is somewhere else entirely, so please do not confidently send us in the wrong direction.", "Spell the word meaning the city where a government sits.", "capital", ["capital", "capitol"]],
+  [5, "Welcome to the Capitol, the capital of Panem, where someone is about to shout 'I volunteer as tribute', and it is you.", "Spell the word meaning the city where a government sits.", "capital", ["capital", "capitol"]],
   [5, "The council asked for counsel, but unfortunately everyone had already decided they were right.", "Spell the word meaning a group of people chosen to make decisions.", "council", ["counsel", "council"]],
   [5, "The principal established one final principle: if you still can't spell after five rounds, we may have to accept that none of you were ever good at spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
 ];

@@ -141,3 +141,7 @@ cases the screen that follows shows the correct word, large, with the other spel
 Update: the answer screen is now just the word. Right: the correct word, front and centre, with the side confetti and the win sound.
 Wrong: a black screen with the red X on the left; on the right the word they said, crossed out, and the correct word under it. The
 other spellings and their meanings no longer appear on the projector. The screen stays until you press Next prompt.
+
+The fake-out: after "Yes, final answer" and the drumroll, the word they said appears in the middle exactly like a winning answer (yellow, blue
+frame). Right and wrong look identical for a beat (longer at the finale). Then the truth: a right answer fires the confetti and win sound; a wrong
+answer cuts instantly to black with a punch flash, the word is struck through, the red X slams down, the buzzer sounds and the correct word drops in underneath.

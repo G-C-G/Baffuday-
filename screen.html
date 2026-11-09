@@ -75,7 +75,14 @@ body.t-ink .opts span.sel{background:var(--cream);color:var(--ink);border-color:
 @keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 .fin-word{font:400 min(calc(var(--hero)*1.35),calc(176vw / var(--n,6)))/.95 var(--serif);letter-spacing:-.02em;margin:0;animation:pop .45s ease-out}
-.said{font:400 min(calc(var(--hero)*.9),calc(120vw / var(--n,6)))/1 var(--serif);letter-spacing:-.02em;text-decoration:line-through;text-decoration-color:#FF1F3D;text-decoration-thickness:.07em;margin:0;opacity:.9}
+.said{font:400 min(calc(var(--hero)*.9),calc(120vw / var(--n,6)))/1 var(--serif);letter-spacing:-.02em;margin:0;opacity:.9;position:relative;display:inline-block}
+.said::after{content:"";position:absolute;left:-2%;top:54%;height:.075em;width:0;background:#FF1F3D;animation:strike .16s .06s linear forwards}
+@keyframes strike{to{width:104%}}
+.wrongcol .fin-word{animation:drop .45s .5s both}
+@keyframes drop{from{transform:translateY(-5vh);opacity:0}to{transform:none;opacity:1}}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+#flash.go{animation:punch .22s ease-out}
+@keyframes punch{0%{opacity:.95}100%{opacity:0}}
 .wrongword{position:relative;display:inline-block;padding:.1em .3em}
 .wrongrow{display:flex;align-items:center;justify-content:center;gap:5vw;text-align:left;width:100%}
 .xbadge{flex:0 0 auto;height:min(48vh,30vw);aspect-ratio:1}
@@ -95,6 +102,7 @@ body.flashred{animation:flashred .6s ease 2}
 <body class="t-cream">
 <div id="stage"></div>
 <canvas id="fx"></canvas>
+<div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
 <script src="config.js"></script>
 <script src="assets/store.js"></script>
@@ -193,8 +201,14 @@ body.flashred{animation:flashred .6s ease 2}
     if (ok) return { theme: "acid", level: lv, html: frame(rd, '<p class="fin-word" style="--n:' + String(s.answer).length + '">' + esc(s.answer) + "</p>", foot, "c") };
     // Wrong: the X on the left; on the right the word they said, crossed out, with the right word under it.
     var said = s.said ? '<p class="said" style="--n:' + String(s.said).length + '">' + esc(s.said) + "</p>" : "";
-    return { theme: "black", level: lv, html: frame(rd, '<div class="wrongrow"><div class="xbadge">' + X_SVG + '</div><div class="wrongcol">' + said + '<span class="lab" style="color:inherit;opacity:.7">The word was</span><p class="fin-word" style="--n:' + String(s.answer).length + '">' + esc(s.answer) + "</p></div></div>", foot, "c") };
+    return { theme: "black", instant: true, level: lv, html: frame(rd, '<div class="wrongrow"><div class="xbadge">' + X_SVG + '</div><div class="wrongcol">' + said + '<span class="lab" style="color:inherit;opacity:.7">The word was</span><p class="fin-word" style="--n:' + String(s.answer).length + '">' + esc(s.answer) + "</p></div></div>", foot, "c") };
   }
+  // The fake-out: the word they said sits in the middle exactly like a winning answer. Right and wrong look identical until the moment of truth.
+  function beeNeutral(s) {
+    var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
+    return { theme: "acid", level: s.level || 1, html: frame(rd, '<p class="fin-word" style="--n:' + String(s.said).length + '">' + esc(s.said) + "</p>", micro(esc(s.contestant) + " &middot; " + esc(s.standing) + " still standing"), "c") };
+  }
+  function holdMs(s) { return Math.min(1500 + (s.level || 1) * 250 + (s.final || (s.total && s.n >= s.total) ? 1500 : 0), 3800); }
   function spellView(s) {
     var L = String(s.said).toUpperCase().split("");
     return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They guessed</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
@@ -202,7 +216,10 @@ body.flashred{animation:flashred .6s ease 2}
 
   var stage = document.getElementById("stage"), last = "", timer = 0, firstLoad = true;
   function draw(v) {
-    document.body.className = "t-" + v.theme; document.body.style.setProperty("--lv", v.level || 1); stage.style.animation = "none"; void stage.offsetWidth; stage.style.animation = ""; stage.innerHTML = v.html;
+    // instant: no fade and no background transition, so a cut lands like a punch (used for the BAM on a wrong answer)
+    if (v.instant) document.body.style.transition = "none";
+    document.body.className = "t-" + v.theme; document.body.style.setProperty("--lv", v.level || 1); stage.style.animation = "none"; void stage.offsetWidth; stage.style.animation = v.instant ? "none" : ""; stage.innerHTML = v.html;
+    if (v.instant) { void document.body.offsetWidth; document.body.style.transition = ""; }
   }
   store.subscribe("state", function (s) {
     s = s || { mode: "home" };
@@ -214,7 +231,12 @@ body.flashred{animation:flashred .6s ease 2}
       var pause = suspenseMs(s); s.big = pause >= 4500;
       draw(beeSentenceView(s, "lock")); drumroll(pause);
       timer = setTimeout(function () {
-        draw(beeFinal(s)); revealFx(s);
+        if (!s.said) { draw(beeFinal(s)); revealFx(s); return; }
+        draw(beeNeutral(s));
+        timer = setTimeout(function () {
+          if (s.ok) { revealFx(s); }          // the word was right: confetti and the win sound, nothing else changes
+          else { draw(beeFinal(s)); revealFx(s); }   // wrong: BAM, black, the strike, the X, the right word drops in
+        }, holdMs(s));
       }, pause);
     } else { draw(view(s)); react(s, fresh); }
   });
@@ -282,7 +304,7 @@ body.flashred{animation:flashred .6s ease 2}
   // Reveal moment: right = the option turns green with a little confetti; wrong = red flash, a big red X stamp and the X sound.
   function revealFx(s) {
     var lv = s.level || 1;
-    if (s.ok) { confetti(CONF[lv]); winSound(lv); } else { xfactor(); document.body.classList.add("shake"); }
+    if (s.ok) { confetti(CONF[lv]); winSound(lv); } else { xfactor(); document.body.classList.add("shake"); var f = document.getElementById("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); }
   }
   function cheer(level) {
     var notes = [523, 659, 784, 1047, 1319, 1568, 2093], count = 3 + level * 2, step = Math.max(.07, .16 - level * .015);

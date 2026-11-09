@@ -51,7 +51,8 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 @keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
 .hero-screen{padding-top:clamp(var(--s6),8vh,var(--s10));min-height:calc(100vh - 256px);min-height:calc(100svh - 256px);margin-bottom:var(--s8);display:flex;flex-direction:column;justify-content:flex-start}
 .cue{margin:auto 0 0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
-.block{margin-bottom:var(--s12)}
+.block{margin-bottom:var(--s8);padding-top:var(--s6);border-top:1px solid var(--ink)}
+.block:first-of-type{border-top-width:2px}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0;max-width:18ch}
 .when{font:italic 400 clamp(40px,12vw,56px)/1 var(--serif);margin:0}
 /* programme and menu */

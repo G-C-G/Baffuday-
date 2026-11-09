@@ -27,7 +27,11 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
 .big{font:400 clamp(30px,9vw,44px)/1.1 var(--serif)!important;border:0!important;border-bottom:1px solid var(--ink)!important;border-radius:0!important;background:transparent!important;padding:var(--s1) 0 var(--s2)!important}
 .field{display:grid;gap:var(--s1);margin-bottom:var(--s5)}
 /* intro */
-.title{font:400 clamp(76px,25vw,140px)/.86 var(--serif);letter-spacing:-.03em;margin:0 0 var(--s6)}.title em{font-style:italic}
+.title{font:400 clamp(76px,25vw,140px)/.86 var(--serif);letter-spacing:-.03em;margin:0 0 var(--s6)}.title em{font-style:italic;font-size:.92em;white-space:nowrap}
+/* a Pac-Man about to eat the "Ate" (28 spelled "2-Ate"); the mouth chomps */
+.pac{display:inline-block;height:.64em;width:.64em;vertical-align:-.02em;margin:0 .05em 0 .02em;fill:var(--ink);font-style:normal}
+.pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
+@keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0 0 var(--s8);max-width:18ch}
 .when{font:italic 400 clamp(40px,12vw,56px)/1 var(--serif);margin:0 0 var(--s10)}
 /* programme and menu */
@@ -81,7 +85,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
     <!-- 1. The invitation: the birthday title dominates -->
     <section class="step on" data-k="intro">
       <p class="lab">You're invited</p>
-      <h1 class="title" id="hero"></h1>
+      <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2-<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/></svg>Ate</em></h1>
       <p class="welcome">A game night. Some of it is voluntary.</p>
       <p class="when" id="when"></p>
       <p class="tiny" style="margin-top:0">A few short questions, about four minutes.</p>
@@ -188,7 +192,6 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
   var title = window.GCG_CONFIG.TITLE || "";
   $("ttl").textContent = title;
-  $("hero").innerHTML = title.replace(/^(\S+)\s*(.*)$/, function (m, a, b) { return a + "<br><em>" + b + "</em>"; });
   $("when").textContent = window.GCG_CONFIG.START_TIME || "6:30 PM";
   if (store.demo) $("demo").hidden = false;
 
@@ -274,6 +277,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s6),11v
     if (lab) lab.textContent = labelFor(key, i, sq);
     $("count").textContent = onForm ? pad(i + 1) + " / " + pad(sq.length) : "";
     $("fill").style.width = (fin ? 100 : onForm ? (i + 1) / sq.length * 100 : 0) + "%";
+    $("ttl").style.visibility = key === "intro" ? "hidden" : "visible";
     $("back").hidden = !onForm; $("nav").style.display = fin ? "none" : "flex";
     $("next").textContent = key === "intro" ? "Begin" : i === sq.length - 1 ? "Lock it in." : "Continue";
     if (key.indexOf("take-") === 0) setNext();

@@ -152,3 +152,8 @@ spelling and only a quick double tap on the same spelling (within about 0.9s) lo
 
 Balance pass (projector): announcement screens are centred (name screen, karaoke, hot-take statement, bee stage count, call-up, champion); lists and
 rules stay left-aligned; the bee sentence sits top-left and a little wider, with the options a little higher at the bottom centre; the Tonight list fits at 16:9, 4:3 and 1080p.
+
+## The promise to guests
+The form tells guests that nobody is forced. Anyone who answers "I'd rather not" to Karaoke, or "Please no" to performing, is never called by Surprise me
+(the host panel counts them as opted out). Guests are nudged, once, to try at least one thing if they put all three on "rather not", but they can still
+choose that. Form error messages now sit above the buttons so they are not hidden under them.

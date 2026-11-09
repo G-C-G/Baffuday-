@@ -226,17 +226,18 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   // Karaoke: call the most willing people first, random within the best remaining tier.
   function tier(g) { var n = singOf(g); return n >= 4 ? "A (4-5)" : n === 3 ? "B (3)" : n === 2 ? "C (2)" : "D (1)"; }
   function pool() {
-    var left = list().filter(function (g) { return g.song && !g.performed; });
+    var left = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); });
     var best = left.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
     return left.filter(function (g) { return tier(g) === best; });
   }
   function queue() {
-    var left = list().filter(function (g) { return g.song && !g.performed; }), t = {};
+    var left = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }), t = {}, optedOut = list().filter(function (g) { return g.song && !g.performed && noKaraoke(g); }).length;
     left.forEach(function (g) { t[tier(g)] = (t[tier(g)] || 0) + 1; });
     var target = window.GCG_CONFIG.KARAOKE_TARGET || 15, done = list().filter(function (g) { return g.performed; }).length;
     var willing = left.filter(function (g) { return singOf(g) >= 3; }).length;
     $("kqueue").innerHTML = "Still to call by willingness: " + (Object.keys(t).sort().map(function (k) { return k + ": " + t[k]; }).join(" · ") || "none") +
-      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are willing to sing (3 or higher), below your target of " + target + ". Calling lower tiers will mean asking people who said they'd rather not.</span>" : "");
+      (done + willing < target ? '<br><span class="flag">Only ' + (done + willing) + " people are willing to sing (3 or higher), below your target of " + target + ". The next tiers are people who said 'rather not' (2); they can still be called as a last resort.</span>" : "") +
+      (optedOut ? '<br><span class="note">' + optedOut + " opted out of karaoke and will not be called. That promise is built in.</span>" : "");
   }
 
   // Hot-take assignment: a pick of "agree" argues AGAINST; "disagree" argues FOR.
@@ -296,7 +297,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   $("kback").onclick = function () { setState({ mode: "home" }).then(render); };
   $("surprise").onclick = function () {
     var pool_ = pool();
-    if (!pool_.length) { $("kinfo").textContent = "Everyone with a song has performed."; return; }
+    if (!pool_.length) { $("kinfo").textContent = "Everyone who is up for it has performed."; return; }
     var g = pool_[Math.floor(Math.random() * pool_.length)];
     g.performed = true; // update locally now so a quick second press cannot pick the same person
     g.took = g.took || {}; g.took.karaoke = true;

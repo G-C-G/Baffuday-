@@ -85,3 +85,5 @@ window.takeRank = function (n, pf) {
   return pf === "not" ? 4 : 3;
 };
 window.RANK_LABEL = ["strong + keen", "strong", "strong, rather not", "medium", "medium, rather not", "weak feelings"];
+// Guests who said "rather not" to karaoke, or "Please no" to performing, are never called by Surprise me. We promised them.
+window.noKaraoke = function (g) { return pref(g, "karaoke") === "not" || (g && g.sing && +g.sing === 1); };

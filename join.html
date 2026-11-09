@@ -52,9 +52,10 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 .seg label:first-child span{margin-left:0;border-radius:var(--r) 0 0 var(--r)}.seg label:last-child span{border-radius:0 var(--r) var(--r) 0}
 .seg input:checked + span{background:var(--wine);border-color:var(--wine);color:var(--cream);position:relative;z-index:1}
 .seg input:focus-visible + span{outline:2px solid var(--wine);outline-offset:2px;z-index:2;position:relative}
-.nav{position:sticky;bottom:0;background:linear-gradient(to top,var(--cream) 70%,rgba(245,215,110,0));padding:var(--s3) 0 max(var(--s3),env(safe-area-inset-bottom,0px));display:flex;gap:var(--s1)}
-.nav .btn{flex:1}.nav .btn.ghost{flex:0 0 auto}
-.err{color:var(--wine);font:600 13px var(--sans);min-height:1.4em;margin:var(--s2) 0 0}
+.nav{position:sticky;bottom:0;background:linear-gradient(to top,var(--cream) 70%,rgba(245,215,110,0));padding:var(--s3) 0 max(var(--s3),env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:var(--s1)}
+.navbtns{display:flex;gap:var(--s1)}
+.navbtns .btn{flex:1}.navbtns .btn.ghost{flex:0 0 auto}
+.err{color:var(--wine);font:600 13px/1.4 var(--sans);margin:0}.err:empty{display:none}
 .demo{font:500 12px var(--sans);color:var(--stone);border:1px dashed var(--stone);padding:var(--s1) var(--s2);border-radius:var(--r);margin-top:var(--s3)}
 .done h1{margin-bottom:var(--s3)}
 .btns{display:flex;gap:var(--s1);flex-wrap:wrap;margin-top:var(--s4)}
@@ -71,7 +72,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <p class="label">You're invited</p>
       <div class="hero" id="hero"></div>
       <p class="q" style="font-size:clamp(26px,7vw,34px);line-height:1.1;color:var(--ink);margin-bottom:var(--s4)">A game night. Some of it is voluntary.</p>
-      <p class="lede" style="margin-top:0">Six short questions so the night is built around you. About four minutes. You can come back and change anything.</p>
+      <p class="lede" style="margin-top:0">Six short questions so the night is built around you. About four minutes. You can come back and change anything. You never have to do anything you do not want to.</p>
       <div class="demo" id="demo" hidden>Demo mode: answers stay in this browser. You will download them as a PDF at the end.</div>
     </section>
 
@@ -120,7 +121,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
       <p class="label">06 / Tonight</p>
       <h2 class="q">What would you <em>rather do?</em></h2>
       <div id="inv"></div>
-      <p class="micro" style="margin-top:var(--s2)">Nobody is forced. Several people will be encouraged.</p>
+      <p class="micro" style="margin-top:var(--s2)">Nobody is forced. Say no to karaoke and you will not be asked to sing. We would like you to try at least one thing tonight, and if you do all three, we will be delighted.</p>
     </section>
 
     <section class="step done" id="done" data-s="7">
@@ -133,10 +134,10 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
   </main>
 
   <footer class="nav" id="nav">
-    <button class="btn ghost" type="button" id="back" hidden>Back</button>
-    <button class="btn" type="button" id="next">Begin</button>
+    <p class="err" id="err" role="alert"></p>
+    <div class="navbtns"><button class="btn ghost" type="button" id="back" hidden>Back</button>
+    <button class="btn" type="button" id="next">Begin</button></div>
   </footer>
-  <p class="err" id="err" role="alert"></p>
 </div>
 <script src="config.js"></script>
 <script src="assets/takes.js"></script>
@@ -146,7 +147,7 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
 <script>
 (function () {
   var ID_KEY = "gcg-guest-id-" + (window.GCG_CONFIG.ROOT || "");
-  var picks = {}, gid = null, cur = 0, LAST = 6;
+  var picks = {}, gid = null, cur = 0, LAST = 6, nudged = false;
   var $ = function (id) { return document.getElementById(id); };
   var title = window.GCG_CONFIG.TITLE || "";
   $("ttl").textContent = title;
@@ -231,9 +232,14 @@ main{flex:1;padding-block:var(--s6) var(--s8)}
     if (n === 1 && !$("name").value.trim()) return "Tell us your name.";
     if (n === 2 && !$("song").value.trim()) return "We need a song. Everyone has one.";
     if (n === 3 && !document.querySelector("input[name=sing]:checked")) return "Pick one. No judgement.";
+    if (n === 6) {
+      var all = INVOLVE.every(function (o) { return document.querySelector("input[name=inv-" + o.id + "]:checked").value === "not"; });
+      if (all && !nudged) { nudged = true; return "All three on rather not? That is allowed. But please pick at least one to try, even the gentlest. Tap Lock it in again if you really mean it."; }
+    }
     if (n === 4) { var m = TAKES.filter(function (t) { return picks[t.id] && !picks[t.id].n; })[0]; if (m) { $("take-" + m.id).scrollIntoView({ block: "center" }); return "Say how strongly you feel about: " + m.q; } }
     return "";
   }
+  $("inv").addEventListener("change", function () { nudged = false; });
   $("back").onclick = function () { show(cur - 1); };
   $("next").onclick = function () {
     var e = check(cur); if (e) { $("err").textContent = e; return; }

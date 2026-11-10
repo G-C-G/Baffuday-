@@ -240,7 +240,7 @@ body.flashred{animation:flashred .6s ease 2}
     if (!(fresh && recent && s.spinId !== seenSpin)) { seenSpin = s.spinId; draw(landed()); return; }   // a reload, or an old spin: show who it landed on
     seenSpin = s.spinId;
     var names = s.names && s.names.length ? s.names : [s.name], N = names.length, ang = 360 / N;
-    draw({ theme: "ink", html: frame(esc(brand), '<span class="lab" style="font-size:calc(var(--lab)*2.9);font-weight:700;letter-spacing:.2em;line-height:1">Karaoke Roulette</span>' + wheelHtml(names), "", "c") });
+    draw({ theme: "ink", html: frame(esc(brand), '<span style="font:400 calc(var(--major)*.95)/1 var(--serif);letter-spacing:-.02em;color:var(--accent)">Karaoke Roulette</span>' + wheelHtml(names), "", "c") });
     var g = document.getElementById("wheel"); if (!g) { draw(landed()); return; }
     var total = 360 * (6 + Math.floor(Math.random() * 2)) - ((s.winner || 0) + .5) * ang + (Math.random() - .5) * ang * .7;
     var dur = 7800, t0 = performance.now(), lastIdx = -1;

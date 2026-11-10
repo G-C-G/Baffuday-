@@ -139,9 +139,9 @@ body.flashred{animation:flashred .6s ease 2}
     return '<div class="frame"><div class="top"><span class="lab mute">' + top + '</span>' + live + '</div><div class="main ' + (cls || "") + '">' + main + '</div><div class="foot">' + (foot || "") + '</div></div>';
   }
   // Highlight the homophones in the sentence so the audience can follow it (the set is the same words shown as options).
-  function hl(text, marks) {
+  function hl(text, marks, exact) {
     var raw = String(text == null ? "" : text); if (!marks || !marks.length) return esc(raw);
-    var alts = marks.map(function (w) { var b = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), a = b + "(?:s|es|d|ed|ing|ly)?"; if (/e$/.test(w)) a += "|" + b.replace(/e$/, "") + "(?:ing|ed)"; return a; });
+    var alts = marks.map(function (w) { var b = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), a = exact ? b : b + "(?:s|es|d|ed|ing|ly)?"; if (!exact && /e$/.test(w)) a += "|" + b.replace(/e$/, "") + "(?:ing|ed)"; return a; });
     var re = new RegExp("(^|[^A-Za-z])((?:" + alts.join("|") + "))(?![A-Za-z])", "gi"), out = "", last = 0, m;
     while ((m = re.exec(raw))) {
       var start = m.index + m[1].length;
@@ -226,7 +226,7 @@ body.flashred{animation:flashred .6s ease 2}
     var note = mode === "lock" ? "Locked in" : mode === "confirm" ? "Final answer?" : "";
     // The sentence sits on the left; the choices are big and bold, bottom centre; "Locked in" is small.
     var bar = '<div class="optbar"><div class="opts">' + opts + '</div><div class="optnote">' + note + "</div></div>";
-    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + (s.img ? "46vw" : wide) + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot, "high") + (s.img ? '<img class="beeimg" src="' + esc(s.img) + '" alt="" onerror="this.remove()">' : "") + bar };
+    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + (s.img ? "46vw" : wide) + ';line-height:1.2">' + hl(s.sentence, s.marks, s.exact) + "</p>", foot, "high") + (s.img ? '<img class="beeimg" src="' + esc(s.img) + '" alt="" onerror="this.remove()">' : "") + bar };
   }
   var X_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg>';
   function beeFinal(s) {

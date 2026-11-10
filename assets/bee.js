@@ -12,6 +12,10 @@ window.BEE_ROUNDS = {
 window.BEE_IMAGES = {
   "pair/pear": "assets/bee/rick-ross-pears.png"
 };
+// Prompts where only the exact words are highlighted (not plurals or other endings such as pears). Same key as BEE_IMAGES.
+window.BEE_EXACT = {
+  "pair/pear": true
+};
 // A sound that plays once on the projector when that prompt first appears. Same key as BEE_IMAGES.
 window.BEE_SOUNDS = {
   "pair/pear": "assets/sounds/shoutout-pears.mp3"

@@ -238,3 +238,7 @@ The build-up before a reveal (spelling bee answer, the roulette near-miss, the h
 ## Sounds on bee prompts
 
 `BEE_SOUNDS` in `assets/bee.js` (same keys as `BEE_IMAGES`) plays a sound once when that prompt first appears on the projector. Right now: pair / pear plays `assets/sounds/shoutout-pears.mp3` (the Rick Ross "shout out to all the pears" clip) together with his picture.
+
+## Exact highlighting
+
+`BEE_EXACT` in `assets/bee.js` lists prompts where only the exact words are highlighted, not forms such as plurals. Right now: pair / pear, so "pear" and "pair" are marked and "pears" is not. Other prompts keep the normal rule (the word plus endings like -s, -ed, -ing).

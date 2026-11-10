@@ -95,7 +95,7 @@ window.BEE = [
   [2, "Rick Ross said shout out to all the pear: And all my peers are here tonight watching Rick Ross hold a pair of pears. Sorry guys this is what yall signed up for \ud83e\udd23.", "Spell the word meaning a set of two.", "pair", ["pair", "pear"]],
   [2, "The male contestant received the mail first, which is not evidence of superiority, despite what he may tell you.", "Spell the word meaning a letter or package delivery.", "mail", ["mail", "male"]],
   [2, "Defend your family's honour. Be the knight, or lady knight, who rides away victorious into the night.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
-  [2, "Edward sparkles in the sun, while Hinda's son is her little sunshine. Neither on is helping you spell today.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
+  [2, "Edward sparkles in the sun, while Hinda's son is her little sunshine. Neither one is helping you spell tonight \ud83e\udd23", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
   [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
   [2, "Harry knew exactly which witch had cast the spell, but nobody at Hogwarts prepared him for a spelling bee.", "Spell the word meaning a woman with magic powers.", "witch", ["which", "witch"]],

@@ -267,7 +267,13 @@ body.flashred{animation:flashred .6s ease 2}
     o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + .05);
   }
   // The talent-show "X": one long, harsh, slightly falling honk.
-  function xfactor() { sweep(170, 118, 0, 1.5, "sawtooth", .9); sweep(172, 120, 0, 1.5, "square", .45); sweep(85, 59, 0, 1.5, "sawtooth", .7); noise(.28, .55); }
+  // The wrong-answer sound is the supplied clip. If the browser will not play it, the old synthesised buzzer is the fallback.
+  var WRONG_SRC = "assets/sounds/wrong.mp3", wrongA = null;
+  try { wrongA = new Audio(WRONG_SRC); wrongA.preload = "auto"; } catch (e) {}
+  function synthBuzzer() { sweep(170, 118, 0, 1.5, "sawtooth", .9); sweep(172, 120, 0, 1.5, "square", .45); sweep(85, 59, 0, 1.5, "sawtooth", .7); noise(.28, .55); }
+  function xfactor() {
+    try { if (!wrongA) { synthBuzzer(); return; } wrongA.pause(); wrongA.currentTime = 0; wrongA.volume = 1; var pr = wrongA.play(); if (pr && pr.catch) pr.catch(synthBuzzer); } catch (e) { synthBuzzer(); }
+  }
   var buzzer = xfactor;
   var fx = document.getElementById("fx"), fctx = fx.getContext("2d"), parts = [], raf = 0;
   // Confetti fires from the LEFT and RIGHT edges, so the sentence in the middle stays readable.

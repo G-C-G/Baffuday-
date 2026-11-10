@@ -316,7 +316,7 @@ body.flashred{animation:flashred .6s ease 2}
   store.subscribe("state", function (s) {
     s = s || { mode: "home" };
     var k = JSON.stringify(s); if (k === last) return; last = k; clearTimeout(timer); cancelAnimationFrame(wheelRaf);
-    var slam = document.getElementById("slam"); if (slam) slam.remove(); document.body.classList.remove("shake");
+    var slam = document.getElementById("slam"); if (slam) slam.remove(); document.body.classList.remove("shake"); stopSuspense();
     var fresh = !firstLoad; firstLoad = false;
     if (s.mode === "bee") s.level = levelFor(s);
     if (s.mode === "roulette") { runRoulette(s, fresh); return; }
@@ -396,7 +396,21 @@ body.flashred{animation:flashred .6s ease 2}
     return Math.min(ms, 6500);
   }
   // Drumroll: a heartbeat that speeds up, then a held silence just before the reveal.
+  // The suspense sound is set in config.js (SUSPENSE): "none" (silence, the default), "synth" (the old heartbeat drumroll below),
+  // or a file path such as "assets/sounds/suspense.mp3" (plays for the length of the pause, fading out at the end).
+  var suspenseA = null;
+  function stopSuspense() { if (suspenseA) { try { suspenseA.pause(); } catch (e) {} suspenseA = null; } }
   function drumroll(ms) {
+    var mode = cfg.SUSPENSE || "none";
+    if (mode === "none") return;
+    if (mode !== "synth") {
+      stopSuspense();
+      try {
+        var el = new Audio(mode); suspenseA = el; el.volume = .9; var pr = el.play(); if (pr && pr.catch) pr.catch(function () {});
+        var fade = setInterval(function () { if (suspenseA !== el) { clearInterval(fade); return; } var left = ms - el.currentTime * 1000; if (left <= 0) { el.pause(); clearInterval(fade); } else if (left < 500) el.volume = Math.max(0, .9 * left / 500); }, 50);
+      } catch (e) {}
+      return;
+    }
     var a = audio(); if (!a) return; var t = 0, gap = .5, end = (ms - 280) / 1000;
     while (t < end) {
       tone(58 + (t / end) * 30, t, .13, "sine", .55); noise(.07, .12 + .22 * (t / end));

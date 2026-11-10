@@ -18,6 +18,9 @@ window.GCG_CONFIG = {
   BEE_RANDOM_ANSWER: true,
   // An optional line above "You're up." (karaoke) and in the bee call-up. Empty = nothing. Put a new intro here whenever you find one you like.
   INTRO: "",
+  // The build-up sound before a reveal (bee answer, roulette near-miss, the twist). "none" = silence. "synth" = the old heartbeat drumroll.
+  // Or a file, e.g. "assets/sounds/suspense.mp3". It plays for the length of the pause and fades out.
+  SUSPENSE: "none",
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

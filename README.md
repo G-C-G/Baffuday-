@@ -222,3 +222,7 @@ Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do
 ## The intro line
 
 `INTRO` in `config.js` is an optional line shown above "You're up." (karaoke) and before "To the stage, please." (bee call-up). It is empty now. Put any new phrase there and it appears on both.
+
+## The suspense sound
+
+The build-up before a reveal (spelling bee answer, the roulette near-miss, the hot take twist) is set by `SUSPENSE` in `config.js`: `"none"` is silence (the default), `"synth"` brings back the old heartbeat drumroll, or give a file such as `"assets/sounds/suspense.mp3"`. A file plays for the length of the pause and fades out at the end.

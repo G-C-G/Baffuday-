@@ -113,7 +113,7 @@ window.BEE = [
   [5, "She went forth into the fourth round with confidence that was impressive, if not entirely justified.", "Spell the word meaning number four in sequence.", "fourth", ["forth", "fourth"]],
   [5, "He likes to hoard snacks because apparently he is preparing for a horde that only exists in his imagination.", "Spell the word meaning to stockpile.", "hoard", ["hoard", "horde"]],
   [5, "She stood at the altar and immediately decided to alter the seating arrangement.", "Spell the word meaning the raised structure used in religious ceremonies.", "altar", ["altar", "alter"]],
-  [5, "He eats cereal while watching serial dramas, which is perhaps the least efficient way to start a morning.", "Spell the word meaning a food made from grains.", "cereal", ["cereal", "serial"]],
+  [5, "Some of y'all pour cereal before milk like some serial killer.", "Spell the word meaning a food made from grains.", "cereal", ["cereal", "serial"]],
   [5, "Several people have volunteered as tribute tonight, although we can confirm this is not the Capitol. The city is Accra, capital of Ghana.", "Spell the word meaning the Hunger Games city.", "capitol", ["capital", "capitol"], "fixed"],
   [5, "The council asked for counsel, but unfortunately everyone had already decided they were right.", "Spell the word meaning a group of people chosen to make decisions.", "council", ["counsel", "council"]],
   [5, "The principal established one final principle: if you still can't spell after five rounds, we may have to accept that none of you were ever good at spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
@@ -121,6 +121,7 @@ window.BEE = [
 
 // Prompts you have approved. Key = the prompt's words in alphabetical order joined with "/". Everything else in BEE is still a draft.
 window.BEE_DECIDED = [
+  "cereal/serial",
   "their/there/they're",
   "to/too/two",
   "you're/your",

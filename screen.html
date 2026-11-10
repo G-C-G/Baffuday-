@@ -101,7 +101,7 @@ body.t-ink .opts span.sel{background:var(--cream);color:var(--ink);border-color:
 body.flashred{animation:flashred .6s ease 2}
 @keyframes flashred{0%,100%{background-color:var(--cream)}30%{background-color:var(--wrong)}}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
-.wheelbox{height:min(62vh,54vw);aspect-ratio:1/1}
+.wheelbox{height:min(70vh,60vw);aspect-ratio:1/1}
 .wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--sans);color:inherit;cursor:pointer;background:none;border:0;opacity:.55}
 </style>
@@ -223,7 +223,7 @@ body.flashred{animation:flashred .6s ease 2}
   // ---- Karaoke roulette: a real wheel with everyone in the pool on it. It spins, ticks, slows down and lands on a name. ----
   var wheelRaf = 0, seenSpin = 0;
   function wheelHtml(names) {
-    var N = names.length, ang = 360 / N, R = 96, fs = N <= 6 ? 11 : N <= 10 ? 9 : N <= 16 ? 6.8 : 5.2, slices = "", labels = "";
+    var N = names.length, ang = 360 / N, R = 96, fs = N <= 6 ? 12 : N <= 10 ? 10.5 : N <= 16 ? 8.2 : N <= 24 ? 6.8 : 5.4, slices = "", labels = "";
     var P = function (deg, r) { var a = deg * Math.PI / 180; return (r * Math.sin(a)).toFixed(2) + " " + (-r * Math.cos(a)).toFixed(2); };
     for (var i = 0; i < N; i++) {
       var a0 = i * ang, a1 = (i + 1) * ang, dark = i % 2, mid = a0 + ang / 2, nm = String(names[i]).length > 15 ? String(names[i]).slice(0, 14) + "\u2026" : String(names[i]);

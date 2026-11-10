@@ -36,6 +36,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 .side h3{font-family:var(--bebas);letter-spacing:.2em;font-size:20px;margin-bottom:8px}
 .side.f h3{color:var(--mint)}.side.a h3{color:var(--red)}
 .side li{list-style:none}.side ul{margin:0;padding:0}
+.nudge{position:sticky;top:8px;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--ink);color:var(--cream);padding:12px 16px;border-radius:6px;box-shadow:0 6px 20px rgba(8,24,62,.35)}.nudge[hidden]{display:none}
+.nudge b{font:400 24px/1 var(--serif)}
+.nudge .btn.ghost{color:var(--cream);border-color:var(--cream)}.nudge .btn:not(.ghost){background:var(--cream);color:var(--ink);border-color:var(--cream)}
 .note{color:var(--muted);font-size:12px;max-width:70ch}
 </style>
 </head>
@@ -44,7 +47,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <header><p class="eyebrow" id="ttl"></p><h1>Host <span>panel</span></h1>
     <p class="note" id="demo" hidden>Demo mode: data is local to this browser. Add the database URL in config.js to go live.</p></header>
 
-  <div class="livebar"><span class="live">On screen</span><b id="livetxt">Name screen</b></div>
+  <div class="nudge" id="nudge" hidden><b>Roulette time.</b> <span>Someone is about to sing.</span> <button class="btn" id="nspin">Spin now</button> <button class="btn ghost" id="nlater">Later</button></div>
+  <div class="livebar"><span class="live">On screen</span><b id="livetxt">Name screen</b><span class="sp" style="flex:1"></span>
+    <button class="btn" id="rbreak">Karaoke roulette break</button><button class="btn ghost" id="rback" hidden>Back to the game</button></div>
 
   <div class="stats" id="stats"></div>
 
@@ -129,10 +134,20 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     <div>
       <span class="k">Karaoke</span>
       <div class="bar">
-        <button class="btn xl" id="surprise">Next player: surprise me</button>
+        <button class="btn xl" id="surprise">Spin the roulette wheel</button>
+        <button class="btn ghost" id="rskip">Not here? Spin again</button>
         <button class="btn ghost" id="kback">Hide</button>
         <span class="note" id="kinfo"></span>
       </div>
+      <p class="note" id="rinfo"></p>
+      <div class="bar" style="margin-top:6px">
+        <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="rall"> Strict: only the keenest group still waiting goes on the wheel (otherwise everyone up for it is on, the keenest on more slices)</label>
+      </div>
+      <div class="bar" style="margin-top:6px">
+        <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="rauto"> Remind me at random times to spin, every</label>
+        <input type="text" id="rmin" value="6" inputmode="numeric" style="width:48px"> to <input type="text" id="rmax" value="12" inputmode="numeric" style="width:48px"> minutes
+      </div>
+      <p class="note">The roulette can be spun from any screen. Use the "Karaoke roulette break" button at the top during the spelling bee, the hot takes or food, then "Back to the game". Spin between rounds, not in the middle of an answer. Keep this page open for the reminders.</p>
       <div class="note" id="kqueue"></div>
     </div>
     <div>
@@ -195,10 +210,11 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         return "<tr><td>" + esc(g.name) + '</td><td class="flag">' + esc(g.allergies) + "</td><td>" + esc(dietText(g)) + "</td><td>" + esc(g.other) + "</td></tr>";
       }).join("") || '<tr><td colspan="4" class="dim">Nothing flagged yet.</td></tr>');
 
-    $("kinfo").textContent = state.mode === "karaoke" && state.name ? "On screen: " + state.name + " - " + state.song : "";
+    $("kinfo").textContent = (state.mode === "karaoke" || state.mode === "roulette") && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
-    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
+    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
     $("livetxt").textContent = lt[mm] || "Name screen";
+    $("rback").hidden = state.mode !== "roulette";
     queue();
     people(L);
     renderRoster();
@@ -295,15 +311,63 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   function setState(o) { state = o; return store.set("state", o); }
   $("modes").addEventListener("click", function (e) { var m = e.target.dataset && e.target.dataset.m; if (m) setState({ mode: m }).then(render); });
   $("kback").onclick = function () { setState({ mode: "home" }).then(render); };
-  $("surprise").onclick = function () {
-    var pool_ = pool();
-    if (!pool_.length) { $("kinfo").textContent = "Everyone who is up for it has performed."; return; }
-    var g = pool_[Math.floor(Math.random() * pool_.length)];
+  // ---- Karaoke roulette ----
+  // Wheel = the keenest group still to call (put me on first, then happy, then if called), or everyone who is up for it. Nobody who opted out is ever on it.
+  var skipNow = {}, lastSpin = null;
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  // Default wheel: everyone who is up for it. People who said "put me on first" get 3 slices, "happy to do it" 2, "if called" 1,
+  // so the keenest come up more often, spread around the wheel. Strict option: only the keenest group still waiting is on the wheel.
+  function rpool() {
+    var all = list().filter(function (g) { return g.song && !g.performed && !noKaraoke(g) && !skipNow[g.id]; });
+    if (!all.length && Object.keys(skipNow).length) { skipNow = {}; return rpool(); }
+    if ($("rall").checked) {
+      var best = all.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
+      return all.filter(function (g) { return tier(g) === best; });
+    }
+    var w = function (g) { var n = level(g, "karaoke"); return n >= 5 ? 3 : n === 4 ? 2 : 1; };
+    var total = all.reduce(function (s, g) { return s + w(g); }, 0), cap = total > 30 ? function () { return 1; } : w, out = [];
+    for (var pass = 1; pass <= 3; pass++) out = out.concat(shuffle(all.filter(function (g) { return cap(g) >= pass; })));
+    return out;
+  }
+  function spinRoulette() {
+    var P = rpool();
+    if (!P.length) { $("rinfo").textContent = "Everyone who is up for it has performed."; return; }
+    var w = Math.floor(Math.random() * P.length), g = P[w], who = {}; P.forEach(function (x) { who[x.id] = 1; });
+    // remember the screen to come back to (unless a roulette is already up, then keep what it came from)
+    var resume = state.mode === "roulette" ? (state.resume || null) : state.mode === "karaoke" ? null : state;
     g.performed = true; // update locally now so a quick second press cannot pick the same person
     g.took = g.took || {}; g.took.karaoke = true;
     store.update("guests/" + g.id, { performed: true, took: g.took });
-    setState({ mode: "karaoke", name: g.name, song: g.song }).then(render);
+    lastSpin = { id: g.id };
+    setState({ mode: "roulette", spinId: Date.now(), names: P.map(function (x) { return x.name; }), winner: w, name: g.name, song: g.song, resume: resume }).then(render);
+    $("rinfo").textContent = "Landing on " + g.name + " (" + g.song + "). The wheel has " + P.length + " slices, " + Object.keys(who).length + " people.";
+    armNudge();
+  }
+  $("surprise").onclick = spinRoulette;
+  $("rbreak").onclick = spinRoulette;
+  $("rskip").onclick = function () {
+    var id = lastSpin && lastSpin.id, g = id && guests[id];
+    if (g) { g.performed = false; g.took = g.took || {}; g.took.karaoke = false; store.update("guests/" + id, { performed: false, took: g.took }); skipNow[id] = true; }
+    spinRoulette();
   };
+  $("rback").onclick = function () { skipNow = {}; setState(state.resume || { mode: "home" }).then(render); };
+  // Random reminders: the host page nudges at random intervals; the host decides whether to spin.
+  var nudgeT = 0;
+  function nudgeChime() {
+    try { var a = new (window.AudioContext || window.webkitAudioContext)(); [660, 880, 1100].forEach(function (f, i) { var o = a.createOscillator(), g = a.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(.15, a.currentTime + i * .16); g.gain.exponentialRampToValueAtTime(.001, a.currentTime + i * .16 + .3); o.connect(g); g.connect(a.destination); o.start(a.currentTime + i * .16); o.stop(a.currentTime + i * .16 + .35); }); } catch (e) {}
+  }
+  function armNudge() {
+    clearTimeout(nudgeT); $("nudge").hidden = true;
+    try { localStorage.setItem("gcg-rnudge", JSON.stringify({ on: $("rauto").checked, min: $("rmin").value, max: $("rmax").value })); } catch (e) {}
+    if (!$("rauto").checked) return;
+    var mn = Math.max(.05, parseFloat($("rmin").value) || 6), mx = Math.max(mn, parseFloat($("rmax").value) || 12);
+    nudgeT = setTimeout(function () { $("nudge").hidden = false; nudgeChime(); }, (mn + Math.random() * (mx - mn)) * 60000);
+  }
+  ["rauto", "rmin", "rmax"].forEach(function (id) { $(id).addEventListener("change", armNudge); });
+  $("nspin").onclick = spinRoulette;
+  $("nlater").onclick = armNudge;
+  try { var sv = JSON.parse(localStorage.getItem("gcg-rnudge") || "null"); if (sv) { $("rauto").checked = !!sv.on; $("rmin").value = sv.min || 6; $("rmax").value = sv.max || 12; } } catch (e) {}
+  armNudge();
   $("tshow").onclick = function () {
     var t = TAKES.filter(function (x) { return x.id === takeId; })[0];
     setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: false }).then(render);

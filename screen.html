@@ -101,6 +101,8 @@ body.t-ink .opts span.sel{background:var(--cream);color:var(--ink);border-color:
 body.flashred{animation:flashred .6s ease 2}
 @keyframes flashred{0%,100%{background-color:var(--cream)}30%{background-color:var(--wrong)}}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.wheelbox{height:min(62vh,54vw);aspect-ratio:1/1}
+.wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--sans);color:inherit;cursor:pointer;background:none;border:0;opacity:.55}
 </style>
 </head>
@@ -218,6 +220,40 @@ body.flashred{animation:flashred .6s ease 2}
     return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They guessed</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
   }
 
+  // ---- Karaoke roulette: a real wheel with everyone in the pool on it. It spins, ticks, slows down and lands on a name. ----
+  var wheelRaf = 0, seenSpin = 0;
+  function wheelHtml(names) {
+    var N = names.length, ang = 360 / N, R = 96, fs = N <= 6 ? 11 : N <= 10 ? 9 : N <= 16 ? 6.8 : 5.2, slices = "", labels = "";
+    var P = function (deg, r) { var a = deg * Math.PI / 180; return (r * Math.sin(a)).toFixed(2) + " " + (-r * Math.cos(a)).toFixed(2); };
+    for (var i = 0; i < N; i++) {
+      var a0 = i * ang, a1 = (i + 1) * ang, dark = i % 2, mid = a0 + ang / 2, nm = String(names[i]).length > 15 ? String(names[i]).slice(0, 14) + "\u2026" : String(names[i]);
+      slices += N === 1 ? '<circle r="' + R + '" fill="#FFF4C9"/>' : '<path d="M0 0 L' + P(a0, R) + " A" + R + " " + R + " 0 0 1 " + P(a1, R) + ' Z" fill="' + (dark ? "#2F4268" : "#FFF4C9") + '" stroke="#F5D76E" stroke-width=".8"/>';
+      labels += '<text transform="rotate(' + (mid - 90).toFixed(2) + ") translate(" + (R - 6) + ' 0)" text-anchor="end" dominant-baseline="central" font-size="' + fs + '" fill="' + (dark ? "#FFF4C9" : "#08183E") + '" font-family="Instrument Serif,Georgia,serif">' + esc(nm) + "</text>";
+    }
+    return '<div class="wheelbox"><svg viewBox="-106 -116 212 222" aria-hidden="true"><g id="wheel">' + slices + labels + '</g><circle r="99" fill="none" stroke="#F5D76E" stroke-width="2.2"/><circle r="10" fill="#F5D76E" stroke="#08183E" stroke-width="1.4"/>' +
+      '<polygon points="-9,-114 9,-114 0,-90" fill="#F5D76E" stroke="#08183E" stroke-width="1.4" stroke-linejoin="round"/></svg></div>';
+  }
+  function rouletteTick() { tone(1150, 0, .03, "square", .08); tone(170, 0, .05, "sine", .12); }
+  function runRoulette(s, fresh) {
+    var landed = function () { return view({ mode: "karaoke", name: s.name, song: s.song }); };
+    var recent = s.spinId && (Date.now() - s.spinId) < 20000;
+    if (!(fresh && recent && s.spinId !== seenSpin)) { seenSpin = s.spinId; draw(landed()); return; }   // a reload, or an old spin: show who it landed on
+    seenSpin = s.spinId;
+    var names = s.names && s.names.length ? s.names : [s.name], N = names.length, ang = 360 / N;
+    draw({ theme: "ink", html: frame("Karaoke Roulette", '<span class="lab">Round and round</span>' + wheelHtml(names), micro("Somebody is about to find out."), "c") });
+    var g = document.getElementById("wheel"); if (!g) { draw(landed()); return; }
+    var total = 360 * (6 + Math.floor(Math.random() * 2)) - ((s.winner || 0) + .5) * ang + (Math.random() - .5) * ang * .7;
+    var dur = 7800, t0 = performance.now(), lastIdx = -1;
+    (function step(now) {
+      var t = Math.min(1, (now - t0) / dur), a = total * (1 - Math.pow(1 - t, 4));
+      g.setAttribute("transform", "rotate(" + a.toFixed(2) + ")");
+      var idx = Math.floor((((-a % 360) + 360) % 360) / ang);
+      if (idx !== lastIdx) { lastIdx = idx; rouletteTick(); }
+      if (t < 1) { wheelRaf = requestAnimationFrame(step); return; }
+      timer = setTimeout(function () { draw(landed()); confetti(CONF[4]); winSound(4); }, 800);
+    })(t0);
+  }
+
   var stage = document.getElementById("stage"), last = "", timer = 0, firstLoad = true;
   function draw(v) {
     // instant: no fade and no background transition, so a cut lands like a punch (used for the BAM on a wrong answer)
@@ -227,9 +263,10 @@ body.flashred{animation:flashred .6s ease 2}
   }
   store.subscribe("state", function (s) {
     s = s || { mode: "home" };
-    var k = JSON.stringify(s); if (k === last) return; last = k; clearTimeout(timer);
+    var k = JSON.stringify(s); if (k === last) return; last = k; clearTimeout(timer); cancelAnimationFrame(wheelRaf);
     var fresh = !firstLoad; firstLoad = false;
     if (s.mode === "bee") s.level = levelFor(s);
+    if (s.mode === "roulette") { runRoulette(s, fresh); return; }
     if (fresh && s.mode === "bee" && s.phase === "result" && s.said) {
       // After "Yes": a held breath (drumroll), longer in later rounds, longer again in sudden death, longest at the finale. Then the reveal.
       var pause = suspenseMs(s); s.big = pause >= 4500;
@@ -345,8 +382,8 @@ body.flashred{animation:flashred .6s ease 2}
     if (s.mode === "bee" && s.phase === "result") { if (s.ok) { winSound(s.level || 1); confetti(CONF[s.level || 1]); } else { buzzer(); document.body.classList.add("shake"); } }
     if (s.mode === "beewin") { winSound(6); confetti(CONF[6]); document.body.classList.add("shake"); }
   }
-  // Test keys: 1-5 win sound + confetti sizes, 6 the finale, b the X buzzer
-  document.addEventListener("keydown", function (e) { if (e.key >= "1" && e.key <= "6") { winSound(+e.key); confetti(CONF[+e.key]); } if (e.key === "b") buzzer(); });
+  // Test keys: 1-5 win sound + confetti sizes, 6 the finale, b the X buzzer, r a test spin of the karaoke roulette
+  document.addEventListener("keydown", function (e) { if (e.key >= "1" && e.key <= "6") { winSound(+e.key); confetti(CONF[+e.key]); } if (e.key === "b") buzzer(); if (e.key === "r") { var nm = ["Ama", "Kofi", "Esi", "Yaw", "Abena", "Nana", "Kwabena", "Adwoa"]; runRoulette({ mode: "roulette", spinId: Date.now(), names: nm, winner: 3, name: "Yaw", song: "Test song" }, true); } });
   document.getElementById("fs").onclick = function () { (document.documentElement.requestFullscreen || function () {}).call(document.documentElement); };
 })();
 </script>

@@ -187,3 +187,11 @@ Karaoke is called 5 first, then 4, then 3. Older answers saved as want / ok / no
 - `bg.mp3` is the background music. It starts only at "Begin to RSVP" (the second slide), never on the title page, loops, and runs to the end. Its level is baked into the file (about -28 LUFS) because phones ignore code volume settings.
 - Short effects pause the music while they play, then it carries on from where it was: `dmx.mp3` (Put me on first), `happy.mp3` (I'm happy to do it), `maybe.mp3` (I'll do it if called), `nemesis.mp3` (Rather not), `meow.mp3` (Please no), `hee-hee.mp3` (song added), `yay.mp3` (finish). Answer sounds stop when the guest leaves the screen.
 - `wrong.mp3` is the projector's wrong-answer sound.
+
+## Karaoke roulette (any time in the night)
+
+- **Projector:** a real wheel with names on it. It spins about 8 seconds with a ticking sound, slows down, lands, then shows "You're up." with the name and song, confetti and the cheer. Press **r** on the projector page to test a spin without the host panel.
+- **Host panel, Show control:** "Spin the roulette wheel". The wheel has everyone who is up for karaoke and has not sung yet. People who said "Put me on first" get 3 slices, "I'm happy to do it" 2, "I'll do it if called" 1, spread around the wheel, so the keenest come up more often. Tick "Strict" to put only the keenest group on the wheel. Nobody who said "Rather not" or "Please no" is ever on it.
+- **"Not here? Spin again":** puts the person back in the pool for later and spins again.
+- **Intermissions from any screen:** the "Karaoke roulette break" button at the top of the host panel works during the spelling bee, the hot takes, the menu, anything. "Back to the game" restores exactly what was on the projector. Spin between rounds, not in the middle of an answer.
+- **Random reminders:** tick "Remind me at random times to spin, every X to Y minutes" (default 6 to 12). The host page shows a banner with a chime at random intervals; you decide whether to spin ("Spin now") or snooze ("Later"). Keep the host page open. The timer restarts after every spin.

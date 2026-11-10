@@ -372,14 +372,14 @@ main{min-height:0;overflow-y:auto}
     } catch (e) {}
   }
   /* The finish: the supplied "yay" clip and a confetti burst from both sides. Starts from the tap on "Lock it in.", so phones allow the sound. */
-  /* Sounds the moment someone taps a no (just the tap, they do not have to confirm):
-     "Rather not" = the nemesis clip, "Please no" = the meow. Picking any other answer stops them. */
+  /* Sounds the moment someone taps an answer (just the tap, they do not have to confirm):
+     "Put me on first" = DMX, "Rather not" = the nemesis clip, "Please no" = the meow. Any other answer is silent and stops the sound. */
   var rej = {};
-  ["nemesis", "meow"].forEach(function (n) { try { rej[n] = new Audio("assets/sounds/" + n + ".mp3"); rej[n].preload = "auto"; } catch (e) {} });
+  ["dmx", "nemesis", "meow"].forEach(function (n) { try { rej[n] = new Audio("assets/sounds/" + n + ".mp3"); rej[n].preload = "auto"; } catch (e) {} });
   function rejectSound(n) {
     try {
       Object.keys(rej).forEach(function (k) { rej[k].pause(); rej[k].currentTime = 0; });
-      var a = n === 2 ? rej.nemesis : n === 1 ? rej.meow : null;
+      var a = n === 5 ? rej.dmx : n === 2 ? rej.nemesis : n === 1 ? rej.meow : null;
       if (a) { var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); }
     } catch (e) {}
   }

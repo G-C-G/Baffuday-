@@ -89,7 +89,7 @@ window.BEE = [
   [2, "Rick Ross said shout out to all the pear: And all my peers are here tonight watching Rick Ross hold a pair of pears. Sorry guys this is what yall signed up for \ud83e\udd23.", "Spell the word meaning a set of two.", "pair", ["pair", "pear"]],
   [2, "The male contestant received the mail first, which is not evidence of superiority, despite what he may tell you.", "Spell the word meaning a letter or package delivery.", "mail", ["mail", "male"]],
   [2, "Defend your family's honour. Be the knight, or lady knight, who rides away victorious into the night.", "Spell the word meaning a medieval warrior.", "knight", ["night", "knight"]],
-  [2, "Her son came home looking like he had personally offended the sun.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
+  [2, "Hinda's son is her little sunshine, but tonight even the sun isn't going to help you spell this word.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
   [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
   [3, "The party site looks cool, the sight of this spelling bee is already concerning, and nobody better cite Hinda as a source of their misfortune. Y'all signed up for this one.", "Spell the word meaning a location.", "site", ["site", "sight", "cite"]],
@@ -117,4 +117,33 @@ window.BEE = [
   [5, "Several people have volunteered as tribute tonight, although we can confirm this is not the Capitol. The city is Accra, capital of Ghana.", "Spell the word meaning the Hunger Games city.", "capitol", ["capital", "capitol"], "fixed"],
   [5, "The council asked for counsel, but unfortunately everyone had already decided they were right.", "Spell the word meaning a group of people chosen to make decisions.", "council", ["counsel", "council"]],
   [5, "The principal established one final principle: if you still can't spell after five rounds, we may have to accept that none of you were ever good at spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
+];
+
+// Prompts you have approved. Key = the prompt's words in alphabetical order joined with "/". Everything else in BEE is still a draft.
+window.BEE_DECIDED = [
+  "their/there/they're",
+  "to/too/two",
+  "you're/your",
+  "sea/see",
+  "right/write",
+  "know/no",
+  "buy/by/bye",
+  "one/won",
+  "for/four",
+  "bare/bear",
+  "pair/pear",
+  "knight/night",
+  "son/sun",
+  "road/rode",
+  "allowed/aloud",
+  "cite/sight/site",
+  "ensure/insure",
+  "role/roll",
+  "sole/soul",
+  "might/mite",
+  "morning/mourning",
+  "muscle/mussel",
+  "passed/past",
+  "capital/capitol",
+  "principal/principle"
 ];

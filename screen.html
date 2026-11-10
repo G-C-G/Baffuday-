@@ -179,7 +179,7 @@ body.flashred{animation:flashred .6s ease 2}
         '<span class="second" style="font-family:var(--sans);font-size:var(--micro)"><span class="lab" style="margin-right:1.2em">Allergies</span>Tell Hinda or the host before you eat. Every dish can be checked. Please do.</span>') };
     }
     if (m === "karaoke") {
-      return { theme: "ink", html: frame("Karaoke", '<span class="lab">Unfortunately</span><p class="hero">You\'re up.</p><p class="major" style="font-style:italic;text-decoration:underline;text-decoration-thickness:.04em;text-underline-offset:.12em">' + esc(s.name) + '</p><p class="second" style="opacity:.85">' + esc(s.song) + "</p>", micro("There is no appeal process."), "c") };
+      return { theme: "ink", html: frame("Karaoke", (cfg.INTRO ? '<span class="lab">' + esc(cfg.INTRO) + "</span>" : "") + '<p class="hero">You\'re up.</p><p class="major" style="font-style:italic;text-decoration:underline;text-decoration-thickness:.04em;text-underline-offset:.12em">' + esc(s.name) + '</p><p class="second" style="opacity:.85">' + esc(s.song) + "</p>", micro("There is no appeal process."), "c") };
     }
     if (m === "hottake") {
       var num = pad(s.num || 1), tot = s.total ? " / " + pad(s.total) : "";
@@ -197,7 +197,7 @@ body.flashred{animation:flashred .6s ease 2}
       return { theme: "cream", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.7);line-height:.8">' + esc(s.standing) + '</p><span class="lab">Still standing</span>' + (s.next ? '<p class="second">Up next: <em>' + esc(s.next) + "</em></p>" : ""), micro("It gets worse."), "c") };
     }
     if (m === "beecall") {
-      return { theme: "ink", html: frame("Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">Unfortunately. To the stage, please.</p>', micro(esc(s.standing) + " still standing"), "c") };
+      return { theme: "ink", html: frame("Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : ""), '<span class="chip">You are next</span><p class="hero">' + esc(s.name) + '</p><p class="second" style="font-style:italic;opacity:.85">' + (cfg.INTRO ? esc(cfg.INTRO) + " " : "") + 'To the stage, please.</p>', micro(esc(s.standing) + " still standing"), "c") };
     }
     if (m === "beewin") {
       return { theme: "ink", html: frame("The Evil Spelling Bee", '<p class="hero" style="font-size:calc(var(--hero)*1.25)">Champion.</p><p class="major">' + esc(s.name) + "</p>", micro("Absurdly important."), "c") };

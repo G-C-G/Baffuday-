@@ -16,6 +16,8 @@ window.GCG_CONFIG = {
   // Spelling bee: pick which word of each pair is "the answer" at random every game (no tell from how often a word appears).
   // Set to false to use the fixed answer written in assets/bee.js.
   BEE_RANDOM_ANSWER: true,
+  // An optional line above "You're up." (karaoke) and in the bee call-up. Empty = nothing. Put a new intro here whenever you find one you like.
+  INTRO: "",
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

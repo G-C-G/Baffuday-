@@ -218,3 +218,7 @@ Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do
 
 - **Hot take on the projector, three steps from the host panel:** 1. Show take (the question). 2. Show what everyone picked (each person who plays this take is placed under what they really picked). 3. The twist: a drumroll, a full-screen "The twist." slam with a flash and shake, then every name is thrown across to the opposite side, with a "picked ..." note kept under each name so the room knows what each person originally picked.
 - **Roulette fake-out:** the wheel spins about 6 seconds, slows right down and almost stops on the person just before the winner, holds there with a heartbeat, then creeps over to the winner. With only one or two names on the wheel it just spins and lands.
+
+## The intro line
+
+`INTRO` in `config.js` is an optional line shown above "You're up." (karaoke) and before "To the stage, please." (bee call-up). It is empty now. Put any new phrase there and it appears on both.

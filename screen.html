@@ -276,7 +276,7 @@ body.flashred{animation:flashred .6s ease 2}
     return '<div class="wheelbox"><svg viewBox="-106 -116 212 222" aria-hidden="true"><g id="wheel">' + slices + labels + '</g><circle r="99" fill="none" stroke="#F5D76E" stroke-width="2.2"/><circle r="10" fill="#F5D76E" stroke="#08183E" stroke-width="1.4"/>' +
       '<polygon points="-9,-114 9,-114 0,-90" fill="#F5D76E" stroke="#08183E" stroke-width="1.4" stroke-linejoin="round"/></svg></div>';
   }
-  function rouletteTick() { tone(1150, 0, .03, "square", .08); tone(170, 0, .05, "sine", .12); }
+  function rouletteTick() { var q = cfg.ROULETTE_SOUND ? .5 : 1; tone(1150, 0, .03, "square", .08 * q); tone(170, 0, .05, "sine", .12 * q); }
   function runRoulette(s, fresh) {
     var landed = function () { return view({ mode: "karaoke", name: s.name, song: s.song }); };
     var recent = s.spinId && (Date.now() - s.spinId) < 20000;
@@ -289,20 +289,30 @@ body.flashred{animation:flashred .6s ease 2}
     // The fake-out: the wheel slows right down and almost stops on the person just before the winner (just short of the line), holds there,
     // then creeps over to the winner. With only one or two names there is nobody to fake out.
     var fake = N >= 3, a1 = fake ? total - jit - .68 * ang : total;
-    var d1 = fake ? 6200 : 7800, hold = 1700, d2 = 1800, t0 = performance.now(), lastIdx = -1, drummed = false;
+    // With a roll sound (ROULETTE_SOUND in config.js) the whole spin is timed to it: the roll starts with the spin, and the cymbal crash
+    // (ROULETTE_LAND_MS into the file) is the moment the wheel settles on the winner and the name is announced.
+    var rollSrc = cfg.ROULETTE_SOUND, roll = null, L = cfg.ROULETTE_LAND_MS || 5400;
+    if (rollSrc) { try { roll = new Audio(rollSrc); suspenseA = roll; roll.volume = 1; var rp = roll.play(); if (rp && rp.catch) rp.catch(function () {}); } catch (e) { roll = null; } }
+    var d1, hold, d2;
+    if (rollSrc) { d1 = fake ? .6 * L : L; hold = fake ? .17 * L : 0; d2 = fake ? L - d1 - hold : 0; }
+    else { d1 = fake ? 6200 : 7800; hold = 1700; d2 = 1800; }
+    var t0 = performance.now(), lastIdx = -1, drummed = false, lastEl = 0;
     function ease2(t) { return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
     (function step(now) {
-      var el = now - t0, a, done = false;
+      // the sound is the clock when it is playing, so the wheel and the crash cannot drift apart
+      var el = roll && !roll.paused && roll.currentTime > .05 ? roll.currentTime * 1000 : now - t0; el = Math.max(el, lastEl); lastEl = el;
+      var a, done = false;
       if (el < d1) a = a1 * (1 - Math.pow(1 - el / d1, 4));
       else if (!fake) { a = total; done = true; }
-      else if (el < d1 + hold) { a = a1 + Math.sin((el - d1) / 230) * .12; if (!drummed) { drummed = true; drumroll(hold); } }
+      else if (el < d1 + hold) { a = a1 + Math.sin((el - d1) / 230) * .12; if (!drummed) { drummed = true; if (!rollSrc) drumroll(hold); } }
       else if (el < d1 + hold + d2) a = a1 + (total - a1) * ease2((el - d1 - hold) / d2);
       else { a = total; done = true; }
       g.setAttribute("transform", "rotate(" + a.toFixed(2) + ")");
       var idx = Math.floor((((-a % 360) + 360) % 360) / ang);
       if (idx !== lastIdx) { lastIdx = idx; rouletteTick(); }
       if (!done) { wheelRaf = requestAnimationFrame(step); return; }
-      timer = setTimeout(function () { draw(landed()); confetti(CONF[4]); winSound(4); }, 800);
+      if (rollSrc) { draw(landed()); confetti(CONF[4]); timer = setTimeout(function () { winSound(4); }, 450); }   // announced on the crash
+      else timer = setTimeout(function () { draw(landed()); confetti(CONF[4]); winSound(4); }, 800);
     })(t0);
   }
 

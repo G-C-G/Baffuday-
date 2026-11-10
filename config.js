@@ -21,6 +21,10 @@ window.GCG_CONFIG = {
   // The build-up sound before a reveal (bee answer, roulette near-miss, the twist). "none" = silence. "synth" = the old heartbeat drumroll.
   // Or a file, e.g. "assets/sounds/suspense.mp3". It plays for the length of the pause and fades out.
   SUSPENSE: "none",
+  // Karaoke roulette: the drum roll with a cymbal crash. It starts with the spin and the crash is when the wheel stops on the winner.
+  // ROULETTE_LAND_MS = how far into the file the crash lands (milliseconds). Set ROULETTE_SOUND to "" to use the old timing with no roll.
+  ROULETTE_SOUND: "assets/sounds/roulette-roll.mp3",
+  ROULETTE_LAND_MS: 5380,
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

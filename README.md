@@ -226,3 +226,7 @@ Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do
 ## The suspense sound
 
 The build-up before a reveal (spelling bee answer, the roulette near-miss, the hot take twist) is set by `SUSPENSE` in `config.js`: `"none"` is silence (the default), `"synth"` brings back the old heartbeat drumroll, or give a file such as `"assets/sounds/suspense.mp3"`. A file plays for the length of the pause and fades out at the end.
+
+## Roulette roll sound
+
+`ROULETTE_SOUND` in `config.js` is the drum roll with a cymbal crash (`assets/sounds/roulette-roll.mp3`). It starts with the spin; the wheel's slow-down, the near-miss pause and the creep to the winner are all timed so the cymbal crash lands exactly as the wheel stops and "You're up." appears. `ROULETTE_LAND_MS` is where the crash sits in the file (5380 ms for this one). If you swap the file, change that number to the new crash time. Set `ROULETTE_SOUND` to `""` for the old silent timing.

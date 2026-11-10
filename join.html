@@ -365,7 +365,7 @@ main{min-height:0;overflow-y:auto}
   $("next").onclick = function () {
     var e = check(curKey); if (e) { $("err").textContent = e; return; }
     var sq = seq(), i = sq.indexOf(curKey);
-    if (curKey === "intro") { if (!unlocked) { unlocked = true; setSoundUI(); } startBg(); if (!bgPrimed) { bgPrimed = true; unlockYay(); } show(sq[0]); return; }
+    if (curKey === "intro") { endGreeting(); if (!unlocked) { unlocked = true; setSoundUI(); } startBg(); if (!bgPrimed) { bgPrimed = true; unlockYay(); } show(sq[0]); return; }
     if (curKey === "song") heeHee();   // song entered and accepted: the sound
     if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };
@@ -408,6 +408,11 @@ main{min-height:0;overflow-y:auto}
   try { greet = fx(new Audio("assets/sounds/greeting.mp3")); greet.preload = "auto"; } catch (e) {}
   /* The greeting plays once. Phones refuse sound until a real tap, so it keeps trying (on load, then on every tap) until one attempt is accepted. */
   var HELLO_EVENTS = ["pointerup", "touchend", "click", "keydown"];
+  /* The greeting belongs to the title page: leaving it (Begin to RSVP) ends it for good, and the music takes over. */
+  function endGreeting() {
+    helloDone = true; HELLO_EVENTS.forEach(function (t) { removeEventListener(t, sayHello, true); });
+    if (greet) { try { greet.pause(); greet.currentTime = 0; } catch (e) {} var i = fxActive.indexOf(greet); if (i >= 0) fxActive.splice(i, 1); }
+  }
   function sayHello() {
     if (helloDone || !greet || !audioOn) return;
     var ok = function () { helloDone = true; unlocked = true; setSoundUI(); HELLO_EVENTS.forEach(function (t) { removeEventListener(t, sayHello, true); }); };

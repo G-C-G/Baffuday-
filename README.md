@@ -183,7 +183,7 @@ Karaoke is called 5 first, then 4, then 3. Older answers saved as want / ok / no
 
 ## Guest form sounds (assets/sounds)
 
-- `greeting.mp3` plays once on the title page. Phones refuse sound until the first tap, so if it is blocked it plays on the first tap (the "Scroll for the details" cue, or "Begin to RSVP" at the latest).
-- `bg.mp3` is the background music. It starts at "Begin to RSVP", loops, and runs to the end.
+- `greeting.mp3` plays once, on the title page only. Phones refuse sound until a tap, so the title page has a "Tap for sound" button; tapping it plays the greeting and unlocks audio. Tapping "Begin to RSVP" ends the greeting for good and the music takes over. After the first tap a small speaker icon in the header mutes and unmutes everything.
+- `bg.mp3` is the background music. It starts at "Begin to RSVP", loops, and runs to the end. Its level is baked into the file (about -28 LUFS) because phones ignore code volume settings.
 - Short effects pause the music while they play, then it carries on from where it was: `dmx.mp3` (Put me on first), `happy.mp3` (I'm happy to do it), `maybe.mp3` (I'll do it if called), `nemesis.mp3` (Rather not), `meow.mp3` (Please no), `hee-hee.mp3` (song added), `yay.mp3` (finish). Answer sounds stop when the guest leaves the screen.
 - `wrong.mp3` is the projector's wrong-answer sound.

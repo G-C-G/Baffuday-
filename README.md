@@ -206,3 +206,10 @@ Every guest rates each activity 1 to 5. **3 (I'll do it if called), 4 and 5 are 
 - Spelling bee: "Load sign-ups onto stage" puts everyone on stage except guests who said 1 or 2. The table shows "opted out" instead of an Add button for them.
 - Karaoke roulette: opted-out guests are never on the wheel.
 - Twisted hot takes: opted-out guests are never assigned a side (they show under "Opted out").
+
+## Who is called first
+
+Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do it" (4), then "I'll do it if called" (3).**
+- Karaoke roulette: the wheel holds the keenest group still waiting; when they have all sung it moves down to the next group. (Untick "Keenest first" on the Show control tab for a mixed wheel.)
+- Spelling bee: "Load sign-ups onto stage" puts the keenest first in the call-up order, random inside each group.
+- Twisted hot takes: each team is listed keenest first, then by strongest feelings, then whoever has been in the fewest takes. **Team size** is Auto (3 to 5), 3, 4, 5 or Everyone. Auto: a side of 5 or fewer all play; bigger sides play in groups of 3, growing to 4 (9+ people on that side) and 5 (12+).

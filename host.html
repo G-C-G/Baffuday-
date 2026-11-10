@@ -106,7 +106,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <button class="btn ghost" id="bwin">Show winner</button>
     </div>
     <div class="bar"><button class="btn ghost" id="bload">Load sign-ups onto stage</button>
-      <span class="note">Puts everyone on stage in a random order, except guests who said Rather not or Please no to the bee. They are never put on stage. Use the table to add or remove other people.</span></div>
+      <span class="note">Puts everyone on stage, except guests who said Rather not or Please no to the bee. The order is keenest first: "Put me on first", then "happy to do it", then "if called" (random inside each group). Use the table to add or remove other people.</span></div>
     <div id="bpick" style="display:none">
       <div id="bchoose">
         <span class="k">Which one did they pick?</span>
@@ -142,7 +142,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       </div>
       <p class="note" id="rinfo"></p>
       <div class="bar" style="margin-top:6px">
-        <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="rall"> Strict: only the keenest group still waiting goes on the wheel (otherwise everyone up for it is on, the keenest on more slices)</label>
+        <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="rall" checked> Keenest first: people who said "Put me on first" are called before everyone else, then "happy to do it", then "if called". Untick for a mixed wheel with everyone on it.</label>
       </div>
       <div class="bar" style="margin-top:6px">
         <label class="note" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="rauto"> Remind me at random times to spin, every</label>
@@ -155,8 +155,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <span class="k">Twisted hot takes</span>
       <div class="takepick" id="takepick"></div>
       <div class="bar" style="margin-top:10px">
-        <label class="k" for="perside" style="margin:0">People per side (0 = everyone)</label>
-        <input type="text" id="perside" value="4" inputmode="numeric" style="width:70px">
+        <label class="k" for="perside" style="margin:0">Team size</label>
+        <select id="perside"><option value="auto" selected>Auto (3 to 5)</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="0">Everyone</option></select>
         <button class="btn ghost" id="tshow">1. Show take</button>
         <button class="btn" id="treveal">2. Reveal sides</button>
       </div>
@@ -262,7 +262,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   // If "people per side" is set, order decides who is in: strongest feelings who are keen first,
   // "rather not" near the end, weak feelings last; within a group, people not yet in a hot take go first.
   function assignment(tid) {
-    var per = +$("perside").value || 0, t = TAKES.filter(function (x) { return x.id === tid; })[0];
+    var perSel = $("perside").value, per = perSel === "auto" ? -1 : (+perSel || 0), t = TAKES.filter(function (x) { return x.id === tid; })[0];
     var out = { argueFor: [], argueAgainst: [], waiting: [], open: [], optedOut: [] };
     list().forEach(function (g) {
       if (!into(g, "takes")) { out.optedOut.push(g.name); return; }   // said Rather not / Please no to hot takes: never assigned
@@ -270,11 +270,14 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       if (!p) { out.open.push(g.name); return; }
       var side = opposite(p.s), pf = pref(g, "takes");
       (side === "agree" ? out.argueFor : out.argueAgainst).push({ id: g.id, name: g.name, real: p.s, n: p.n, pf: pf,
-        label: p.s === "agree" ? t.a : t.b, rank: takeRank(p.n, pf), done: (g.took && g.took.takes) || 0 });
+        label: p.s === "agree" ? t.a : t.b, rank: takeRank(p.n, pf), lv: level(g, "takes"), done: (g.took && g.took.takes) || 0 });
     });
     ["argueFor", "argueAgainst"].forEach(function (k) {
-      out[k].sort(function (x, y) { return x.rank - y.rank || x.done - y.done || y.n - x.n; });
-      if (per) { out.waiting = out.waiting.concat(out[k].slice(per)); out[k] = out[k].slice(0, per); }
+      // keenest first ("Put me on first", then "happy", then "if called"); then the strongest feelings; then whoever has been in least
+      out[k].sort(function (x, y) { return y.lv - x.lv || x.rank - y.rank || x.done - y.done || y.n - x.n; });
+      // Auto: a side of 5 or fewer all play; bigger sides play in groups of 3, growing to 4 (9+ people) and 5 (12+ people)
+      var size = per === -1 ? (out[k].length <= 5 ? out[k].length : out[k].length >= 12 ? 5 : out[k].length >= 9 ? 4 : 3) : per;
+      if (size && out[k].length > size) { out.waiting = out.waiting.concat(out[k].slice(size)); out[k] = out[k].slice(0, size); }
     });
     return out;
   }
@@ -309,7 +312,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     inplay[id] = e.target.checked; store.set("setup/inplay", inplay); drawTakes();
   });
   store.subscribe("setup/inplay", function (v) { inplay = v || {}; drawTakes(); });
-  $("perside").addEventListener("input", preview);
+  $("perside").addEventListener("change", preview);
   $("takepick").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-t]"); if (b) { takeId = b.dataset.t; preview(); } });
 
   function setState(o) { state = o; return store.set("state", o); }
@@ -559,8 +562,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     g.beeStat = s; store.update("guests/" + id, { beeStat: s }); saveBee(); render(); renderBee();
   });
   $("bload").onclick = function () {
-    var ids = list().filter(function (g) { return into(g, "bee"); }).map(function (g) { return g.id; });
-    for (var i = ids.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
+    // Everyone except Rather not / Please no. Called in order: "Put me on first" people first, then "happy to do it", then "if called". Random inside each group.
+    var inn = list().filter(function (g) { return into(g, "bee"); }), ids = [];
+    [5, 4, 3].forEach(function (lv) { ids = ids.concat(shuffle(inn.filter(function (g) { return Math.max(3, Math.min(5, level(g, "bee"))) === lv; })).map(function (g) { return g.id; })); });
     list().forEach(function (g) { var s = ids.indexOf(g.id) >= 0 ? { on: true, out: false, score: 0, turns: 0 } : { on: false }; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); });
     bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids, winner: null, seed: Math.floor(Math.random() * 1e9) + 1 }; scored = false; saveBee(); renderBee();
   };

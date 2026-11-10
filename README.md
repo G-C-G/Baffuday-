@@ -213,3 +213,8 @@ Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do
 - Karaoke roulette: the wheel holds the keenest group still waiting; when they have all sung it moves down to the next group. (Untick "Keenest first" on the Show control tab for a mixed wheel.)
 - Spelling bee: "Load sign-ups onto stage" puts the keenest first in the call-up order, random inside each group.
 - Twisted hot takes: everyone gets a go before anyone gets a second (fewest takes so far first), and inside that the keenest go first, then the strongest feelings. **Team size** is Auto, 3, 4, 5 or Everyone. Auto keeps the two teams even (never more than one person apart, never below 3): a side of 5 or fewer all play; bigger sides play in groups of 3, growing to 4 (9+ people on that side) and 5 (12+). Note: the sides can only be as even as the crowd's picks. If 21 of 23 people pick the same side, the other team is small however the host sets this.
+
+## The twist and the roulette drama
+
+- **Hot take on the projector, three steps from the host panel:** 1. Show take (the question). 2. Show where everyone stands (each person who plays this take is placed on the side they really hold). 3. The twist: a drumroll, a full-screen "The twist." slam with a flash and shake, then every name is thrown across to the opposite side, with a "was ..." note kept under each name so the room knows who moved from where.
+- **Roulette fake-out:** the wheel spins about 6 seconds, slows right down and almost stops on the person just before the winner, holds there with a heartbeat, then creeps over to the winner. With only one or two names on the wheel it just spins and lands.

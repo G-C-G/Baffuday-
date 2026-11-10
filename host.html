@@ -158,9 +158,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         <label class="k" for="perside" style="margin:0">Team size</label>
         <select id="perside"><option value="auto" selected>Auto: even teams of 3 to 5</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="0">Everyone</option></select>
         <button class="btn ghost" id="tshow">1. Show take</button>
-        <button class="btn" id="treveal">2. Reveal sides</button>
+        <button class="btn ghost" id="tstand">2. Show where everyone stands</button>
+        <button class="btn" id="treveal">3. The twist: swap sides</button>
       </div>
-      <p class="note">Guests picked the side they actually hold. The reveal gives each person the OPPOSITE. Strongest feelings are listed first (1 to 5). Guests who skipped this take are not assigned; split them by hand.</p>
+      <p class="note">Guests picked the side they actually hold. Step 2 shows each person on the side they really hold; step 3 is the twist, where everyone is thrown to the OPPOSITE side and the screen keeps a "was ..." note under each name. Strongest feelings are listed first (1 to 5). Guests who skipped this take are not assigned; split them by hand.</p>
       <div class="two" id="preview"></div>
     </div>
   </section>
@@ -214,7 +215,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
     $("kinfo").textContent = (state.mode === "karaoke" || state.mode === "roulette") && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
-    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.reveal ? ", sides revealed" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
+    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.phase === "twist" ? ", the twist" : state.phase === "stand" ? ", where everyone stands" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
     $("livetxt").textContent = lt[mm] || "Name screen";
     $("rback").hidden = state.mode !== "roulette";
     queue();
@@ -386,19 +387,26 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   armNudge();
   $("tshow").onclick = function () {
     var t = TAKES.filter(function (x) { return x.id === takeId; })[0];
-    setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: false }).then(render);
+    setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: false, phase: "question" }).then(render);
   };
+  // The state for the stand / twist screens: everyone playing this take, with the side they REALLY hold (a = the take as stated, b = the other).
+  function takeState(phase, a) {
+    var t = TAKES.filter(function (x) { return x.id === takeId; })[0];
+    var people = a.argueFor.map(function (p) { return { name: p.name, from: "b" }; }).concat(a.argueAgainst.map(function (p) { return { name: p.name, from: "a" }; }));
+    return { mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, phase: phase, reveal: phase === "twist", a: t.a, b: t.b, people: people,
+      argueFor: a.argueFor.map(function (p) { return p.name; }), argueAgainst: a.argueAgainst.map(function (p) { return p.name; }) };
+  }
+  $("tstand").onclick = function () { setState(takeState("stand", assignment(takeId))).then(render); };
   $("treveal").onclick = function () {
-    var t = TAKES.filter(function (x) { return x.id === takeId; })[0], a = assignment(takeId);
-    if (!(state.mode === "hottake" && state.reveal && state.takeId === takeId)) {
+    var a = assignment(takeId);   // taken before the counts below change, so the stand and the twist show the same people
+    if (!(state.mode === "hottake" && state.phase === "twist" && state.takeId === takeId)) {
       a.argueFor.concat(a.argueAgainst).forEach(function (p) {
         var g = guests[p.id]; if (!g) return;
         g.took = g.took || {}; g.took.takes = (g.took.takes || 0) + 1;
         store.update("guests/" + p.id, { took: g.took });
       });
     }
-    setState({ mode: "hottake", takeId: t.id, num: TAKES.indexOf(t) + 1, total: TAKES.length, text: t.text, reveal: true,
-      argueFor: a.argueFor.map(function (p) { return p.name; }), argueAgainst: a.argueAgainst.map(function (p) { return p.name; }) }).then(render);
+    setState(takeState("twist", a)).then(render);
   };
 
   $("csv").onclick = function () {

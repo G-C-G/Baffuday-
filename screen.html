@@ -101,6 +101,15 @@ body.t-ink .opts span.sel{background:var(--cream);color:var(--ink);border-color:
 body.flashred{animation:flashred .6s ease 2}
 @keyframes flashred{0%,100%{background-color:var(--cream)}30%{background-color:var(--wrong)}}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.names li.mv-l2r{animation:l2r 1.15s cubic-bezier(.16,.9,.2,1) both}
+.names li.mv-r2l{animation:r2l 1.15s cubic-bezier(.16,.9,.2,1) both}
+@keyframes l2r{0%{transform:translateX(-48vw) scale(1.12);opacity:0}25%{opacity:1}100%{transform:none}}
+@keyframes r2l{0%{transform:translateX(48vw) scale(1.12);opacity:0}25%{opacity:1}100%{transform:none}}
+.was{display:block;font:500 var(--micro)/1.2 var(--sans);letter-spacing:.06em;opacity:.7;margin-top:.25em}
+#slam{position:fixed;inset:0;display:grid;place-items:center;background:var(--ink);z-index:70;animation:slamfade 1.9s linear both}
+#slam span{font:400 calc(var(--hero)*1.45)/.9 var(--serif);letter-spacing:-.03em;color:var(--cream);animation:slamin .42s cubic-bezier(.2,1.5,.4,1) both;text-align:center}
+@keyframes slamin{0%{transform:scale(3.4) rotate(-6deg);opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
+@keyframes slamfade{0%,80%{opacity:1}100%{opacity:0}}
 .wheelbox{height:min(72vh,60vw);aspect-ratio:1/1}
 .wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--sans);color:inherit;cursor:pointer;background:none;border:0;opacity:.55}
@@ -142,6 +151,22 @@ body.flashred{animation:flashred .6s ease 2}
   var micro = function (t) { return '<span class="micro">' + t + '</span>'; };
   var ul = function (a, c) { return '<ul class="list ' + (c || "") + '">' + (a || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; };
 
+  // Hot take, after the question: everyone stands on the side they REALLY hold; then the twist swaps them, and each name keeps a "was ..." note.
+  function standView(s, twisted, fresh) {
+    var num = pad(s.num || 1), tot = s.total ? " / " + pad(s.total) : "", P = s.people || [];
+    var inA = P.filter(function (p) { return twisted ? p.from === "b" : p.from === "a"; }), inB = P.filter(function (p) { return twisted ? p.from === "a" : p.from === "b"; });
+    function items(arr, col) {
+      return arr.map(function (p, i) {
+        var cls = twisted && fresh ? (col === "A" ? "mv-r2l" : "mv-l2r") : "";
+        var was = twisted ? '<span class="was">was ' + esc(p.from === "a" ? s.a : s.b) + "</span>" : "";
+        return '<li class="' + cls + '" style="animation-delay:' + (i * 130) + 'ms">' + esc(p.name) + was + "</li>";
+      }).join("") || '<li style="opacity:.5">nobody</li>';
+    }
+    var head = twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">Where everyone stands</span>', cap = twisted ? "Now defending" : "Standing with";
+    return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + "</p><div>" + head + "</div></div>" +
+      '<div class="teams"><div class="team a"><span class="lab">' + cap + '</span><p class="major">' + esc(s.a) + '</p><ul class="names">' + items(inA, "A") + "</ul></div>" +
+      '<div class="team b"><span class="lab">' + cap + '</span><p class="major">' + esc(s.b) + '</p><ul class="names">' + items(inB, "B") + "</ul></div></div></div>" };
+  }
   // Each view returns { theme, html }.
   function view(s) {
     var m = s.mode;
@@ -158,6 +183,8 @@ body.flashred{animation:flashred .6s ease 2}
     }
     if (m === "hottake") {
       var num = pad(s.num || 1), tot = s.total ? " / " + pad(s.total) : "";
+      if (s.people && s.phase === "stand") return standView(s, false, false);
+      if (s.people && s.phase === "twist") return standView(s, true, !!s._fresh);
       if (!s.reveal) return { theme: "cream", html: frame("Twisted hot take " + num + tot, '<p class="major" style="font-size:calc(var(--major)*1.15);max-width:20ch">' + esc(s.text) + "</p>", micro("Pick a side. Quietly."), "c") };
       return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + '</p><div><span class="chip" style="font-size:calc(var(--lab)*1.4)">Defend the opposite.</span></div></div>' +
         '<div class="teams"><div class="team a"><span class="lab">Team A</span><p class="major">For</p><ul class="names">' + (s.argueFor || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + '</ul></div>' +
@@ -220,6 +247,22 @@ body.flashred{animation:flashred .6s ease 2}
     return { theme: "ink", html: frame("Round " + pad(s.round || 1) + " &middot; " + esc(s.contestant), '<span class="lab">They guessed</span><div class="letters">' + L.map(function (c, i) { return '<i style="animation-delay:' + (i * 0.13) + 's">' + (c === " " ? "&nbsp;" : esc(c)) + "</i>"; }).join("") + "</div>", micro("Take your time. Actually, don't."), "c") };
   }
 
+  // ---- The twist: a held breath on the real stands, a full-screen slam, then everyone is thrown across to the opposite side. ----
+  function twistHit() { tone(52, 0, .8, "sine", .95); tone(104, 0, .45, "square", .28); noise(.4, .5); }
+  function twistWhoosh(n) { for (var i = 0; i < n; i++) (function (i) { setTimeout(function () { sweep(240, 1500, 0, .5, "sawtooth", .06); noise(.32, .09); }, i * 130); })(i); }
+  function runTwist(s) {
+    var old = document.getElementById("slam"); if (old) old.remove();
+    draw(standView(s, false, false)); drumroll(1700);
+    timer = setTimeout(function () {
+      var o = document.createElement("div"); o.id = "slam"; o.innerHTML = "<span>The twist.</span>"; document.body.appendChild(o);
+      twistHit(); document.body.classList.add("shake"); var f = document.getElementById("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+      timer = setTimeout(function () {
+        o.remove(); document.body.classList.remove("shake");
+        draw(standView(s, true, true)); twistWhoosh((s.people || []).length);
+      }, 1850);
+    }, 1750);
+  }
+
   // ---- Karaoke roulette: a real wheel with everyone in the pool on it. It spins, ticks, slows down and lands on a name. ----
   var wheelRaf = 0, seenSpin = 0;
   function wheelHtml(names) {
@@ -242,14 +285,23 @@ body.flashred{animation:flashred .6s ease 2}
     var names = s.names && s.names.length ? s.names : [s.name], N = names.length, ang = 360 / N;
     draw({ theme: "ink", html: frame(esc(brand), '<span style="font:400 calc(var(--major)*.95)/1 var(--serif);letter-spacing:-.02em;color:var(--accent)">Karaoke Roulette</span>' + wheelHtml(names), "", "c") });
     var g = document.getElementById("wheel"); if (!g) { draw(landed()); return; }
-    var total = 360 * (6 + Math.floor(Math.random() * 2)) - ((s.winner || 0) + .5) * ang + (Math.random() - .5) * ang * .7;
-    var dur = 7800, t0 = performance.now(), lastIdx = -1;
+    var jit = (Math.random() - .5) * ang * .7, total = 360 * (6 + Math.floor(Math.random() * 2)) - ((s.winner || 0) + .5) * ang + jit;
+    // The fake-out: the wheel slows right down and almost stops on the person just before the winner (just short of the line), holds there,
+    // then creeps over to the winner. With only one or two names there is nobody to fake out.
+    var fake = N >= 3, a1 = fake ? total - jit - .68 * ang : total;
+    var d1 = fake ? 6200 : 7800, hold = 1700, d2 = 1800, t0 = performance.now(), lastIdx = -1, drummed = false;
+    function ease2(t) { return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
     (function step(now) {
-      var t = Math.min(1, (now - t0) / dur), a = total * (1 - Math.pow(1 - t, 4));
+      var el = now - t0, a, done = false;
+      if (el < d1) a = a1 * (1 - Math.pow(1 - el / d1, 4));
+      else if (!fake) { a = total; done = true; }
+      else if (el < d1 + hold) { a = a1 + Math.sin((el - d1) / 230) * .12; if (!drummed) { drummed = true; drumroll(hold); } }
+      else if (el < d1 + hold + d2) a = a1 + (total - a1) * ease2((el - d1 - hold) / d2);
+      else { a = total; done = true; }
       g.setAttribute("transform", "rotate(" + a.toFixed(2) + ")");
       var idx = Math.floor((((-a % 360) + 360) % 360) / ang);
       if (idx !== lastIdx) { lastIdx = idx; rouletteTick(); }
-      if (t < 1) { wheelRaf = requestAnimationFrame(step); return; }
+      if (!done) { wheelRaf = requestAnimationFrame(step); return; }
       timer = setTimeout(function () { draw(landed()); confetti(CONF[4]); winSound(4); }, 800);
     })(t0);
   }
@@ -264,9 +316,12 @@ body.flashred{animation:flashred .6s ease 2}
   store.subscribe("state", function (s) {
     s = s || { mode: "home" };
     var k = JSON.stringify(s); if (k === last) return; last = k; clearTimeout(timer); cancelAnimationFrame(wheelRaf);
+    var slam = document.getElementById("slam"); if (slam) slam.remove(); document.body.classList.remove("shake");
     var fresh = !firstLoad; firstLoad = false;
     if (s.mode === "bee") s.level = levelFor(s);
     if (s.mode === "roulette") { runRoulette(s, fresh); return; }
+    if (s.mode === "hottake" && s.phase === "twist" && s.people && fresh) { runTwist(s); return; }
+    if (s.mode === "hottake") s._fresh = false;
     if (fresh && s.mode === "bee" && s.phase === "result" && s.said) {
       // After "Yes": a held breath (drumroll), longer in later rounds, longer again in sudden death, longest at the finale. Then the reveal.
       var pause = suspenseMs(s); s.big = pause >= 4500;

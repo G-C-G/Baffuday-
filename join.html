@@ -60,12 +60,10 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .block{margin-bottom:var(--s8);padding-top:var(--s6);border-top:1px solid var(--ink)}
 .block:first-of-type{border-top-width:2px}
 /* sound: a prompt on the title page (the tap also unlocks audio on phones), then a small mute toggle in the header */
-.soundbtn{display:inline-flex;align-items:center;gap:var(--s2);margin-top:var(--s5);align-self:flex-start;background:transparent;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:10px 18px 10px 14px;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
-.soundbtn svg{width:20px;height:20px}.soundbtn.on{background:var(--ink);color:var(--cream);cursor:default}
+.soundnote{display:flex;align-items:center;gap:var(--s2);margin:var(--s5) 0 0;font:500 14px/1.4 var(--sans);color:var(--ink)}
+.soundnote svg{width:20px;height:20px;flex:none}
 .soundico{background:none;border:0;color:var(--ink);padding:4px;margin:-4px -4px -4px 0;cursor:pointer;line-height:0}
 .soundico svg{width:22px;height:22px}.soundico .x{display:none}.soundico.off .w{display:none}.soundico.off .x{display:inline}
-.soundbtn .x{display:none}
-main.gate{overflow:hidden}main.gate .cue{visibility:hidden}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0;max-width:18ch}
 .nogifts{font:italic 400 20px/1.25 var(--serif);margin:var(--s4) 0 0}
 .venue{font:500 15px/1.4 var(--sans);margin:var(--s2) 0 0}
@@ -131,7 +129,7 @@ main{min-height:0;overflow-y:auto}
         <p class="lab">You're invited</p>
         <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
         <p class="welcome">A game night. Some of it is voluntary.</p>
-        <button class="soundbtn" id="soundbtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg><span id="soundtxt">Tap to open</span></button>
+        <p class="soundnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span>Turn your sound on for the full experience.</span></p>
         <button class="cue" type="button" id="cue">Scroll for the details</button>
       </div>
       <div class="block">
@@ -405,40 +403,32 @@ main{min-height:0;overflow-y:auto}
       try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
     } else bgResume();
   }
-  var greet = null, helloDone = false;
+  var greet = null, openYay = null, helloDone = false;
   try { greet = fx(new Audio("assets/sounds/greeting.mp3")); greet.preload = "auto"; } catch (e) {}
+  try { openYay = fx(new Audio("assets/sounds/yay-open.mp3")); openYay.preload = "auto"; } catch (e) {}
   /* The greeting plays once. Phones refuse sound until a real tap, so it keeps trying (on load, then on every tap) until one attempt is accepted. */
   var HELLO_EVENTS = ["pointerup", "touchend", "click", "keydown"];
   /* The greeting belongs to the title page: leaving it (Begin to RSVP) ends it for good, and the music takes over. */
   function endGreeting() {
     helloDone = true; HELLO_EVENTS.forEach(function (t) { removeEventListener(t, sayHello, true); });
-    if (greet) { try { greet.pause(); greet.currentTime = 0; } catch (e) {} var i = fxActive.indexOf(greet); if (i >= 0) fxActive.splice(i, 1); }
+    [greet, openYay].forEach(function (a) { if (!a) return; try { a.pause(); a.currentTime = 0; } catch (e) {} var i = fxActive.indexOf(a); if (i >= 0) fxActive.splice(i, 1); });
   }
   function sayHello() {
     if (helloDone || !greet || !audioOn) return;
     var ok = function () { helloDone = true; unlocked = true; setSoundUI(); HELLO_EVENTS.forEach(function (t) { removeEventListener(t, sayHello, true); }); };
     try { var pr = greet.play(); if (pr && pr.then) pr.then(ok, function () {}); else ok(); } catch (e) {}
+    try { if (openYay) { var py = openYay.play(); if (py && py.catch) py.catch(function () {}); } } catch (e) {}
   }
   HELLO_EVENTS.forEach(function (t) { addEventListener(t, sayHello, true); });
   /* The sound switch. The title-page button is the guaranteed tap that unlocks audio on phones; after that the header icon mutes and unmutes. */
   function setSoundUI() {
-    var pill = $("soundbtn"), txt = $("soundtxt"), ico = $("soundico");
-    pill.classList.toggle("on", unlocked); txt.textContent = unlocked ? (audioOn ? "Sound on" : "Sound off") : "Tap to open";
-    document.querySelector("main").classList.toggle("gate", !unlocked && curKey === "intro");
+    var ico = $("soundico");
     ico.hidden = !unlocked; ico.classList.toggle("off", !audioOn);
     ico.setAttribute("aria-label", audioOn ? "Sound on. Tap to mute." : "Sound off. Tap to turn on.");
   }
   function stopAllSound() {
-    try { [bg, greet, hee, yayA].concat(Object.keys(rej).map(function (k) { return rej[k]; })).forEach(function (a) { if (a) a.pause(); }); } catch (e) {}
+    try { [bg, greet, openYay, hee, yayA].concat(Object.keys(rej).map(function (k) { return rej[k]; })).forEach(function (a) { if (a) a.pause(); }); } catch (e) {}
   }
-  function primeMusic() {   // inside the tap: let the phone treat the music and finish sounds as user-started, so they can start later without a tap
-    if (bgPrimed) return; bgPrimed = true;
-    if (bg) try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
-    unlockYay();
-  }
-  function openInvitation() { if (unlocked) return; unlocked = true; audioOn = true; sayHello(); primeMusic(); setSoundUI(); }
-  $("soundbtn").onclick = openInvitation;
-  document.querySelector(".hero-screen").addEventListener("click", openInvitation);
   $("soundico").onclick = function () {
     audioOn = !audioOn;
     if (!audioOn) stopAllSound(); else bgResume();

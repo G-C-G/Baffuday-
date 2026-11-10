@@ -156,7 +156,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <div class="takepick" id="takepick"></div>
       <div class="bar" style="margin-top:10px">
         <label class="k" for="perside" style="margin:0">Team size</label>
-        <select id="perside"><option value="auto" selected>Auto (3 to 5)</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="0">Everyone</option></select>
+        <select id="perside"><option value="auto" selected>Auto: even teams of 3 to 5</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="0">Everyone</option></select>
         <button class="btn ghost" id="tshow">1. Show take</button>
         <button class="btn" id="treveal">2. Reveal sides</button>
       </div>
@@ -272,13 +272,22 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       (side === "agree" ? out.argueFor : out.argueAgainst).push({ id: g.id, name: g.name, real: p.s, n: p.n, pf: pf,
         label: p.s === "agree" ? t.a : t.b, rank: takeRank(p.n, pf), lv: level(g, "takes"), done: (g.took && g.took.takes) || 0 });
     });
+    // Who plays: everyone gets a go before anyone gets a second (fewest takes so far first). Inside that, the keenest go first
+    // ("Put me on first", then "happy", then "if called"), then the strongest feelings.
     ["argueFor", "argueAgainst"].forEach(function (k) {
-      // keenest first ("Put me on first", then "happy", then "if called"); then the strongest feelings; then whoever has been in least
-      out[k].sort(function (x, y) { return y.lv - x.lv || x.rank - y.rank || x.done - y.done || y.n - x.n; });
-      // Auto: a side of 5 or fewer all play; bigger sides play in groups of 3, growing to 4 (9+ people) and 5 (12+ people)
-      var size = per === -1 ? (out[k].length <= 5 ? out[k].length : out[k].length >= 12 ? 5 : out[k].length >= 9 ? 4 : 3) : per;
-      if (size && out[k].length > size) { out.waiting = out.waiting.concat(out[k].slice(size)); out[k] = out[k].slice(0, size); }
+      out[k].sort(function (x, y) { return x.done - y.done || y.lv - x.lv || x.rank - y.rank || y.n - x.n; });
     });
+    // Team size. Auto: a side of 5 or fewer all play; bigger sides play in groups of 3, growing to 4 (9+ people) and 5 (12+).
+    // Auto also keeps the teams even: the bigger team is never more than one person bigger than the smaller (and never below 3).
+    var take = {};
+    ["argueFor", "argueAgainst"].forEach(function (k) {
+      var n = out[k].length; take[k] = per === -1 ? (n <= 5 ? n : n >= 12 ? 5 : n >= 9 ? 4 : 3) : (per && n > per ? per : n);
+    });
+    if (per === -1) {
+      var hi = take.argueFor >= take.argueAgainst ? "argueFor" : "argueAgainst", lo = hi === "argueFor" ? "argueAgainst" : "argueFor";
+      take[hi] = Math.min(take[hi], Math.max(take[lo] + 1, 3));
+    }
+    ["argueFor", "argueAgainst"].forEach(function (k) { out.waiting = out.waiting.concat(out[k].slice(take[k])); out[k] = out[k].slice(0, take[k]); });
     return out;
   }
   function preview() {

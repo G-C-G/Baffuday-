@@ -44,6 +44,7 @@ window.BEE_W = {
   son: "a male child", sun: "the star at the centre of our solar system",
   road: "a way for vehicles", rode: "past tense of ride",
   allowed: "permitted", aloud: "out loud, not silently",
+  which: "asking about a choice", witch: "a woman with magic powers",
   site: "a location", sight: "something seen, or the ability to see", cite: "to quote as a source",
   principal: "head of a school, or most important", principle: "a basic rule or belief",
   stationary: "not moving", stationery: "paper, pens and writing supplies",
@@ -95,6 +96,7 @@ window.BEE = [
   [2, "Edward sparkles in the sun, while Hinda's son is her little sunshine. Neither on is helping you spell today.", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
   [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
+  [2, "Harry knew exactly which witch had cast the spell, but nobody at Hogwarts prepared him for a spelling bee.", "Spell the word meaning a woman with magic powers.", "witch", ["which", "witch"]],
   [3, "The party site looks cool, the sight of this spelling bee is already concerning, and nobody better cite Hinda as a source of their misfortune. Y'all signed up for this one.", "Spell the word meaning a location.", "site", ["site", "sight", "cite"]],
   [3, "The stationery is beautiful, but you've been stationary for so long that we may need to send help.", "Spell the word meaning writing materials.", "stationery", ["stationary", "stationery"]],
   [3, "Please be discreet about your strategy; there are already discrete groups of people hoping you lose.", "Spell the word meaning careful not to attract attention.", "discreet", ["discreet", "discrete"]],
@@ -124,6 +126,7 @@ window.BEE = [
 
 // Prompts you have approved. Key = the prompt's words in alphabetical order joined with "/". Everything else in BEE is still a draft.
 window.BEE_DECIDED = [
+  "which/witch",
   "peace/piece",
   "cereal/serial",
   "their/there/they're",

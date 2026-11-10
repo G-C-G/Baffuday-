@@ -7,6 +7,11 @@ window.BEE_ROUNDS = {
   4: "Evil",
   5: "I actually hate you"
 };
+// A picture to show on the projector while a prompt is up. Key = the prompt's words in alphabetical order, joined with "/".
+// A missing file is simply not shown.
+window.BEE_IMAGES = {
+  "pair/pear": "assets/bee/rick-ross-pears.png"
+};
 window.BEE_W = {
   their: "belonging to them", there: "in that place", "they're": "they are",
   to: "toward, or part of 'to go'", too: "also, or excessively", two: "the number 2",

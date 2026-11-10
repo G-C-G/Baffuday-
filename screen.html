@@ -110,6 +110,7 @@ body.flashred{animation:flashred .6s ease 2}
 #slam span{font:400 calc(var(--hero)*1.45)/.9 var(--serif);letter-spacing:-.03em;color:var(--cream);animation:slamin .42s cubic-bezier(.2,1.5,.4,1) both;text-align:center}
 @keyframes slamin{0%{transform:scale(3.4) rotate(-6deg);opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
 @keyframes slamfade{0%,80%{opacity:1}100%{opacity:0}}
+.beeimg{position:fixed;right:3.5vw;top:13vh;width:31vw;max-height:60vh;object-fit:contain;filter:drop-shadow(0 1.4vh 2.6vh rgba(8,24,62,.4));animation:pop .5s ease-out;pointer-events:none}
 .wheelbox{height:min(72vh,60vw);aspect-ratio:1/1}
 .wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--sans);color:inherit;cursor:pointer;background:none;border:0;opacity:.55}
@@ -225,7 +226,7 @@ body.flashred{animation:flashred .6s ease 2}
     var note = mode === "lock" ? "Locked in" : mode === "confirm" ? "Final answer?" : "";
     // The sentence sits on the left; the choices are big and bold, bottom centre; "Locked in" is small.
     var bar = '<div class="optbar"><div class="opts">' + opts + '</div><div class="optnote">' + note + "</div></div>";
-    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + wide + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot, "high") + bar };
+    return { theme: mode === "lock" && s.big ? "ink" : "cream", level: s.level || 1, html: frame(rd + " &middot; " + esc(s.contestant), '<p class="major" style="font-size:' + big + ';max-width:' + (s.img ? "46vw" : wide) + ';line-height:1.2">' + hl(s.sentence, s.marks) + "</p>", foot, "high") + (s.img ? '<img class="beeimg" src="' + esc(s.img) + '" alt="" onerror="this.remove()">' : "") + bar };
   }
   var X_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M14 14L86 86M86 14L14 86" stroke="#FF1F3D" stroke-width="24"/></svg>';
   function beeFinal(s) {

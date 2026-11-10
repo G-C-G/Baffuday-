@@ -199,3 +199,10 @@ Karaoke is called 5 first, then 4, then 3. Older answers saved as want / ok / no
 ## Importing a guest file
 
 If answers arrive as screenshots instead of PDFs, type them into a guest-list JSON (an array of the same records the form saves) and use **Import guest file (.json)** on the Guests tab. Importing is safe to repeat: a guest with the same id, or the same exact name, is updated instead of duplicated, so a real PDF from the same person later just replaces the transcribed entry. Guest data (names, songs, allergies) is never committed to this repo because the repo and the site are public.
+
+## Who is in each activity (the promise)
+
+Every guest rates each activity 1 to 5. **3 (I'll do it if called), 4 and 5 are in. 1 (Please no) and 2 (Rather not) are never in that activity.**
+- Spelling bee: "Load sign-ups onto stage" puts everyone on stage except guests who said 1 or 2. The table shows "opted out" instead of an Add button for them.
+- Karaoke roulette: opted-out guests are never on the wheel.
+- Twisted hot takes: opted-out guests are never assigned a side (they show under "Opted out").

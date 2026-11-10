@@ -106,7 +106,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <button class="btn ghost" id="bwin">Show winner</button>
     </div>
     <div class="bar"><button class="btn ghost" id="bload">Load sign-ups onto stage</button>
-      <span class="note">Puts everyone who rated the bee 4 or 5 on stage in a random order. Use the table to add or remove people.</span></div>
+      <span class="note">Puts everyone on stage in a random order, except guests who said Rather not or Please no to the bee. They are never put on stage. Use the table to add or remove other people.</span></div>
     <div id="bpick" style="display:none">
       <div id="bchoose">
         <span class="k">Which one did they pick?</span>
@@ -263,8 +263,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   // "rather not" near the end, weak feelings last; within a group, people not yet in a hot take go first.
   function assignment(tid) {
     var per = +$("perside").value || 0, t = TAKES.filter(function (x) { return x.id === tid; })[0];
-    var out = { argueFor: [], argueAgainst: [], waiting: [], open: [] };
+    var out = { argueFor: [], argueAgainst: [], waiting: [], open: [], optedOut: [] };
     list().forEach(function (g) {
+      if (!into(g, "takes")) { out.optedOut.push(g.name); return; }   // said Rather not / Please no to hot takes: never assigned
       var p = pick((g.picks || {})[tid]);
       if (!p) { out.open.push(g.name); return; }
       var side = opposite(p.s), pf = pref(g, "takes");
@@ -285,7 +286,8 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     }
     $("preview").innerHTML = col("f", "ARGUE FOR", a.argueFor) + col("a", "ARGUE AGAINST", a.argueAgainst) +
       '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">WAITING (' + a.waiting.length + ')</h3><span class="dim">' + (esc(a.waiting.map(function (p) { return p.name; }).join(", ")) || "nobody") + '</span></div>' +
-      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>";
+      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">NO PICK (' + a.open.length + ')</h3><span class="dim">' + esc(a.open.join(", ")) + "</span></div>" +
+      '<div class="side" style="grid-column:1/-1"><h3 style="color:var(--muted)">OPTED OUT (' + a.optedOut.length + ')</h3><span class="dim">' + (esc(a.optedOut.join(", ")) || "nobody") + " &middot; said Rather not or Please no to hot takes, never assigned.</span></div>";
     document.querySelectorAll("#takepick button").forEach(function (b) { b.classList.toggle("on", b.dataset.t === takeId); });
   }
 
@@ -544,7 +546,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("bt").innerHTML = "<tr><th>Name</th><th>Bee</th><th>Status</th><th>Score</th><th></th></tr>" +
       (L.slice().sort(function (x, y) { return rk[pref(x, "bee")] - rk[pref(y, "bee")]; }).map(function (g) {
         var s = bs(g), st = !s.on ? '<span class="dim">not on stage</span>' : s.out ? '<span class="flag">out</span>' : '<span class="ok">standing</span>';
-        var btn = !s.on ? '<button class="btn ghost" data-badd="' + g.id + '" style="padding:6px 10px">Add</button>' : s.out ? '<button class="btn ghost" data-brev="' + g.id + '" style="padding:6px 10px">Bring back</button>' : '<button class="btn ghost" data-brem="' + g.id + '" style="padding:6px 10px">Remove</button>';
+        var btn = !s.on ? (into(g, "bee") ? '<button class="btn ghost" data-badd="' + g.id + '" style="padding:6px 10px">Add</button>' : '<span class="dim">opted out</span>') : s.out ? '<button class="btn ghost" data-brev="' + g.id + '" style="padding:6px 10px">Bring back</button>' : '<button class="btn ghost" data-brem="' + g.id + '" style="padding:6px 10px">Remove</button>';
         return "<tr><td>" + esc(g.name) + "</td><td>" + ratingLabel(level(g, "bee")) + " (" + level(g, "bee") + ")" + "</td><td>" + st + "</td><td>" + (s.score || 0) + "</td><td>" + btn + "</td></tr>";
       }).join("") || '<tr><td colspan="5" class="dim">No guests yet.</td></tr>');
   }
@@ -557,7 +559,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     g.beeStat = s; store.update("guests/" + id, { beeStat: s }); saveBee(); render(); renderBee();
   });
   $("bload").onclick = function () {
-    var ids = list().filter(function (g) { return pref(g, "bee") === "want"; }).map(function (g) { return g.id; });
+    var ids = list().filter(function (g) { return into(g, "bee"); }).map(function (g) { return g.id; });
     for (var i = ids.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
     list().forEach(function (g) { var s = ids.indexOf(g.id) >= 0 ? { on: true, out: false, score: 0, turns: 0 } : { on: false }; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); });
     bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids, winner: null, seed: Math.floor(Math.random() * 1e9) + 1 }; scored = false; saveBee(); renderBee();

@@ -331,6 +331,7 @@ main{min-height:0;overflow-y:auto}
     var sec = document.querySelector('.step[data-k="' + key + '"]'), lab = sec && sec.querySelector("[data-t]");
     if (lab) lab.textContent = labelFor(key, i, sq);
     $("prog").style.setProperty("--p", fin ? 1 : onForm ? (i + 1) / sq.length : 0);
+    $("prog").style.visibility = key === "intro" ? "hidden" : "visible";
     $("ttl").style.visibility = key === "intro" ? "hidden" : "visible";
     $("back").hidden = !onForm; $("nav").style.display = fin || (key === "intro" && !seenAll) ? "none" : "flex";
     $("next").textContent = key === "intro" ? "Begin to RSVP" : i === sq.length - 1 ? "Lock it in." : "Continue";

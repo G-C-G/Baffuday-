@@ -11,7 +11,8 @@ window.BEE_ROUNDS = {
 // A missing file is simply not shown.
 window.BEE_IMAGES = {
   "pair/pear": "assets/bee/rick-ross-pears.png",
-  "capital/capitol": "assets/bee/capitol.jpg"
+  "capital/capitol": "assets/bee/capitol.jpg",
+  "for/four": "assets/bee/four.jpg"
 };
 // Prompts where only the exact words are highlighted (not plurals or other endings such as pears). Same key as BEE_IMAGES.
 window.BEE_EXACT = {

@@ -56,7 +56,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
 @keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
 .hero-screen{padding-top:clamp(var(--s6),8vh,var(--s10));min-height:calc(100vh - 256px);min-height:calc(100svh - 256px);margin-bottom:var(--s8);display:flex;flex-direction:column;justify-content:flex-start}
-.cue{margin:auto 0 0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
+.cue{background:none;border:0;text-align:left;cursor:pointer;margin:auto 0 0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
 .block{margin-bottom:var(--s8);padding-top:var(--s6);border-top:1px solid var(--ink)}
 .block:first-of-type{border-top-width:2px}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0;max-width:18ch}
@@ -124,7 +124,7 @@ main{min-height:0;overflow-y:auto}
         <p class="lab">You're invited</p>
         <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
         <p class="welcome">A game night. Some of it is voluntary.</p>
-        <p class="cue">Scroll for the details</p>
+        <button class="cue" type="button" id="cue">Scroll for the details</button>
       </div>
       <div class="block">
         <p class="lab" id="date" hidden></p>
@@ -358,7 +358,7 @@ main{min-height:0;overflow-y:auto}
   $("next").onclick = function () {
     var e = check(curKey); if (e) { $("err").textContent = e; return; }
     var sq = seq(), i = sq.indexOf(curKey);
-    if (curKey === "intro") { startBg(); show(sq[0]); return; }
+    if (curKey === "intro") { startBg(); unlockYay(); show(sq[0]); return; }
     if (curKey === "song") heeHee();   // song entered and accepted: the sound
     if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };
@@ -378,7 +378,7 @@ main{min-height:0;overflow-y:auto}
   /* Sound plan: a greeting when the link opens, then background music from the tap on "Begin to RSVP" to the end.
      Every short effect (answer sounds, hee-hee, the finish) pauses the music while it plays; when the effect is over the music carries on from where it was. */
   var bg = null, bgWanted = false, fxActive = [], greeted = false;
-  try { bg = new Audio("assets/sounds/bg.mp3"); bg.loop = true; bg.volume = .35; bg.preload = "auto"; } catch (e) {}
+  try { bg = new Audio("assets/sounds/bg.mp3"); bg.loop = true; bg.volume = .35; bg.preload = "none"; } catch (e) {}
   function bgResume() {
     if (!bgWanted || !bg || fxActive.length) return;
     try { var pr = bg.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
@@ -390,16 +390,21 @@ main{min-height:0;overflow-y:auto}
     a.addEventListener("ended", off); a.addEventListener("pause", off);
     return a;
   }
-  function startBg() { greeted = true; bgWanted = true; bgResume(); }
+  function startBg() {
+    bgWanted = true;
+    if (fxActive.length && bg) {   // greeting still going: unlock the music inside this tap, then hold it until the greeting ends
+      try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
+    } else bgResume();
+  }
   var greet = null;
   try { greet = fx(new Audio("assets/sounds/greeting.mp3")); greet.preload = "auto"; } catch (e) {}
   function sayHello() {
     if (greeted || !greet) return; greeted = true;
     try { var pr = greet.play(); if (pr && pr.catch) pr.catch(function () { greeted = false; waitForTap(); }); } catch (e) { greeted = false; waitForTap(); }
   }
-  /* Browsers refuse sound before a first tap. If the greeting is blocked, it plays on the first tap (unless that tap is already "Begin to RSVP"). */
+  /* Browsers refuse sound before a first tap. If the greeting is blocked, it plays on the very first tap (the "Scroll for the details" cue, or Begin to RSVP at the latest). */
   function waitForTap() {
-    var go = function (e) { ["pointerup", "touchend", "click", "keydown"].forEach(function (t) { removeEventListener(t, go, true); }); if (e && e.target && e.target.id === "next") { greeted = true; return; } sayHello(); };
+    var go = function () { ["pointerup", "touchend", "click", "keydown"].forEach(function (t) { removeEventListener(t, go, true); }); sayHello(); };
     ["pointerup", "touchend", "click", "keydown"].forEach(function (t) { addEventListener(t, go, true); });
   }
   var rej = {};
@@ -418,8 +423,14 @@ main{min-height:0;overflow-y:auto}
   var hee = null;
   try { hee = fx(new Audio("assets/sounds/hee-hee.mp3")); hee.preload = "auto"; } catch (e) {}
   function heeHee() { try { if (hee) { hee.currentTime = 0; var pr = hee.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {} }
+  var yayA = null, yayFx = false;
+  try { yayA = new Audio("assets/sounds/yay.mp3"); yayA.preload = "auto"; yayA.volume = .8; } catch (e) {}
+  function unlockYay() {   // phones only allow the first play inside a tap, and the finish plays after saving, so unlock it at "Begin to RSVP"
+    if (!yayA) return;
+    try { yayA.muted = true; var pr = yayA.play(); var back = function () { yayA.pause(); yayA.currentTime = 0; yayA.muted = false; }; if (pr && pr.then) pr.then(back, function () { yayA.muted = false; }); else back(); } catch (e) {}
+  }
   function celebrate() {
-    try { var a = fx(new Audio("assets/sounds/yay.mp3")); a.volume = .8; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+    try { if (yayA) { if (!yayFx) { fx(yayA); yayFx = true; } yayA.currentTime = 0; var pr = yayA.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {}
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var cv = $("conf"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr; var c = cv.getContext("2d"); c.scale(dpr, dpr);
@@ -466,6 +477,7 @@ main{min-height:0;overflow-y:auto}
     if (m.scrollTop + m.clientHeight >= m.scrollHeight - 24) { seenAll = true; $("nav").style.display = "flex"; m.scrollTop = m.scrollHeight; }
   }
   document.querySelector("main").addEventListener("scroll", reveal, { passive: true });
+  $("cue").onclick = function () { var m = document.querySelector("main"); m.scrollTo({ top: m.scrollTop + m.clientHeight * .85, behavior: "smooth" }); };
   sayHello(); show("intro"); fitHero(); addEventListener("resize", fitHero);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHero);
 })();

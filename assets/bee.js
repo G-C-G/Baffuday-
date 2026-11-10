@@ -10,7 +10,8 @@ window.BEE_ROUNDS = {
 // A picture to show on the projector while a prompt is up. Key = the prompt's words in alphabetical order, joined with "/".
 // A missing file is simply not shown.
 window.BEE_IMAGES = {
-  "pair/pear": "assets/bee/rick-ross-pears.png"
+  "pair/pear": "assets/bee/rick-ross-pears.png",
+  "capital/capitol": "assets/bee/capitol.jpg"
 };
 // Prompts where only the exact words are highlighted (not plurals or other endings such as pears). Same key as BEE_IMAGES.
 window.BEE_EXACT = {
@@ -18,7 +19,8 @@ window.BEE_EXACT = {
 };
 // A sound that plays once on the projector when that prompt first appears. Same key as BEE_IMAGES.
 window.BEE_SOUNDS = {
-  "pair/pear": "assets/sounds/shoutout-pears.mp3"
+  "pair/pear": "assets/sounds/shoutout-pears.mp3",
+  "capital/capitol": "assets/sounds/volunteer.mp3"
 };
 window.BEE_W = {
   their: "belonging to them", there: "in that place", "they're": "they are",
@@ -114,7 +116,7 @@ window.BEE = [
   [5, "He likes to hoard snacks because apparently he is preparing for a horde that only exists in his imagination.", "Spell the word meaning to stockpile.", "hoard", ["hoard", "horde"]],
   [5, "She stood at the altar and immediately decided to alter the seating arrangement.", "Spell the word meaning the raised structure used in religious ceremonies.", "altar", ["altar", "alter"]],
   [5, "Some of y'all pour cereal before milk like some serial killers.", "Spell the word meaning a food made from grains.", "cereal", ["cereal", "serial"]],
-  [5, "Several people have volunteered as tribute tonight, although we can confirm this is not the Capitol. This is Accra, capital of Ghana, get with the programme.", "Spell the word meaning the Hunger Games city.", "capitol", ["capital", "capitol"], "fixed"],
+  [5, "Several people have volunteered as tribute tonight.\n\nSmall issue: this is Accra, not the Capitol.\n\nAccra is the capital of Ghana.\nThe Capitol is from The Hunger Games.\n\nThe Hunger Games is not actually happening here.\n\n\u2026right?\n\nRIGHT???\n\nAnyway, get with the programme.", "Spell the word meaning the Hunger Games city.", "capitol", ["capital", "capitol"], "fixed"],
   [5, "The council asked for counsel, but unfortunately everyone had already decided they were right.", "Spell the word meaning a group of people chosen to make decisions.", "council", ["counsel", "council"]],
   [5, "The principal established one final principle: if you still can't spell after five rounds, we may have to accept that none of you were ever good at spelling.", "Spell the word meaning a fundamental rule or belief.", "principle", ["principal", "principle"]]
 ];

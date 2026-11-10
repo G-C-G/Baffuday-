@@ -538,7 +538,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       out += tre.test(m[2]) ? '<u style="text-decoration-thickness:3px;text-underline-offset:3px;font-weight:600">' + esc(m[2]) + "</u>" : "<b>" + esc(m[2]) + "</b>";
       last = st + m[2].length; re.lastIndex = last;
     }
-    return out + esc(raw.slice(last));
+    return (out + esc(raw.slice(last))).replace(/\n/g, "<br>");
   }
   // The answer is chosen at random per prompt (seeded once when you load the stage, so a refresh keeps it). This removes any
   // tell, such as the answer being the word that appears most in the sentence.

@@ -83,7 +83,7 @@ window.BEE = [
   [1, "You only need one correct answer, but if you get it right, you'll have won absolutely nothing except our respect.", "Spell the word meaning the number after zero.", "one", ["one", "won"]],
   [1, "Four chose Dauntless for the thrill of it; you chose Hinda's birthday. Frankly, you may be more courageous than Four for being here.", "Spell the word meaning intended to benefit, or because of.", "for", ["for", "four"], "fixed"],
   [2, "She brought a flower to the table, but somehow there is flour everywhere, and nobody is taking responsibility.", "Spell the word used for baking.", "flour", ["flower", "flour"]],
-  [2, "All I wanted was some peace, but apparently everyone wants a piece of the argument.", "Spell the word meaning a portion of something.", "piece", ["peace", "piece"]],
+  [2, "Clearly there will be no peace today, so enjoy your piece of chicken while pondering the life decisions that brought you here.", "Spell the word meaning calm and quiet.", "peace", ["peace", "piece"]],
   [2, "Take a break if you need one, but please don't hit the brake on your thinking.", "Spell the word used to slow down a vehicle.", "brake", ["break", "brake"]],
   [2, "Reports confirm the bear is still the safer option, while several guests have refused to bare their reasoning before dinner.", "Spell the word meaning uncovered.", "bare", ["bare", "bear"]],
   [2, "Rick Ross said shout out to all the pear: And all my peers are here tonight watching Rick Ross hold a pair of pears. Sorry guys this is what yall signed up for \ud83e\udd23.", "Spell the word meaning a set of two.", "pair", ["pair", "pear"]],
@@ -121,6 +121,7 @@ window.BEE = [
 
 // Prompts you have approved. Key = the prompt's words in alphabetical order joined with "/". Everything else in BEE is still a draft.
 window.BEE_DECIDED = [
+  "peace/piece",
   "cereal/serial",
   "their/there/they're",
   "to/too/two",

@@ -12,7 +12,7 @@ window.BEE_ROUNDS = {
 window.BEE_IMAGES = {
   "pair/pear": "assets/bee/rick-ross-pears.png",
   "capital/capitol": "assets/bee/capitol.jpg",
-  "for/four": "assets/bee/four.jpg"
+  "for/four": "assets/bee/four.png"
 };
 // Prompts where only the exact words are highlighted (not plurals or other endings such as pears). Same key as BEE_IMAGES.
 window.BEE_EXACT = {

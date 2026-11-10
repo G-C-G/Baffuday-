@@ -195,3 +195,7 @@ Karaoke is called 5 first, then 4, then 3. Older answers saved as want / ok / no
 - **"Not here? Spin again":** puts the person back in the pool for later and spins again.
 - **Intermissions from any screen:** the "Karaoke roulette break" button at the top of the host panel works during the spelling bee, the hot takes, the menu, anything. "Back to the game" restores exactly what was on the projector. Spin between rounds, not in the middle of an answer.
 - **Random reminders:** tick "Remind me at random times to spin, every X to Y minutes" (default 6 to 12). The host page shows a banner with a chime at random intervals; you decide whether to spin ("Spin now") or snooze ("Later"). Keep the host page open. The timer restarts after every spin.
+
+## Importing a guest file
+
+If answers arrive as screenshots instead of PDFs, type them into a guest-list JSON (an array of the same records the form saves) and use **Import guest file (.json)** on the Guests tab. Importing is safe to repeat: a guest with the same id, or the same exact name, is updated instead of duplicated, so a real PDF from the same person later just replaces the transcribed entry. Guest data (names, songs, allergies) is never committed to this repo because the repo and the site are public.

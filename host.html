@@ -67,6 +67,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   <section class="panel on" id="p-guests">
     <div class="bar"><label class="btn ghost" style="cursor:pointer">Import answer PDFs<input type="file" id="imp" accept="application/pdf" multiple hidden></label>
+      <label class="btn ghost" style="cursor:pointer">Import guest file (.json)<input type="file" id="impjson" accept="application/json,.json" hidden></label>
       <span class="note" id="impmsg">Guests download a PDF at the end of the form and send it to you. Pick as many as you like; importing the same PDF twice just updates that guest.</span></div>
     <div class="tbl"><table id="gt"></table></div></section>
 
@@ -187,11 +188,12 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     return Object.keys(guests || {}).map(function (id) { var g = guests[id]; g.id = id; return g; })
       .sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
   }
+  function hasAllergy(g) { return !!g.allergies && !/^\s*(none|nada|no|nil|n\/a|nothing|-)\s*\.?\s*$/i.test(g.allergies); }
   function dietText(g) { return Object.keys(g.diet || {}).join(", "); }
 
   function render() {
     var L = list();
-    var withAll = L.filter(function (g) { return g.allergies; }).length;
+    var withAll = L.filter(hasAllergy).length;
     var songs = L.filter(function (g) { return g.song; }).length;
     var perf = L.filter(function (g) { return g.performed; }).length;
     var bee = L.filter(function (g) { return pref(g, "bee") === "want"; }).length;
@@ -204,7 +206,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
           Object.keys(g.picks || {}).length + '</td><td>' + esc(g.ownTake || "") + '</td><td>' + (g.performed ? '<span class="ok">sung</span>' : '<span class="dim">-</span>') + "</td></tr>";
       }).join("") || '<tr><td colspan="6" class="dim">No guests yet. Send them the join link.</td></tr>');
 
-    var need = L.filter(function (g) { return g.allergies || g.other || Object.keys(g.diet || {}).length; });
+    var need = L.filter(function (g) { return hasAllergy(g) || g.other || Object.keys(g.diet || {}).length; });
     $("ft").innerHTML = "<tr><th>Name</th><th>Allergies</th><th>Diet</th><th>Other</th></tr>" +
       (need.map(function (g) {
         return "<tr><td>" + esc(g.name) + '</td><td class="flag">' + esc(g.allergies) + "</td><td>" + esc(dietText(g)) + "</td><td>" + esc(g.other) + "</td></tr>";
@@ -451,21 +453,39 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   });
 
   // ---- Import answer PDFs ----
+  // One guest record in: same _id updates that guest; otherwise the same exact name updates that guest (no duplicates); otherwise a new guest.
+  function importRec(rec) {
+    var id = rec._id; delete rec._id;
+    if (!id || !guests[id]) { var nm = norm(rec.name), hit = list().filter(function (g) { return norm(g.name) === nm; })[0]; if (hit) id = hit.id; }
+    if (!id) id = "imp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    var has = !!guests[id]; if (!has) rec.createdAt = rec.createdAt || Date.now();
+    guests[id] = Object.assign(guests[id] || {}, rec);
+    return has ? store.update("guests/" + id, rec) : store.set("guests/" + id, rec);
+  }
   $("imp").addEventListener("change", function () {
     var files = Array.prototype.slice.call(this.files), self = this, ok = 0, bad = [];
     $("impmsg").textContent = "Reading " + files.length + " file" + (files.length === 1 ? "" : "s") + "...";
     files.reduce(function (chain, f) {
       return chain.then(function () { return readAnswersPdf(f); }).then(function (rec) {
         if (!rec || !rec.name) { bad.push(f.name); return; }
-        var id = rec._id || ("imp" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)); delete rec._id;
-        var has = !!guests[id]; if (!has) rec.createdAt = rec.createdAt || Date.now();
-        guests[id] = Object.assign(guests[id] || {}, rec);
-        ok++; return has ? store.update("guests/" + id, rec) : store.set("guests/" + id, rec);
+        ok++; return importRec(rec);
       }).catch(function () { bad.push(f.name); });
     }, Promise.resolve()).then(function () {
       $("impmsg").textContent = "Imported " + ok + (bad.length ? ". Could not read: " + bad.join(", ") + " (not an answers PDF)." : ".");
       self.value = ""; render(); drawTakes();
     });
+  });
+  // A guest list saved as JSON (an array of guest records, the same shape the form saves). Used when answers arrived as screenshots, not PDFs.
+  $("impjson").addEventListener("change", function () {
+    var f = this.files[0], self = this; if (!f) return;
+    $("impmsg").textContent = "Reading " + f.name + "...";
+    f.text().then(function (t) {
+      var arr = JSON.parse(t); if (!Array.isArray(arr)) arr = [arr];
+      var ok = 0, chain = Promise.resolve();
+      arr.forEach(function (rec) { if (rec && rec.name) chain = chain.then(function () { ok++; return importRec(Object.assign({}, rec)); }); });
+      return chain.then(function () { $("impmsg").textContent = "Imported " + ok + " guests from " + f.name + "."; });
+    }).catch(function () { $("impmsg").textContent = "Could not read " + f.name + " (not a guest list)."; })
+      .then(function () { self.value = ""; render(); drawTakes(); });
   });
 
   // ---- Spelling bee: elimination, everyone on stage starts in; wrong answer sits down ----

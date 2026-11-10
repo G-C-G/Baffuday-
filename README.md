@@ -216,5 +216,5 @@ Everywhere, the keenest go first: **"Put me on first" (5), then "I'm happy to do
 
 ## The twist and the roulette drama
 
-- **Hot take on the projector, three steps from the host panel:** 1. Show take (the question). 2. Show where everyone stands (each person who plays this take is placed on the side they really hold). 3. The twist: a drumroll, a full-screen "The twist." slam with a flash and shake, then every name is thrown across to the opposite side, with a "was ..." note kept under each name so the room knows who moved from where.
+- **Hot take on the projector, three steps from the host panel:** 1. Show take (the question). 2. Show what everyone picked (each person who plays this take is placed under what they really picked). 3. The twist: a drumroll, a full-screen "The twist." slam with a flash and shake, then every name is thrown across to the opposite side, with a "picked ..." note kept under each name so the room knows what each person originally picked.
 - **Roulette fake-out:** the wheel spins about 6 seconds, slows right down and almost stops on the person just before the winner, holds there with a heartbeat, then creeps over to the winner. With only one or two names on the wheel it just spins and lands.

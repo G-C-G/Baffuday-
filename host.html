@@ -158,10 +158,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
         <label class="k" for="perside" style="margin:0">Team size</label>
         <select id="perside"><option value="auto" selected>Auto: even teams of 3 to 5</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="0">Everyone</option></select>
         <button class="btn ghost" id="tshow">1. Show take</button>
-        <button class="btn ghost" id="tstand">2. Show where everyone stands</button>
+        <button class="btn ghost" id="tstand">2. Show what everyone picked</button>
         <button class="btn" id="treveal">3. The twist: swap sides</button>
       </div>
-      <p class="note">Guests picked the side they actually hold. Step 2 shows each person on the side they really hold; step 3 is the twist, where everyone is thrown to the OPPOSITE side and the screen keeps a "was ..." note under each name. Strongest feelings are listed first (1 to 5). Guests who skipped this take are not assigned; split them by hand.</p>
+      <p class="note">Guests picked the side they actually hold. Step 2 shows what each person really picked; step 3 is the twist, where everyone is thrown to the OPPOSITE side and the screen keeps a "picked ..." note under each name. Strongest feelings are listed first (1 to 5). Guests who skipped this take are not assigned; split them by hand.</p>
       <div class="two" id="preview"></div>
     </div>
   </section>
@@ -215,7 +215,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
     $("kinfo").textContent = (state.mode === "karaoke" || state.mode === "roulette") && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
-    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.phase === "twist" ? ", the twist" : state.phase === "stand" ? ", where everyone stands" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
+    var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), hottake: "Twisted hot take " + (state.num || "") + (state.phase === "twist" ? ", the twist" : state.phase === "stand" ? ", what everyone picked" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
     $("livetxt").textContent = lt[mm] || "Name screen";
     $("rback").hidden = state.mode !== "roulette";
     queue();

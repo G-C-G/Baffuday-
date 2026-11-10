@@ -158,11 +158,11 @@ body.flashred{animation:flashred .6s ease 2}
     function items(arr, col) {
       return arr.map(function (p, i) {
         var cls = twisted && fresh ? (col === "A" ? "mv-r2l" : "mv-l2r") : "";
-        var was = twisted ? '<span class="was">was ' + esc(p.from === "a" ? s.a : s.b) + "</span>" : "";
+        var was = twisted ? '<span class="was">picked ' + esc(p.from === "a" ? s.a : s.b) + "</span>" : "";
         return '<li class="' + cls + '" style="animation-delay:' + (i * 130) + 'ms">' + esc(p.name) + was + "</li>";
       }).join("") || '<li style="opacity:.5">nobody</li>';
     }
-    var head = twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">Where everyone stands</span>', cap = twisted ? "Now defending" : "Standing with";
+    var head = twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">What everyone picked</span>', cap = twisted ? "Now defending" : "Picked";
     return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + "</p><div>" + head + "</div></div>" +
       '<div class="teams"><div class="team a"><span class="lab">' + cap + '</span><p class="major">' + esc(s.a) + '</p><ul class="names">' + items(inA, "A") + "</ul></div>" +
       '<div class="team b"><span class="lab">' + cap + '</span><p class="major">' + esc(s.b) + '</p><ul class="names">' + items(inB, "B") + "</ul></div></div></div>" };

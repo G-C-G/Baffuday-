@@ -56,9 +56,15 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
 @keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
 .hero-screen{padding-top:clamp(var(--s6),8vh,var(--s10));min-height:calc(100vh - 256px);min-height:calc(100svh - 256px);margin-bottom:var(--s8);display:flex;flex-direction:column;justify-content:flex-start}
-.cue{background:none;border:0;text-align:left;cursor:pointer;margin:auto 0 0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
+.cue{background:none;border:0;text-align:left;cursor:pointer;margin:auto 0 0;padding-left:0;padding-right:0;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding-top:var(--s6)}
 .block{margin-bottom:var(--s8);padding-top:var(--s6);border-top:1px solid var(--ink)}
 .block:first-of-type{border-top-width:2px}
+/* sound: a prompt on the title page (the tap also unlocks audio on phones), then a small mute toggle in the header */
+.soundbtn{display:inline-flex;align-items:center;gap:var(--s2);margin-top:var(--s5);align-self:flex-start;background:transparent;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:10px 18px 10px 14px;font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.soundbtn svg{width:20px;height:20px}.soundbtn.on{background:var(--ink);color:var(--cream);cursor:default}
+.soundico{background:none;border:0;color:var(--ink);padding:4px;margin:-4px -4px -4px 0;cursor:pointer;line-height:0}
+.soundico svg{width:22px;height:22px}.soundico .x{display:none}.soundico.off .w{display:none}.soundico.off .x{display:inline}
+.soundbtn .x{display:none}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0;max-width:18ch}
 .nogifts{font:italic 400 20px/1.25 var(--serif);margin:var(--s4) 0 0}
 .venue{font:500 15px/1.4 var(--sans);margin:var(--s2) 0 0}
@@ -114,7 +120,7 @@ main{min-height:0;overflow-y:auto}
 </head>
 <body>
 <div class="shell">
-  <header class="top"><span class="label" id="ttl"></span></header>
+  <header class="top"><span class="label" id="ttl"></span><button class="soundico" id="soundico" type="button" hidden aria-label="Sound on. Tap to mute."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg></button></header>
   <div class="prog" id="prog" aria-hidden="true"><span class="ln"></span><svg class="pac" viewBox="0 0 100 100"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg></div>
 
   <main id="steps">
@@ -124,6 +130,7 @@ main{min-height:0;overflow-y:auto}
         <p class="lab">You're invited</p>
         <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
         <p class="welcome">A game night. Some of it is voluntary.</p>
+        <button class="soundbtn" id="soundbtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg><span id="soundtxt">Tap for sound</span></button>
         <button class="cue" type="button" id="cue">Scroll for the details</button>
       </div>
       <div class="block">
@@ -358,7 +365,7 @@ main{min-height:0;overflow-y:auto}
   $("next").onclick = function () {
     var e = check(curKey); if (e) { $("err").textContent = e; return; }
     var sq = seq(), i = sq.indexOf(curKey);
-    if (curKey === "intro") { startBg(); unlockYay(); show(sq[0]); return; }
+    if (curKey === "intro") { if (!unlocked) { unlocked = true; setSoundUI(); } startBg(); if (!bgPrimed) { bgPrimed = true; unlockYay(); } show(sq[0]); return; }
     if (curKey === "song") heeHee();   // song entered and accepted: the sound
     if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };
@@ -377,10 +384,11 @@ main{min-height:0;overflow-y:auto}
      "Put me on first" = DMX, "I'm happy to do it" = the happy song, "I'll do it if called" = yes-no-maybe, "Rather not" = the nemesis clip, "Please no" = the meow. Every answer now has a sound; picking another one stops the last. */
   /* Sound plan: a greeting when the link opens, then background music from the tap on "Begin to RSVP" to the end.
      Every short effect (answer sounds, hee-hee, the finish) pauses the music while it plays; when the effect is over the music carries on from where it was. */
-  var bg = null, bgWanted = false, fxActive = [], greeted = false;
-  try { bg = new Audio("assets/sounds/bg.mp3"); bg.loop = true; bg.volume = .35; bg.preload = "none"; } catch (e) {}
+  var bg = null, bgWanted = false, fxActive = [], audioOn = true, unlocked = false, bgPrimed = false;
+  /* the level is baked into the file, because phones ignore audio.volume */
+  try { bg = new Audio("assets/sounds/bg.mp3"); bg.loop = true; bg.preload = "none"; } catch (e) {}
   function bgResume() {
-    if (!bgWanted || !bg || fxActive.length) return;
+    if (!audioOn || !bgWanted || !bg || fxActive.length) return;
     try { var pr = bg.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
   }
   function fx(a) {
@@ -396,17 +404,37 @@ main{min-height:0;overflow-y:auto}
       try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
     } else bgResume();
   }
-  var greet = null;
+  var greet = null, helloDone = false;
   try { greet = fx(new Audio("assets/sounds/greeting.mp3")); greet.preload = "auto"; } catch (e) {}
+  /* The greeting plays once. Phones refuse sound until a real tap, so it keeps trying (on load, then on every tap) until one attempt is accepted. */
+  var HELLO_EVENTS = ["pointerup", "touchend", "click", "keydown"];
   function sayHello() {
-    if (greeted || !greet) return; greeted = true;
-    try { var pr = greet.play(); if (pr && pr.catch) pr.catch(function () { greeted = false; waitForTap(); }); } catch (e) { greeted = false; waitForTap(); }
+    if (helloDone || !greet || !audioOn) return;
+    var ok = function () { helloDone = true; unlocked = true; setSoundUI(); HELLO_EVENTS.forEach(function (t) { removeEventListener(t, sayHello, true); }); };
+    try { var pr = greet.play(); if (pr && pr.then) pr.then(ok, function () {}); else ok(); } catch (e) {}
   }
-  /* Browsers refuse sound before a first tap. If the greeting is blocked, it plays on the very first tap (the "Scroll for the details" cue, or Begin to RSVP at the latest). */
-  function waitForTap() {
-    var go = function () { ["pointerup", "touchend", "click", "keydown"].forEach(function (t) { removeEventListener(t, go, true); }); sayHello(); };
-    ["pointerup", "touchend", "click", "keydown"].forEach(function (t) { addEventListener(t, go, true); });
+  HELLO_EVENTS.forEach(function (t) { addEventListener(t, sayHello, true); });
+  /* The sound switch. The title-page button is the guaranteed tap that unlocks audio on phones; after that the header icon mutes and unmutes. */
+  function setSoundUI() {
+    var pill = $("soundbtn"), txt = $("soundtxt"), ico = $("soundico");
+    pill.classList.toggle("on", unlocked); txt.textContent = unlocked ? (audioOn ? "Sound on" : "Sound off") : "Tap for sound";
+    ico.hidden = !unlocked; ico.classList.toggle("off", !audioOn);
+    ico.setAttribute("aria-label", audioOn ? "Sound on. Tap to mute." : "Sound off. Tap to turn on.");
   }
+  function stopAllSound() {
+    try { [bg, greet, hee, yayA].concat(Object.keys(rej).map(function (k) { return rej[k]; })).forEach(function (a) { if (a) a.pause(); }); } catch (e) {}
+  }
+  function primeMusic() {   // inside the tap: let the phone treat the music and finish sounds as user-started, so they can start later without a tap
+    if (bgPrimed) return; bgPrimed = true;
+    if (bg) try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
+    unlockYay();
+  }
+  $("soundbtn").onclick = function () { if (unlocked) return; unlocked = true; audioOn = true; sayHello(); primeMusic(); setSoundUI(); };
+  $("soundico").onclick = function () {
+    audioOn = !audioOn;
+    if (!audioOn) stopAllSound(); else bgResume();
+    setSoundUI();
+  };
   var rej = {};
   ["dmx", "happy", "maybe", "nemesis", "meow"].forEach(function (n) { try { rej[n] = fx(new Audio("assets/sounds/" + n + ".mp3")); rej[n].preload = "auto"; } catch (e) {} });
   function stopAnswerSounds() {
@@ -415,6 +443,7 @@ main{min-height:0;overflow-y:auto}
   function rejectSound(n) {
     try {
       Object.keys(rej).forEach(function (k) { rej[k].pause(); rej[k].currentTime = 0; });
+      if (!audioOn) return;
       var a = n === 5 ? rej.dmx : n === 4 ? rej.happy : n === 3 ? rej.maybe : n === 2 ? rej.nemesis : n === 1 ? rej.meow : null;
       if (a) { var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); }
     } catch (e) {}
@@ -422,7 +451,7 @@ main{min-height:0;overflow-y:auto}
   /* Michael Jackson "hee-hee" when they have added their karaoke song. Played from the tap on Continue so phones allow it. */
   var hee = null;
   try { hee = fx(new Audio("assets/sounds/hee-hee.mp3")); hee.preload = "auto"; } catch (e) {}
-  function heeHee() { try { if (hee) { hee.currentTime = 0; var pr = hee.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {} }
+  function heeHee() { try { if (hee && audioOn) { hee.currentTime = 0; var pr = hee.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {} }
   var yayA = null, yayFx = false;
   try { yayA = new Audio("assets/sounds/yay.mp3"); yayA.preload = "auto"; yayA.volume = .8; } catch (e) {}
   function unlockYay() {   // phones only allow the first play inside a tap, and the finish plays after saving, so unlock it at "Begin to RSVP"
@@ -430,7 +459,7 @@ main{min-height:0;overflow-y:auto}
     try { yayA.muted = true; var pr = yayA.play(); var back = function () { yayA.pause(); yayA.currentTime = 0; yayA.muted = false; }; if (pr && pr.then) pr.then(back, function () { yayA.muted = false; }); else back(); } catch (e) {}
   }
   function celebrate() {
-    try { if (yayA) { if (!yayFx) { fx(yayA); yayFx = true; } yayA.currentTime = 0; var pr = yayA.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {}
+    try { if (yayA && audioOn) { if (!yayFx) { fx(yayA); yayFx = true; } yayA.currentTime = 0; var pr = yayA.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {}
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var cv = $("conf"), dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr; var c = cv.getContext("2d"); c.scale(dpr, dpr);
@@ -478,7 +507,7 @@ main{min-height:0;overflow-y:auto}
   }
   document.querySelector("main").addEventListener("scroll", reveal, { passive: true });
   $("cue").onclick = function () { var m = document.querySelector("main"); m.scrollTo({ top: m.scrollTop + m.clientHeight * .85, behavior: "smooth" }); };
-  sayHello(); show("intro"); fitHero(); addEventListener("resize", fitHero);
+  setSoundUI(); sayHello(); show("intro"); fitHero(); addEventListener("resize", fitHero);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHero);
 })();
 </script>

@@ -358,6 +358,7 @@ main{min-height:0;overflow-y:auto}
     var e = check(curKey); if (e) { $("err").textContent = e; return; }
     var sq = seq(), i = sq.indexOf(curKey);
     if (curKey === "intro") { show(sq[0]); return; }
+    if (curKey === "song") heeHee();   // song entered and accepted: the sound
     if (i < sq.length - 1) show(sq[i + 1]); else submit();
   };
   document.querySelectorAll("input[type=text]").forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("next").click(); } }); });
@@ -371,6 +372,10 @@ main{min-height:0;overflow-y:auto}
     } catch (e) {}
   }
   /* The finish: the supplied "yay" clip and a confetti burst from both sides. Starts from the tap on "Lock it in.", so phones allow the sound. */
+  /* Michael Jackson "hee-hee" when they have added their karaoke song. Played from the tap on Continue so phones allow it. */
+  var hee = null;
+  try { hee = new Audio("assets/sounds/hee-hee.mp3"); hee.preload = "auto"; } catch (e) {}
+  function heeHee() { try { if (hee) { hee.currentTime = 0; var pr = hee.play(); if (pr && pr.catch) pr.catch(function () {}); } } catch (e) {} }
   function celebrate() {
     try { var a = new Audio("assets/sounds/yay.mp3"); a.volume = .8; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;

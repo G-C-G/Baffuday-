@@ -65,6 +65,7 @@ main{flex:1;display:flex;flex-direction:column;padding-block:clamp(var(--s3),5vh
 .soundico{background:none;border:0;color:var(--ink);padding:4px;margin:-4px -4px -4px 0;cursor:pointer;line-height:0}
 .soundico svg{width:22px;height:22px}.soundico .x{display:none}.soundico.off .w{display:none}.soundico.off .x{display:inline}
 .soundbtn .x{display:none}
+main.gate{overflow:hidden}main.gate .cue{visibility:hidden}
 .welcome{font:400 clamp(24px,7vw,32px)/1.15 var(--serif);margin:0;max-width:18ch}
 .nogifts{font:italic 400 20px/1.25 var(--serif);margin:var(--s4) 0 0}
 .venue{font:500 15px/1.4 var(--sans);margin:var(--s2) 0 0}
@@ -130,7 +131,7 @@ main{min-height:0;overflow-y:auto}
         <p class="lab">You're invited</p>
         <h1 class="title" id="hero" aria-label="Hinda's 28th">Hinda's<br><em>2<svg class="pac" viewBox="0 0 100 100" aria-hidden="true"><path class="o" d="M50 50 L96 22 A50 50 0 1 0 96 78 Z"/><path class="c" d="M50 50 L100 47 A50 50 0 1 0 100 53 Z"/><circle class="eye" cx="58" cy="27" r="9"/><circle class="pupil" cx="60" cy="28" r="4"/></svg><span class="ate"><span class="a">A</span>te<svg class="crumbs" viewBox="0 0 40 80" aria-hidden="true"><polygon points="8,8 20,4 16,16"/><polygon points="22,34 34,30 30,44"/><polygon points="6,58 16,56 12,70"/></svg></span></em></h1>
         <p class="welcome">A game night. Some of it is voluntary.</p>
-        <button class="soundbtn" id="soundbtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg><span id="soundtxt">Tap for sound</span></button>
+        <button class="soundbtn" id="soundbtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg><span id="soundtxt">Tap to open</span></button>
         <button class="cue" type="button" id="cue">Scroll for the details</button>
       </div>
       <div class="block">
@@ -422,7 +423,8 @@ main{min-height:0;overflow-y:auto}
   /* The sound switch. The title-page button is the guaranteed tap that unlocks audio on phones; after that the header icon mutes and unmutes. */
   function setSoundUI() {
     var pill = $("soundbtn"), txt = $("soundtxt"), ico = $("soundico");
-    pill.classList.toggle("on", unlocked); txt.textContent = unlocked ? (audioOn ? "Sound on" : "Sound off") : "Tap for sound";
+    pill.classList.toggle("on", unlocked); txt.textContent = unlocked ? (audioOn ? "Sound on" : "Sound off") : "Tap to open";
+    document.querySelector("main").classList.toggle("gate", !unlocked && curKey === "intro");
     ico.hidden = !unlocked; ico.classList.toggle("off", !audioOn);
     ico.setAttribute("aria-label", audioOn ? "Sound on. Tap to mute." : "Sound off. Tap to turn on.");
   }
@@ -434,7 +436,9 @@ main{min-height:0;overflow-y:auto}
     if (bg) try { bg.muted = true; var pr = bg.play(); var back = function () { bg.pause(); bg.currentTime = 0; bg.muted = false; }; if (pr && pr.then) pr.then(back, function () { bg.muted = false; }); else back(); } catch (e) {}
     unlockYay();
   }
-  $("soundbtn").onclick = function () { if (unlocked) return; unlocked = true; audioOn = true; sayHello(); primeMusic(); setSoundUI(); };
+  function openInvitation() { if (unlocked) return; unlocked = true; audioOn = true; sayHello(); primeMusic(); setSoundUI(); }
+  $("soundbtn").onclick = openInvitation;
+  document.querySelector(".hero-screen").addEventListener("click", openInvitation);
   $("soundico").onclick = function () {
     audioOn = !audioOn;
     if (!audioOn) stopAllSound(); else bgResume();

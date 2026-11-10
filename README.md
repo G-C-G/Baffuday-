@@ -233,4 +233,8 @@ The build-up before a reveal (spelling bee answer, the roulette near-miss, the h
 
 ## Pictures on bee prompts
 
-`BEE_IMAGES` in `assets/bee.js` maps a prompt (its words in alphabetical order, joined with "/") to a picture. While that prompt is on the projector the picture sits on the right of the sentence. Right now: pairs / peers shows `assets/bee/rick-ross-pears.png`. A missing file is just not shown.
+`BEE_IMAGES` in `assets/bee.js` maps a prompt (its words in alphabetical order, joined with "/") to a picture. While that prompt is on the projector the picture sits on the right of the sentence. Right now: pair / pear shows `assets/bee/rick-ross-pears.png`. A missing file is just not shown.
+
+## Sounds on bee prompts
+
+`BEE_SOUNDS` in `assets/bee.js` (same keys as `BEE_IMAGES`) plays a sound once when that prompt first appears on the projector. Right now: pair / pear plays `assets/sounds/shoutout-pears.mp3` (the Rick Ross "shout out to all the pears" clip) together with his picture.

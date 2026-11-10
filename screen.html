@@ -333,6 +333,8 @@ body.flashred{animation:flashred .6s ease 2}
     if (s.mode === "roulette") { runRoulette(s, fresh); return; }
     if (s.mode === "hottake" && s.phase === "twist" && s.people && fresh) { runTwist(s); return; }
     if (s.mode === "hottake") s._fresh = false;
+    // a prompt with its own sound (BEE_SOUNDS): plays once when the prompt first comes up
+    if (s.mode === "bee" && s.phase === "prompt" && s.snd && fresh) { try { var pa = new Audio(s.snd); var pp = pa.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {} }
     if (fresh && s.mode === "bee" && s.phase === "result" && s.said) {
       // After "Yes": a held breath (drumroll), longer in later rounds, longer again in sudden death, longest at the finale. Then the reveal.
       var pause = suspenseMs(s); s.big = pause >= 4500;

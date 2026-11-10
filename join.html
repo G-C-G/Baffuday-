@@ -258,7 +258,7 @@ main{min-height:0;overflow-y:auto}
     RATING.forEach(function (o) {
       var l = document.createElement("label"); l.className = "opt";
       l.innerHTML = '<input type="radio" name="rate-' + id + '" value="' + o.n + '"><span>' + o.label + "<small>" + pad(o.n) + "</small></span>";
-      l.querySelector("input").addEventListener("change", function () { rates[id] = o.n; nudged = false; });
+      l.querySelector("input").addEventListener("change", function () { rates[id] = o.n; nudged = false; meow(o.n <= 2); });
       sec.querySelector("[data-rate]").appendChild(l);
     });
   });
@@ -372,6 +372,12 @@ main{min-height:0;overflow-y:auto}
     } catch (e) {}
   }
   /* The finish: the supplied "yay" clip and a confetti burst from both sides. Starts from the tap on "Lock it in.", so phones allow the sound. */
+  /* A meow the moment someone taps "Rather not" or "Please no" (just the tap, they do not have to confirm). Picking another answer stops it. */
+  var mew = null;
+  try { mew = new Audio("assets/sounds/meow.mp3"); mew.preload = "auto"; } catch (e) {}
+  function meow(on) {
+    try { if (!mew) return; if (!on) { mew.pause(); mew.currentTime = 0; return; } mew.currentTime = 0; var pr = mew.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+  }
   /* Michael Jackson "hee-hee" when they have added their karaoke song. Played from the tap on Continue so phones allow it. */
   var hee = null;
   try { hee = new Audio("assets/sounds/hee-hee.mp3"); hee.preload = "auto"; } catch (e) {}

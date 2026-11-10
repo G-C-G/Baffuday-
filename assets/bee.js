@@ -12,7 +12,8 @@ window.BEE_ROUNDS = {
 window.BEE_IMAGES = {
   "pair/pear": "assets/bee/rick-ross-pears.png",
   "capital/capitol": "assets/bee/capitol.jpg",
-  "for/four": "assets/bee/four.png"
+  "for/four": "assets/bee/four.png",
+  "son/sun": "assets/bee/edward.jpg"
 };
 // Prompts where only the exact words are highlighted (not plurals or other endings such as pears). Same key as BEE_IMAGES.
 window.BEE_EXACT = {
@@ -21,7 +22,8 @@ window.BEE_EXACT = {
 // A sound that plays once on the projector when that prompt first appears. Same key as BEE_IMAGES.
 window.BEE_SOUNDS = {
   "pair/pear": "assets/sounds/shoutout-pears.mp3",
-  "capital/capitol": "assets/sounds/volunteer.mp3"
+  "capital/capitol": "assets/sounds/volunteer.mp3",
+  "son/sun": "assets/sounds/edward.mp3"
 };
 window.BEE_W = {
   their: "belonging to them", there: "in that place", "they're": "they are",

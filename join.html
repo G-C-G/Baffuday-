@@ -326,6 +326,7 @@ main{min-height:0;overflow-y:auto}
     $("next").textContent = !p ? "Skip this one" : "Continue";
   }
   function show(key) {
+    stopAnswerSounds();   // leaving a screen ends its answer sound (the hee-hee and the finish are separate and keep playing)
     curKey = key; var sq = seq(), i = sq.indexOf(key), onForm = i >= 0, fin = key === "done";
     document.querySelectorAll(".step").forEach(function (s) { s.classList.toggle("on", s.dataset.k === key); });
     var sec = document.querySelector('.step[data-k="' + key + '"]'), lab = sec && sec.querySelector("[data-t]");
@@ -376,6 +377,9 @@ main{min-height:0;overflow-y:auto}
      "Put me on first" = DMX, "I'm happy to do it" = the happy song, "I'll do it if called" = yes-no-maybe, "Rather not" = the nemesis clip, "Please no" = the meow. Every answer now has a sound; picking another one stops the last. */
   var rej = {};
   ["dmx", "happy", "maybe", "nemesis", "meow"].forEach(function (n) { try { rej[n] = new Audio("assets/sounds/" + n + ".mp3"); rej[n].preload = "auto"; } catch (e) {} });
+  function stopAnswerSounds() {
+    try { if (rej) Object.keys(rej).forEach(function (k) { rej[k].pause(); rej[k].currentTime = 0; }); } catch (e) {}
+  }
   function rejectSound(n) {
     try {
       Object.keys(rej).forEach(function (k) { rej[k].pause(); rej[k].currentTime = 0; });

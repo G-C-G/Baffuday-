@@ -65,10 +65,26 @@
     A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
     G = A.get();
     if (!G.guests) return say("No guests are loaded. On your host screen, load the guest file, then press Start now.");
-    var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false;
-    A.beeLoad(s.stage === "everyone" || G.keenest < 6 ? 0 : G.keenest); A.beeRules();
+    var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false; run.stage = s.stage; run.iceLen = s.ice === undefined ? 120 : s.ice;
+    if (run.iceLen > 0) return startIce();
+    startBee();
+  }
+  function startBee() {
+    A = api(); G = A.get();
+    A.beeLoad(run.stage === "everyone" || G.keenest < 6 ? 0 : G.keenest); A.beeRules();
     run.phase = "bee"; run.sinceK = 0; run.every = rnd(EVERY[0], EVERY[1]); run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
   }
+  // ---- icebreaker: every take is debated first, in groups; the clock runs on the projector ----
+  function startIce() { run.phase = "ice"; run.iceIdx = -1; run.ret = ""; run.ask = false; run.paused = null; save(); iceNext(); }
+  function iceNext() {
+    A = api(); var P = A.icePlan(), i = (run.iceIdx || 0) + 1;
+    while (i < P.length && !P[i].groups.length) i++;               // nobody to argue: skip
+    if (i >= P.length) return startBee();
+    run.iceIdx = i; save(); var t = P[i];
+    A.setState({ mode: "icebreaker", phase: "groups", num: i + 1, total: P.length, takeId: t.takeId, text: t.text, a: t.a, b: t.b, groups: t.groups, listeners: t.listeners, note: t.note || "", durMs: run.iceLen * 1000 });
+  }
+  function iceGo() { A = api(); A.setState(Object.assign({}, st, { phase: "timer", startAt: Date.now(), noReplay: true })); }
+  function iceAdd() { A = api(); A.setState(Object.assign({}, st, { durMs: st.durMs + 30000, noReplay: true })); }
   startBtn.addEventListener("click", function () { startShow(); });
 
   // ---- what happens after a karaoke break ----
@@ -96,8 +112,9 @@
   function finishNight() { A = api(); run.phase = "done"; run.ask = false; save(); A.setState({ mode: "home" }); }
 
   // ---- pause ----
-  function pause() { A = api(); run.paused = st; save(); A.setState({ mode: "pause", resume: st }); }
-  function resume() { A = api(); var r = run.paused; run.paused = null; save(); A.setState(Object.assign({}, r && r.mode !== "pause" ? r : { mode: "home" }, { noReplay: true })); }
+  function pause() { A = api(); run.paused = st; run.pausedAt = Date.now(); save(); A.setState({ mode: "pause", resume: st }); }
+  function resume() { A = api(); var r = run.paused; run.paused = null; save();
+    if (r && r.mode === "icebreaker" && r.phase === "timer" && run.pausedAt) r = Object.assign({}, r, { startAt: r.startAt + (Date.now() - run.pausedAt) }); A.setState(Object.assign({}, r && r.mode !== "pause" ? r : { mode: "home" }, { noReplay: true })); }
 
   // ---- actions ----
   var ACT = {
@@ -122,6 +139,11 @@
     kback: function () { returnFromKaraoke(); },
     kagain: function () { A.spinAgain(); },
     pause: function () { pause(); },
+    icego: function () { iceGo(); },
+    icenext: function () { iceNext(); },
+    icelast: function () { startBee(); },
+    iceadd: function () { iceAdd(); },
+    iceskip: function () { if (confirm("Skip the rest of the icebreaker and go to the spelling bee?")) startBee(); },
     resume: function () { resume(); },
     reset: function () { run.phase = "idle"; run.ret = ""; run.ask = false; run.paused = null; save(); A.setState({ mode: "home" }); }
   };
@@ -162,6 +184,18 @@
       status = "<b>Karaoke roulette.</b> " + esc(st.name || "") + (st.song ? " &middot; " + esc(st.song) : "");
       primary = btn("Back to the show", "kback", "go");
       sec = [btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")];
+    } else if (run.phase === "ice") {
+      var P2 = A.icePlan(), idx = run.iceIdx || 0, lastIce = !P2.slice(idx + 1).some(function (t) { return t.groups.length; });
+      status = "<b>Icebreaker.</b> Take " + (idx + 1) + " of " + P2.length;
+      if (m === "icebreaker" && st.phase === "timer") {
+        var left = st.startAt + st.durMs - Date.now();
+        status += left > 0 ? " &middot; clock running (" + Math.ceil(left / 1000) + "s left)" : " &middot; <b>time</b>";
+        primary = btn(lastIce ? "Next: the spelling bee" : "Next take", lastIce ? "icelast" : "icenext", "go");
+        sec = [btn("+30 seconds", "iceadd", "sec"), btn("Pause", "pause", "sec")];
+      } else if (m === "icebreaker") {
+        primary = btn("Start the clock (" + Math.round(st.durMs / 1000 / 60 * 10) / 10 + " min)", "icego", "go");
+        sec = [btn(lastIce ? "Skip to the spelling bee" : "Skip this take", lastIce ? "icelast" : "icenext", "sec"), btn("Skip the icebreaker", "iceskip", "sec"), btn("Pause", "pause", "sec")];
+      } else primary = btn("Show the groups", "icenext", "go");
     } else if (run.phase === "bee") {
       var stand = G.alive + " standing" + (G.sudden ? " &middot; sudden death" : ""), who = G.cur ? " &middot; up: <b>" + esc(G.cur) + "</b>" : "";
       var left = G.total - G.n - 1;

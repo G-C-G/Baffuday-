@@ -257,3 +257,13 @@ Open `screen.html` (the projector page) and host the whole night from it, no sep
 - Keys: Space/Enter = the gold button, P pause, K karaoke now, S skip, 1 to 4 pick an answer, H show the strip.
 - Settings in `config.js`: `KARAOKE_EVERY_MIN`, `KARAOKE_EVERY_MAX`, `TAKES_TO_PLAY`.
 - It runs on the same game code as the host panel (loaded invisibly in the page), so both stay in sync. The projector page and host panel must be in the same browser for the demo storage to be shared, which is the case when you host from the projector page alone.
+
+## Icebreaker debates (before the spelling bee)
+
+Set on the host panel's **Night setup** tab: Off, 1 minute or 2 minutes per take. When on, **Start now** begins with all the hot takes (lightest to spiciest), one at a time.
+- **The projector makes the groups, always 2 against 2.** People who really picked opposite sides are matched first, and the strongest feelings are matched with the strongest feelings (the hottest matchup is marked "Most heated"). When a take is lopsided, the rest are still put in balanced groups of 4: the two people in a group with the weakest feelings are asked to argue the side they did NOT pick (their name carries a small "picked ..." note). Nobody is left out unless fewer than 4 remain.
+- **A big clock** runs on the projector. At zero it says "Time." with a bell and a flash. The strip has **Start the clock**, **+30 seconds**, **Next take**, **Skip this take**, **Skip the icebreaker**, and Pause (which freezes the clock).
+- **Lopsided takes get an instruction on screen.** Where 70% or more picked one side, the screen tells everyone to talk about why someone would pick the other side. Jollof has its own line about Ghana and Nigerian jollof.
+- The screen also says "Listen closely. Keep an open mind."
+- **The groups are fixed and repeatable.** The same guests and shuffle number give the same groups in every browser. The Night setup tab lists the groups for all 8 takes, with **Shuffle the groups** and **Print the groups**. Final groups should be made after the last answers are in.
+- People who said Rather not or Please no to hot takes are never put in a group.

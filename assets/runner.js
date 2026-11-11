@@ -221,7 +221,8 @@
     } else if (run.phase === "ice") {
       var P2 = A.icePlan(), idx = run.iceIdx || 0, lastIce = !P2.slice(idx + 1).some(function (t) { return t.groups.length; });
       status = "<b>Icebreaker.</b> Take " + (idx + 1) + " of " + P2.length;
-      if (P2[idx] && P2[idx].note) status += '<br><span style="color:#F5D76E"><b>Tell the room:</b> ' + esc(P2[idx].note) + "</span>";
+      if (idx === 0) status += '<br><span style="color:#F5D76E"><b>Say first:</b> If you are in a group where everyone feels the same way, work out why other people feel completely differently.</span>';
+      if (P2[idx] && P2[idx].note) status += '<br><span style="color:#F5D76E"><b>For this one:</b> ' + esc(P2[idx].note) + "</span>";
       if (m === "icebreaker" && st.phase === "timer") {
         var left = st.startAt + st.durMs - Date.now();
         status += left > 0 ? " &middot; clock running (" + Math.ceil(left / 1000) + "s left)" : " &middot; <b>time</b>";

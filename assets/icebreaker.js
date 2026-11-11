@@ -47,6 +47,15 @@
         var real = four.filter(function (p) { return !flipped[p.name]; });
         take({ a: ga, b: gb, heat: real.reduce(function (s, p) { return s + p.n; }, 0) / (real.length || 1) - 1, real: false });
       }
+      // An even number of groups, never more than 8 (so names stay big on the projector): the extra groups are folded into the others as 3 against 3.
+      var want = Math.min(groups.length, 8); if (want % 2 && want > 1) want--;
+      if (groups.length > want) {
+        groups.sort(function (x, y) { return (x.real ? 1 : 0) - (y.real ? 1 : 0) || x.heat - y.heat; });
+        var cut = groups.splice(0, groups.length - want), to = 0;
+        cut.forEach(function (g) {
+          for (var q = 0; q < Math.max(g.a.length, g.b.length); q++) { var host = groups[to % groups.length]; to++; if (g.a[q]) host.a.push(g.a[q]); if (g.b[q]) host.b.push(g.b[q]); }
+        });
+      }
       // Spread the meetings: swap people between groups (same picked side, same role) so that as few pairs as possible have already met.
       var pairsOf = function (g) { var m = [].concat(g.a, g.b), r = []; for (var i = 0; i < m.length; i++) for (var j = i + 1; j < m.length; j++) r.push(pairKey(m[i].name, m[j].name)); return r; };
       var cost = function () { var c = 0; groups.forEach(function (g) { pairsOf(g).forEach(function (k) { c += (met[k] || 0) * 100; }); var sa = g.a.reduce(function (s, m) { return s + m.n; }, 0) / g.a.length, sb = g.b.reduce(function (s, m) { return s + m.n; }, 0) / g.b.length; c += Math.abs(sa - sb) * (g.real ? 1 : 0.2); }); return c; };
@@ -63,8 +72,8 @@
       groups.forEach(function (g) { pairsOf(g).forEach(function (k) { met[k] = (met[k] || 0) + 1; }); });
       var listeners = A.concat(B).filter(function (p) { return !used[p.name]; }).map(function (p) { return p.name; });
       var tot = A.length + B.length, major = A.length >= B.length ? t.a : t.b, minor = A.length >= B.length ? t.b : t.a, note = "";
-      if (tot && Math.max(A.length, B.length) / tot >= 0.7) note = "Most of you picked " + major + ". If everyone in your group picked the same, two of you argue " + minor + " anyway. Talk about why someone would pick it.";
-      if (t.id === "jollof" && note) note = "We're in Ghana, so most of you picked Ghanaian. Even if you don't support Nigerian, talk about why people would choose Nigerian jollof. Get in that mindset. If everyone in your group picked Ghanaian, two of you argue Nigerian.";
+      if (tot && Math.max(A.length, B.length) / tot >= 0.7) note = "Most people picked " + major + ", so some groups have two people arguing " + minor + " who did not pick it. Ask them to work out why someone would.";
+      if (t.id === "jollof" && note) note = "We are in Ghana, so almost everyone picked Ghanaian. Tell them: even if you do not support Nigerian, talk about why people would choose Nigerian jollof, to get in that mindset. In most groups two people argue Nigerian who did not pick it.";
       out.push({ takeId: t.id, text: t.text, a: t.a, b: t.b, q: t.q, nA: A.length, nB: B.length, groups: groups, listeners: listeners, note: note });
     });
     return out;

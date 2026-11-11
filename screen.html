@@ -111,6 +111,16 @@ body.flashred{animation:flashred .6s ease 2}
 @keyframes slamin{0%{transform:scale(3.4) rotate(-6deg);opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
 @keyframes slamfade{0%,80%{opacity:1}100%{opacity:0}}
 .beeimg{position:fixed;right:3.5vw;top:13vh;width:31vw;height:60vh;object-fit:contain;object-position:right top;border-radius:6px;filter:drop-shadow(0 1.4vh 2.6vh rgba(8,24,62,.4));animation:pop .5s ease-out;pointer-events:none}
+/* the invitation title: Hinda's 2 [Pac-Man] Ate, with the bite out of the A and the crumbs (same as the guest form) */
+.hero em.t28{font-size:.92em;white-space:nowrap}
+.pac{display:inline-block;height:.66em;width:.66em;vertical-align:-.03em;margin:0 .06em 0 .1em;fill:var(--ink);font-style:normal}
+.pac .eye{fill:var(--cream)}.pac .pupil{fill:var(--ink)}
+.ate{position:relative;display:inline-block}
+.ate .a{display:inline-block;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 74%,22% 66%,8% 58%,28% 51%,10% 43%,24% 35%,0 28%)}
+.crumbs{position:absolute;left:-.3em;top:.1em;height:.7em;width:.35em;fill:var(--ink);animation:crumb 1.4s ease-in-out infinite alternate}
+@keyframes crumb{from{transform:translate(0,0) rotate(0)}to{transform:translate(.06em,-.05em) rotate(8deg)}}
+.pac .o{animation:chompO .5s steps(1,end) infinite}.pac .c{animation:chompC .5s steps(1,end) infinite}
+@keyframes chompO{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes chompC{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
 .wheelbox{height:min(72vh,60vw);aspect-ratio:1/1}
 .wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
 .fs{position:fixed;right:12px;bottom:10px;font:11px var(--sans);color:inherit;cursor:pointer;background:none;border:0;opacity:.55}
@@ -209,8 +219,8 @@ body.flashred{animation:flashred .6s ease 2}
       return beeFinal(s);
     }
     // home
-    var parts = title.match(/^(\S+)\s*(.*)$/) || [title, title, ""];
-    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)">' + esc(parts[1]) + (parts[2] ? "<br><em>" + esc(parts[2]) + "</em>" : "") + "</p>", micro("Some of it is voluntary."), "c") };
+    var HOME_TITLE = "Hinda's<br><em class=\"t28\">2<svg class=\"pac\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path class=\"o\" d=\"M50 50 L96 22 A50 50 0 1 0 96 78 Z\"/><path class=\"c\" d=\"M50 50 L100 47 A50 50 0 1 0 100 53 Z\"/><circle class=\"eye\" cx=\"58\" cy=\"27\" r=\"9\"/><circle class=\"pupil\" cx=\"60\" cy=\"28\" r=\"4\"/></svg><span class=\"ate\"><span class=\"a\">A</span>te<svg class=\"crumbs\" viewBox=\"0 0 40 80\" aria-hidden=\"true\"><polygon points=\"8,8 20,4 16,16\"/><polygon points=\"22,34 34,30 30,44\"/><polygon points=\"6,58 16,56 12,70\"/></svg></span></em>";
+    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)" aria-label="' + esc(title) + '">' + HOME_TITLE + "</p>", micro("Some of it is voluntary."), "c") };
   }
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
   function beeSentenceView(s, mode) {

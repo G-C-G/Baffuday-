@@ -220,7 +220,7 @@ body.flashred{animation:flashred .6s ease 2}
     }
     // home
     var HOME_TITLE = "Hinda's<br><em class=\"t28\">2<svg class=\"pac\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path class=\"o\" d=\"M50 50 L96 22 A50 50 0 1 0 96 78 Z\"/><path class=\"c\" d=\"M50 50 L100 47 A50 50 0 1 0 100 53 Z\"/><circle class=\"eye\" cx=\"58\" cy=\"27\" r=\"9\"/><circle class=\"pupil\" cx=\"60\" cy=\"28\" r=\"4\"/></svg><span class=\"ate\"><span class=\"a\">A</span>te<svg class=\"crumbs\" viewBox=\"0 0 40 80\" aria-hidden=\"true\"><polygon points=\"8,8 20,4 16,16\"/><polygon points=\"22,34 34,30 30,44\"/><polygon points=\"6,58 16,56 12,70\"/></svg></span></em>";
-    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)" aria-label="' + esc(title) + '">' + HOME_TITLE + "</p>", micro("Some of it is voluntary."), "c") };
+    return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)" aria-label="' + esc(title) + '">' + HOME_TITLE + "</p>", "", "c") };
   }
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
   function beeSentenceView(s, mode) {

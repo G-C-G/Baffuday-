@@ -23,7 +23,8 @@ window.BEE_EXACT = {
 window.BEE_SOUNDS = {
   "pair/pear": "assets/sounds/shoutout-pears.mp3",
   "capital/capitol": "assets/sounds/volunteer.mp3",
-  "son/sun": "assets/sounds/edward.mp3"
+  "son/sun": "assets/sounds/edward.mp3",
+  "which/witch": "assets/sounds/potter.mp3"
 };
 window.BEE_W = {
   their: "belonging to them", there: "in that place", "they're": "they are",
@@ -98,7 +99,7 @@ window.BEE = [
   [2, "Edward sparkles in the sun, while Hinda's son is her little sunshine. Neither one is helping you spell tonight \ud83e\udd23", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [2, "He rode all the way down the road to get here, and now he's standing here wondering why he agreed to a spelling bee.", "Spell the past tense of ride.", "rode", ["road", "rode"]],
   [2, "You're allowed to have an opinion; you're just not allowed to voice it aloud.", "Spell the word meaning spoken rather than silently.", "aloud", ["allowed", "aloud"]],
-  [2, "Harry knew exactly which witch had cast the spell, but nobody at Hogwarts prepared him for a spelling bee.", "Spell the word meaning a woman with magic powers.", "witch", ["which", "witch"]],
+  [2, "Harry knew exactly which witch had cast the spell, but nobody at Hogwarts prepared him for a spelling bee.", "Spell the word for asking about a choice.", "which", ["which", "witch"]],
   [3, "The party site looks cool, the sight of this spelling bee is already concerning, and nobody better cite Hinda as a source of their misfortune. Y'all signed up for this one.", "Spell the word meaning a location.", "site", ["site", "sight", "cite"]],
   [3, "The stationery is beautiful, but you've been stationary for so long that we may need to send help.", "Spell the word meaning writing materials.", "stationery", ["stationary", "stationery"]],
   [3, "Please be discreet about your strategy; there are already discrete groups of people hoping you lose.", "Spell the word meaning careful not to attract attention.", "discreet", ["discreet", "discrete"]],

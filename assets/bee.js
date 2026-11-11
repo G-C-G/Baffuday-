@@ -24,7 +24,8 @@ window.BEE_SOUNDS = {
   "pair/pear": "assets/sounds/shoutout-pears.mp3",
   "capital/capitol": "assets/sounds/volunteer.mp3",
   "son/sun": "assets/sounds/edward.mp3",
-  "which/witch": "assets/sounds/potter.mp3"
+  "which/witch": "assets/sounds/potter.mp3",
+  "sea/see": "assets/sounds/pirates.mp3"
 };
 window.BEE_W = {
   their: "belonging to them", there: "in that place", "they're": "they are",

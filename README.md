@@ -268,3 +268,8 @@ Set on the host panel's **Night setup** tab: Off, 1 minute or 2 minutes per take
 - **The groups are fixed and repeatable.** The same guests and shuffle number give the same groups in every browser. The Night setup tab lists the groups for all 8 takes, with **Shuffle the groups** and **Print the groups**. Final groups should be made after the last answers are in.
 - People who said Rather not or Please no to hot takes are never put in a group.
 - **Mixing.** The groups are spread so that people meet as many different people as possible across the 8 takes (the Night setup tab shows the result: with the 24 who can play, each person meets about 20 of the other 23 on average). A perfect "everyone meets everyone" is not possible with 2 against 2 groups and the sides people picked, so a handful of pairs never share a group.
+
+## Who is here tonight
+
+The host panel's **Night setup** tab starts with **Who is here tonight**: a big tap list of every guest. Tap people as they arrive (tap again to undo), or **Everyone is here** / **Clear all**. Only the people marked here are put in the icebreaker groups, the spelling bee stage, the karaoke wheel and the hot-take teams, so nobody is called to the stage who is not in the room. You can change it at any time: someone who arrives late joins the next icebreaker take, the wheel and the hot takes straight away (the bee stage is set when the bee starts; add a late arrival from the Spelling bee tab).
+**Start now** on the projector will not start until at least 4 people are marked here, and tells you so on the strip. (Before anyone has been marked, the host panel treats everyone as present, which is only for testing.)

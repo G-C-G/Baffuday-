@@ -65,6 +65,8 @@
     A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
     G = A.get();
     if (!G.guests) return say("No guests are loaded. On your host screen, load the guest file, then press Start now.");
+    if (!G.hereOn) return say("Mark who is here first. On your host screen, open Night setup and tap the people who have arrived, then press Start now.");
+    if (G.here < 4) return say("Only " + G.here + " marked here. Mark everyone who has arrived on your host screen (Night setup).");
     var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false; run.stage = s.stage; run.iceLen = s.ice === undefined ? 120 : s.ice;
     if (run.iceLen > 0) return startIce();
     startBee();

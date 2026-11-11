@@ -59,6 +59,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     <button class="btn ghost" data-p="food">Allergies &amp; diet</button>
     <button class="btn ghost" data-p="people">Engagement</button>
     <button class="btn ghost" data-p="bee">Spelling bee</button>
+    <button class="btn ghost" data-p="night">Night setup</button>
     <button class="btn ghost" data-p="show">Show control</button>
     <span class="sp"></span>
     <button class="btn ghost" id="csv">Export CSV</button>
@@ -121,6 +122,18 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       </div>
     </div>
     <div class="tbl"><table id="bt"></table></div>
+  </section>
+
+  <section class="panel" id="p-night">
+    <p class="note">Set the night up here, on this screen only. The projector never shows any of this. When you are ready, open <b>screen.html</b> on the projector and press <b>Start now</b>. Everything saves as you change it.</p>
+    <div class="side" id="nready"></div>
+    <div><span class="k">Spelling bee: who goes on stage</span>
+      <div class="bar" id="nstage"></div></div>
+    <div><span class="k">Twisted hot takes to play</span>
+      <div class="bar" id="ntakes"></div></div>
+    <div><span class="k">Karaoke roulette breaks</span>
+      <div class="bar" id="nk"></div>
+      <p class="note">When on, the projector page asks you (on the strip, with a chime) whether to run a karaoke break after every few bee turns and between hot takes.</p></div>
   </section>
 
   <section class="panel" id="p-show">
@@ -219,6 +232,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("livetxt").textContent = lt[mm] || "Name screen";
     $("rback").hidden = state.mode !== "roulette";
     queue();
+    drawNight();
     people(L);
     renderRoster();
     preview();
@@ -657,11 +671,30 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   store.subscribe("guests", function (v) { guests = v || {}; render(); drawTakes(); renderBee(); });
   store.subscribe("state", function (v) { state = v || {}; render(); });
 
+  // ---- Night setup (host screen only; the projector page reads it when you press Start now) ----
+  var show = { stage: "keenest", takes: (window.GCG_CONFIG && window.GCG_CONFIG.TAKES_TO_PLAY) || 5, k: true };
+  function drawNight() {
+    var L = list(), keen = L.filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length, all = L.filter(function (g) { return into(g, "bee"); }).length;
+    var wheel = L.filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, takers = L.filter(function (g) { return into(g, "takes"); }).length;
+    $("nready").innerHTML = L.length ? '<b>' + L.length + ' guests loaded.</b> ' + all + ' can go on the bee stage (' + keen + ' of them are the keenest), ' + wheel + ' are on the karaoke wheel, ' + takers + ' can play the hot takes. Rather not and Please no are never put on an activity.' :
+      '<b class="flag">No guests are loaded yet.</b> Load the guest file on the Guests tab (Import guest file), then come back.';
+    var pill = function (on, attr, label) { return '<button type="button" class="btn ' + (on ? "" : "ghost") + '" ' + attr + '>' + label + '</button>'; };
+    $("nstage").innerHTML = (keen >= 6 ? pill(show.stage === "keenest", 'data-ns="keenest"', "The keenest " + keen + " (about 40 min)") : "") + pill(show.stage === "everyone" || keen < 6, 'data-ns="everyone"', "Everyone " + all + " (about 65 min)");
+    $("ntakes").innerHTML = [3, 4, 5, 6, 8].filter(function (n) { return n <= TAKES.length; }).map(function (n) { return pill(show.takes === n, 'data-nt="' + n + '"', n); }).join("");
+    $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each karaoke break") + pill(!show.k, 'data-nk="0"', "No breaks, I will start them myself");
+  }
+  $("p-night").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("button"); if (!b) return; var d = b.dataset;
+    if (d.ns) show.stage = d.ns; if (d.nt) show.takes = +d.nt; if (d.nk !== undefined) show.k = d.nk === "1";
+    store.set("setup/show", show); drawNight();
+  });
+  store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true }, v || {}); drawNight(); });
+
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
   window.HOSTAPI = {
     get: function () {
       var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
-      return { state: state, guests: list().length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
+      return { show: show, state: state, guests: list().length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
         winner: bee.winner || null, sudden: a.length <= SD, wheel: rpool().length, keenest: list().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
         eligible: list().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
     },

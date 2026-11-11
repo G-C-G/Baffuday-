@@ -246,7 +246,8 @@ The build-up before a reveal (spelling bee answer, the roulette near-miss, the h
 ## Hosting from the projector page
 
 Open `screen.html` (the projector page) and host the whole night from it, no separate host panel needed.
-- **Title page:** a **Start now** button (or Space / Enter). It opens a short setup: who goes on the bee stage (the keenest, or everyone, with a rough time for each), how many hot takes to play, and whether to be offered karaoke breaks.
+- **Setup is on the host screen, never on the projector.** On the host panel there is a **Night setup** tab: who goes on the bee stage (the keenest or everyone), how many hot takes to play, and whether to be offered karaoke breaks. It saves as you change it. Load the guest file there too (Guests tab, Import guest file).
+- **Title page:** the **Start now** button (or Space / Enter) is only on the title page. It starts the spelling bee straight away using the Night setup. If no guests are loaded it shows a small line on the strip instead of starting.
 - **The control strip** sits along the bottom and fades out after a few seconds. Move the mouse to bring it back. It always shows one big gold button for the next step, so you can press Space or Enter all night:
   - Spelling bee: Call up contestant, Show the sentence, tap their answer (or press 1, 2, 3), Lock it in, Next contestant, Show the champion. Then Next: Twisted Hot Takes.
   - Hot takes: Show what everyone picked, The twist, Next take, Finish the night.

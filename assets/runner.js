@@ -35,29 +35,17 @@
     "#runner .sec{opacity:.9}",
     "#startbtn{position:fixed;left:50%;bottom:11vh;transform:translateX(-50%);z-index:80;font:700 clamp(18px,2vw,32px)/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:#08183E;color:#F5D76E;border:0;border-radius:999px;padding:.9em 2.4em;cursor:pointer;box-shadow:0 1.2vh 3vh rgba(8,24,62,.4)}",
     "#startbtn:hover{background:#0F2560}",
-    "#dlgwrap[hidden],#startbtn[hidden]{display:none}",
-    "#dlgwrap{position:fixed;inset:0;z-index:95;background:rgba(8,24,62,.78);display:grid;place-items:center}",
-    "#dlg{background:#FBE9A6;color:#08183E;border-radius:10px;padding:3.2vh 3vw;width:min(54vw,860px);font:400 clamp(13px,1.2vw,19px)/1.45 Inter,sans-serif;display:grid;gap:2vh;box-shadow:0 2vh 6vh rgba(0,0,0,.45)}",
-    "#dlg h2{font:400 clamp(34px,3.8vw,60px)/1 'Instrument Serif',Georgia,serif;margin:0}",
-    "#dlg .lab{font:700 clamp(10px,.9vw,14px)/1.2 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;opacity:.7;margin:0 0 .8vh}",
-    "#dlg .pills{display:flex;gap:.7vw;flex-wrap:wrap}",
-    "#dlg .pill{font:700 clamp(12px,1.1vw,17px)/1.2 Inter,sans-serif;border:1.5px solid #08183E;background:transparent;color:#08183E;border-radius:999px;padding:.7em 1.3em;cursor:pointer;text-align:left}",
-    "#dlg .pill small{display:block;font-weight:500;opacity:.75;margin-top:.2em;letter-spacing:0}",
-    "#dlg .pill.on{background:#08183E;color:#F5D76E}",
-    "#dlg .go{justify-self:start;font:700 clamp(14px,1.4vw,22px)/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:#08183E;color:#F5D76E;border:0;border-radius:6px;padding:.9em 1.8em;cursor:pointer}",
-    "#dlg .go[disabled]{opacity:.35;cursor:default}",
-    "#dlg .note{opacity:.75}"
+    "#startbtn[hidden]{display:none}",
   ].join("\n");
   document.head.appendChild(css);
 
   var frame = document.createElement("iframe"); frame.id = "hostframe"; frame.src = "host.html?embed=1"; frame.setAttribute("aria-hidden", "true"); frame.tabIndex = -1; document.body.appendChild(frame);
   var strip = document.createElement("div"); strip.id = "runner"; strip.className = "hide"; document.body.appendChild(strip);
   var startBtn = document.createElement("button"); startBtn.id = "startbtn"; startBtn.type = "button"; startBtn.textContent = "Start now"; startBtn.hidden = true; document.body.appendChild(startBtn);
-  var dlgWrap = document.createElement("div"); dlgWrap.id = "dlgwrap"; dlgWrap.hidden = true; document.body.appendChild(dlgWrap);
 
   function api() { try { return frame.contentWindow && frame.contentWindow.HOSTAPI; } catch (e) { return null; } }
   var st = { mode: "home" };
-  var A = null, G = null, dialogOpen = false, hideT = 0, sig = "";
+  var A = null, G = null, hideT = 0, sig = "";
 
   // ---- show / hide the strip with the mouse ----
   function poke() {
@@ -65,49 +53,23 @@
     hideT = setTimeout(function () { if (!needsAttention()) { strip.classList.add("hide"); document.body.classList.remove("hostmode"); } }, 4500);
   }
   document.addEventListener("mousemove", poke); document.addEventListener("mousedown", poke); document.addEventListener("touchstart", poke);
-  function needsAttention() { return !!(run.ask || run.paused || dialogOpen || run.phase === "done"); }
+  function needsAttention() { return !!(run.ask || run.paused || hint || run.phase === "done"); }
   function chime() {
     try { var ac = new (window.AudioContext || window.webkitAudioContext)(); [660, 880].forEach(function (f, i) { var o = ac.createOscillator(), g = ac.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(.12, ac.currentTime + i * .15); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + i * .15 + .3); o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + i * .15); o.stop(ac.currentTime + i * .15 + .35); }); } catch (e) {}
   }
 
-  // ---- the setup dialog ----
-  function openSetup() {
-    A = api(); if (!A) return; G = A.get(); dialogOpen = true; poke();
-    var keen = G.keenest, all = G.eligible, useKeen = keen >= 6;
-    if (!run.stageTouched) run.stage = useKeen ? keen : 0;
-    var mins = function (n) { var turns = n >= 20 ? 42 : n >= 15 ? 32 : n >= 11 ? 26 : 20; return "about " + Math.round(turns * 1.5 / 5) * 5 + " min"; };
-    var noGuests = !G.guests;
-    var takeOpts = [3, 4, 5, 6, 8].filter(function (n) { return n <= G.takes.length; });
-    dlgWrap.hidden = false;
-    dlgWrap.innerHTML = '<div id="dlg"><h2>Ready?</h2>' +
-      (noGuests ? '<p class="note"><b>No guests are loaded.</b> Load the guest file, then come back to this screen.</p><div><label class="pill" style="display:inline-block">Load guest file (.json)<input type="file" id="dlgfile" accept="application/json,.json" hidden></label></div><p class="note" id="dlgmsg"></p>' :
-        '<p class="note">' + G.guests + ' guests. ' + all + ' can go on the bee stage. The people who said Rather not or Please no are never put on an activity they said no to.</p>' +
-        '<div><p class="lab">Spelling bee: who goes on stage</p><div class="pills">' +
-        (keen >= 6 ? '<button type="button" class="pill' + (run.stage === keen ? " on" : "") + '" data-stage="' + keen + '">The keenest ' + keen + '<small>' + mins(keen) + '</small></button>' : "") +
-        '<button type="button" class="pill' + (run.stage === 0 ? " on" : "") + '" data-stage="0">Everyone ' + all + '<small>' + mins(all) + '</small></button></div></div>' +
-        '<div><p class="lab">Hot takes to play</p><div class="pills">' + takeOpts.map(function (n) { return '<button type="button" class="pill' + (run.takes === n ? " on" : "") + '" data-takes="' + n + '">' + n + '</button>'; }).join("") + '</div></div>' +
-        '<div><p class="lab">Karaoke roulette breaks</p><div class="pills"><button type="button" class="pill' + (run.kOn ? " on" : "") + '" data-k="1">Ask me every ' + EVERY[0] + ' to ' + EVERY[1] + ' turns<small>You say yes or not now each time</small></button><button type="button" class="pill' + (!run.kOn ? " on" : "") + '" data-k="0">No breaks, I will call them myself</button></div></div>' +
-        '<button type="button" class="go" id="dlgbegin">Start the spelling bee</button>') + '<p class="note"><button type="button" class="pill" id="dlgcancel">Not yet</button></p></div>';
+  // ---- Start now: no dialog. The setup is chosen on the host panel (Night setup tab) and never shown on the projector. ----
+  var hint = "", hintT = 0;
+  function say(t) { hint = t; clearTimeout(hintT); hintT = setTimeout(function () { hint = ""; paint(true); }, 7000); paint(true); poke(); }
+  function startShow() {
+    A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
+    G = A.get();
+    if (!G.guests) return say("No guests are loaded. On your host screen, load the guest file, then press Start now.");
+    var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false;
+    A.beeLoad(s.stage === "everyone" || G.keenest < 6 ? 0 : G.keenest); A.beeRules();
+    run.phase = "bee"; run.sinceK = 0; run.every = rnd(EVERY[0], EVERY[1]); run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
   }
-  function closeDlg() { dialogOpen = false; dlgWrap.hidden = true; dlgWrap.innerHTML = ""; }
-  dlgWrap.addEventListener("click", function (e) {
-    var t = e.target.closest && e.target.closest("button, label"); if (!t) return;
-    if (t.dataset.stage !== undefined) { run.stage = +t.dataset.stage; run.stageTouched = true; save(); return openSetup(); }
-    if (t.dataset.takes) { run.takes = +t.dataset.takes; save(); return openSetup(); }
-    if (t.dataset.k !== undefined) { run.kOn = t.dataset.k === "1"; save(); return openSetup(); }
-    if (t.id === "dlgcancel") return closeDlg();
-    if (t.id === "dlgbegin") {
-      closeDlg(); A = api(); A.beeLoad(run.stage); A.beeRules();
-      run.phase = "bee"; run.sinceK = 0; run.every = rnd(EVERY[0], EVERY[1]); run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
-    }
-  });
-  dlgWrap.addEventListener("change", function (e) {
-    if (e.target.id !== "dlgfile" || !e.target.files[0]) return;
-    var f = e.target.files[0]; document.getElementById("dlgmsg").textContent = "Reading...";
-    f.text().then(function (t) { return api().importJson(t); }).then(function (n) { document.getElementById("dlgmsg").textContent = "Loaded " + n + " guests."; setTimeout(openSetup, 600); })
-      .catch(function () { document.getElementById("dlgmsg").textContent = "That file is not a guest list."; });
-  });
-  startBtn.addEventListener("click", function () { openSetup(); });
+  startBtn.addEventListener("click", function () { startShow(); });
 
   // ---- what happens after a karaoke break ----
   function returnFromKaraoke() {
@@ -169,9 +131,9 @@
     var f = ACT[b.dataset.act]; if (f) { f(); setTimeout(function () { paint(true); }, 60); }
   });
   document.addEventListener("keydown", function (e) {
-    if (dialogOpen || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) return;
     var k = e.key;
-    if (run.phase === "idle" && (k === " " || k === "Enter") && !startBtn.hidden) { e.preventDefault(); openSetup(); return; }
+    if (run.phase === "idle" && (k === " " || k === "Enter") && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
     if (run.phase === "idle" || run.phase === "done") return;
     var go = strip.querySelector("button.go:not([disabled])");
     if ((k === " " || k === "Enter") && go) { e.preventDefault(); go.click(); poke(); }
@@ -189,7 +151,7 @@
   function paint(force) {
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
     startBtn.hidden = !(run.phase === "idle" && (m === "home" || !m));
-    if (run.phase === "idle") { strip.classList.add("hide"); return; }
+    if (run.phase === "idle") { if (hint) { strip.innerHTML = '<div class="row"><span class="st"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();
 
@@ -261,5 +223,5 @@
   if (window.store) window.store.subscribe("state", function (v) { st = v || { mode: "home" }; paint(); });
   setInterval(paint, 1200);
   paint();
-  window.GCG_RUN = { open: openSetup, get: function () { return run; } };
+  window.GCG_RUN = { open: startShow, get: function () { return run; } };
 })();

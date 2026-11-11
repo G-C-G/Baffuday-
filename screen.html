@@ -205,8 +205,8 @@ body.flashred{animation:flashred .6s ease 2}
     }
     var head = twisted && s.winner ? '<span class="chip" style="font-size:calc(var(--lab)*1.6)">Most convincing &middot; ' + esc(s.winner) + "</span>" : twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">What everyone picked</span>', cap = twisted ? "Now defending" : "Picked";
     return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + "</p><div>" + head + "</div></div>" +
-      '<div class="teams"><div class="team a"><span class="lab">' + cap + '</span><p class="major">' + esc(s.a) + '</p><ul class="names">' + items(inA, "A") + "</ul></div>" +
-      '<div class="team b"><span class="lab">' + cap + '</span><p class="major">' + esc(s.b) + '</p><ul class="names">' + items(inB, "B") + "</ul></div></div></div>" };
+      '<div class="teams"><div class="team a"><span class="lab">' + cap + '</span><p class="major">' + esc(twisted ? s.b : s.a) + '</p><ul class="names">' + items(inA, "A") + "</ul></div>" +
+      '<div class="team b"><span class="lab">' + cap + '</span><p class="major">' + esc(twisted ? s.a : s.b) + '</p><ul class="names">' + items(inB, "B") + "</ul></div></div></div>" };
   }
   // Icebreaker: the take, the clock (or "Find your group"), and the groups.
   function fmtClock(ms) { ms = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(ms / 60) + ":" + (ms % 60 < 10 ? "0" : "") + (ms % 60); }

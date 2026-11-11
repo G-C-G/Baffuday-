@@ -177,6 +177,7 @@
   strip.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("button"); if (!b || b.disabled) return; A = api(); if (!A) return; fresh();
     if (b.dataset.pick) { A.beePick(b.dataset.pick); return; }
+    if (b.dataset.w !== undefined) { var cur = (run.win || {})[st.takeId]; run.win = run.win || {}; run.win[st.takeId] = cur === b.dataset.w ? "" : b.dataset.w; save(); A.setState(Object.assign({}, st, { winner: run.win[st.takeId] || "", noReplay: true })); setTimeout(function () { paint(true); }, 60); return; }
     var f = ACT[b.dataset.act]; if (f) { f(); setTimeout(function () { paint(true); }, 60); }
   });
   document.addEventListener("keydown", function (e) {
@@ -268,6 +269,8 @@
         primary = nowT >= tk ? btn("Finish the night", "hend", "go") : btn("Next take", "hnext", "go");
         if (nowT >= tk) ACT.hend = function () { finishNight(); };
         sec = [btn("Karaoke now", "know", "sec"), btn("Pause", "pause", "sec")];
+        var wn = (run.win || {})[st.takeId] || "";
+        opts = '<span class="st">Ask the room: who was the most convincing? Tap the winner.</span>' + (st.people || []).map(function (p) { return btn(esc(p.name), "hwin", "opt" + (wn === p.name ? " on" : ""), ' data-w="' + esc(p.name) + '"'); }).join("");
       } else if (m === "hottake" && st.phase === "stand") {
         primary = btn("The twist", "twist", "go"); sec = [btn("Skip take", "hskip", "sec"), btn("Pause", "pause", "sec")];
       } else if (m === "hottake") {

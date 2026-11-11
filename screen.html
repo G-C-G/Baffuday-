@@ -203,7 +203,7 @@ body.flashred{animation:flashred .6s ease 2}
         return '<li class="' + cls + '" style="animation-delay:' + (i * 130) + 'ms">' + esc(p.name) + was + "</li>";
       }).join("") || '<li style="opacity:.5">nobody</li>';
     }
-    var head = twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">What everyone picked</span>', cap = twisted ? "Now defending" : "Picked";
+    var head = twisted && s.winner ? '<span class="chip" style="font-size:calc(var(--lab)*1.6)">Most convincing &middot; ' + esc(s.winner) + "</span>" : twisted ? '<span class="chip">The twist &middot; defend your honour</span>' : '<span class="chip">What everyone picked</span>', cap = twisted ? "Now defending" : "Picked";
     return { theme: "cream", html: '<div class="split"><div class="splitTop"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Twisted hot take ' + num + tot + "</span>" + live + '</div><p class="second" style="max-width:48ch">' + esc(s.text) + "</p><div>" + head + "</div></div>" +
       '<div class="teams"><div class="team a"><span class="lab">' + cap + '</span><p class="major">' + esc(s.a) + '</p><ul class="names">' + items(inA, "A") + "</ul></div>" +
       '<div class="team b"><span class="lab">' + cap + '</span><p class="major">' + esc(s.b) + '</p><ul class="names">' + items(inB, "B") + "</ul></div></div></div>" };

@@ -373,8 +373,9 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   function nudgeChime() {
     try { var a = new (window.AudioContext || window.webkitAudioContext)(); [660, 880, 1100].forEach(function (f, i) { var o = a.createOscillator(), g = a.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(.15, a.currentTime + i * .16); g.gain.exponentialRampToValueAtTime(.001, a.currentTime + i * .16 + .3); o.connect(g); g.connect(a.destination); o.start(a.currentTime + i * .16); o.stop(a.currentTime + i * .16 + .35); }); } catch (e) {}
   }
+  var EMBED = /[?&]embed=1/.test(location.search);   // loaded invisibly inside the projector page, which runs the show itself
   function armNudge() {
-    clearTimeout(nudgeT); $("nudge").hidden = true;
+    clearTimeout(nudgeT); $("nudge").hidden = true; if (EMBED) return;
     try { localStorage.setItem("gcg-rnudge", JSON.stringify({ on: $("rauto").checked, min: $("rmin").value, max: $("rmax").value })); } catch (e) {}
     if (!$("rauto").checked) return;
     var mn = Math.max(.05, parseFloat($("rmin").value) || 6), mx = Math.max(mn, parseFloat($("rmax").value) || 12);
@@ -578,13 +579,15 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     if (d.brev) s.out = false;
     g.beeStat = s; store.update("guests/" + id, { beeStat: s }); saveBee(); render(); renderBee();
   });
-  $("bload").onclick = function () {
-    // Everyone except Rather not / Please no. Called in order: "Put me on first" people first, then "happy to do it", then "if called". Random inside each group.
+  // limit = how many go on stage (0 = everyone who did not say Rather not / Please no). The keenest are always first in the order.
+  function loadBee(limit) {
     var inn = list().filter(function (g) { return into(g, "bee"); }), ids = [];
     [5, 4, 3].forEach(function (lv) { ids = ids.concat(shuffle(inn.filter(function (g) { return Math.max(3, Math.min(5, level(g, "bee"))) === lv; })).map(function (g) { return g.id; })); });
+    if (limit > 0) ids = ids.slice(0, limit);
     list().forEach(function (g) { var s = ids.indexOf(g.id) >= 0 ? { on: true, out: false, score: 0, turns: 0 } : { on: false }; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); });
     bee = { n: 0, round: 1, passDone: [], cur: ids[0] || null, order: ids, winner: null, seed: Math.floor(Math.random() * 1e9) + 1 }; scored = false; saveBee(); renderBee();
-  };
+  }
+  $("bload").onclick = function () { loadBee(0); };
   $("brules").onclick = function () { setState({ mode: "beerules" }); };
   $("bstage").onclick = function () { var c = curGuest(); setState({ mode: "beestage", standing: alive().length, next: c ? c.name : "" }); };
   $("bshow").onclick = function () {
@@ -653,6 +656,46 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 
   store.subscribe("guests", function (v) { guests = v || {}; render(); drawTakes(); renderBee(); });
   store.subscribe("state", function (v) { state = v || {}; render(); });
+
+  // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
+  window.HOSTAPI = {
+    get: function () {
+      var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
+      return { state: state, guests: list().length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
+        winner: bee.winner || null, sudden: a.length <= SD, wheel: rpool().length, keenest: list().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
+        eligible: list().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
+    },
+    setState: function (o) { return setState(o); },
+    importJson: function (text) {
+      var arr = JSON.parse(text); if (!Array.isArray(arr)) arr = [arr];
+      var ok = 0, chain = Promise.resolve();
+      arr.forEach(function (rec) { if (rec && rec.name) chain = chain.then(function () { ok++; return importRec(Object.assign({}, rec)); }); });
+      return chain.then(function () { render(); drawTakes(); return ok; });
+    },
+    beeLoad: function (limit) { loadBee(limit || 0); },
+    beeRules: function () { $("brules").onclick(); },
+    beeStage: function () { $("bstage").onclick(); },
+    beeCall: function () { $("bcall").onclick(); },
+    beeShow: function () { $("bshow").onclick(); },
+    beePick: function (w) { tap(w); },
+    beeLock: function (w) { pending = w; lastTap = { w: w, t: Date.now() }; tap(w); },
+    beeUnpick: function () { $("bnotyet").onclick(); },
+    beeNext: function () { $("bnext").onclick(); },
+    beeWin: function () { $("bwin").onclick(); },
+    // skip this question: the same contestant gets the next prompt, nobody is scored
+    beeSkipPrompt: function () { $("bpick").style.display = "none"; bee.n = Math.min((bee.n || 0) + 1, BEE.length - 1); scored = false; saveBee(); renderBee(); $("bshow").onclick(); },
+    // this contestant is not here: take them off the stage and call the next one
+    beeSkipPerson: function () {
+      var g = curGuest(); if (g) { var s = g.beeStat || {}; s.on = false; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); }
+      var nx = nextAfter(bee.cur); bee.cur = nx; scored = false; saveBee(); renderBee(); $("bcall").onclick();
+    },
+    spin: function () { spinRoulette(); },
+    spinAgain: function () { $("rskip").onclick(); },
+    takePick: function (id) { takeId = id; preview(); },
+    takeShow: function () { $("tshow").onclick(); },
+    takeStand: function () { $("tstand").onclick(); },
+    takeTwist: function () { $("treveal").onclick(); }
+  };
 })();
 </script>
 </body>

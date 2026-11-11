@@ -242,3 +242,17 @@ The build-up before a reveal (spelling bee answer, the roulette near-miss, the h
 ## Exact highlighting
 
 `BEE_EXACT` in `assets/bee.js` lists prompts where only the exact words are highlighted, not forms such as plurals. Right now: pair / pear, so "pear" and "pair" are marked and "pears" is not. Other prompts keep the normal rule (the word plus endings like -s, -ed, -ing).
+
+## Hosting from the projector page
+
+Open `screen.html` (the projector page) and host the whole night from it, no separate host panel needed.
+- **Title page:** a **Start now** button (or Space / Enter). It opens a short setup: who goes on the bee stage (the keenest, or everyone, with a rough time for each), how many hot takes to play, and whether to be offered karaoke breaks.
+- **The control strip** sits along the bottom and fades out after a few seconds. Move the mouse to bring it back. It always shows one big gold button for the next step, so you can press Space or Enter all night:
+  - Spelling bee: Call up contestant, Show the sentence, tap their answer (or press 1, 2, 3), Lock it in, Next contestant, Show the champion. Then Next: Twisted Hot Takes.
+  - Hot takes: Show what everyone picked, The twist, Next take, Finish the night.
+- **Karaoke breaks:** after a random 4 to 7 bee turns (and between hot takes) the strip asks "Karaoke roulette break?" with a chime. **Yes, spin the wheel** runs the roulette; **Not now** asks again a few turns later. After the song, **Back to the show** carries on from the next contestant or take. **Karaoke now** starts a break any time.
+- **Pause** puts "Be right back." on screen; **Resume** puts back exactly what was there, without replaying the reveal.
+- **Skip question** gives the same contestant the next prompt and scores nobody. **Not here, skip person** takes them off the stage and calls the next one. **Skip take** moves to the next hot take. **End the bee now** crowns the champion on the spot.
+- Keys: Space/Enter = the gold button, P pause, K karaoke now, S skip, 1 to 4 pick an answer, H show the strip.
+- Settings in `config.js`: `KARAOKE_EVERY_MIN`, `KARAOKE_EVERY_MAX`, `TAKES_TO_PLAY`.
+- It runs on the same game code as the host panel (loaded invisibly in the page), so both stay in sync. The projector page and host panel must be in the same browser for the demo storage to be shared, which is the case when you host from the projector page alone.

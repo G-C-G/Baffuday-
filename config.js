@@ -25,6 +25,11 @@ window.GCG_CONFIG = {
   // ROULETTE_LAND_MS = how far into the file the crash lands (milliseconds). Set ROULETTE_SOUND to "" to use the old timing with no roll.
   ROULETTE_SOUND: "assets/sounds/roulette-roll.mp3",
   ROULETTE_LAND_MS: 5380,
+  // Hosting from the projector page ("Start now" on the title screen):
+  // a karaoke break is offered after this many bee turns / hot takes (a random number in the range each time), and how many hot takes are played.
+  KARAOKE_EVERY_MIN: 4,
+  KARAOKE_EVERY_MAX: 7,
+  TAKES_TO_PLAY: 5,
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

@@ -273,3 +273,16 @@ Set on the host panel's **Night setup** tab: Off, 1 minute or 2 minutes per take
 
 The host panel's **Night setup** tab starts with **Who is here tonight**: a big tap list of every guest. Tap people as they arrive (tap again to undo), or **Everyone is here** / **Clear all**. Only the people marked here are put in the icebreaker groups, the spelling bee stage, the karaoke wheel and the hot-take teams, so nobody is called to the stage who is not in the room. You can change it at any time: someone who arrives late joins the next icebreaker take, the wheel and the hot takes straight away (the bee stage is set when the bee starts; add a late arrival from the Spelling bee tab).
 **Start now** on the projector will not start until at least 4 people are marked here, and tells you so on the strip. (Before anyone has been marked, the host panel treats everyone as present, which is only for testing.)
+
+## Update: the controls are on the host page, the projector is only the game
+
+The control strip and Start now button now live on the **host page**, in the **Run the show** tab. The projector page (`screen.html`) shows only the game: no buttons, no strip, no setup, nothing for the crowd to see except the game. This replaces "Hosting from the projector page" above.
+- **One laptop, two windows:** open `host.html` and `screen.html`, drag the projector window to the projector (extended display), and run the night from the host window on the laptop's own screen. Both windows must be in the **same browser**.
+- **Tablet and laptop:** needs the live database (see below). The tablet runs `host.html` (Run the show), the laptop runs `screen.html` on the projector.
+- Everything else (Who is here, Night setup, the icebreaker, the bee, karaoke breaks, hot takes, pause, skips) is unchanged, just driven from the host page.
+
+### Live database (so two devices share the game)
+1. Create a free Firebase project and add a Realtime Database. Start it in test mode.
+2. Paste its address (like `https://your-project-default-rtdb.firebaseio.com`) into `DB_URL` in `config.js`.
+3. Open `host.html` on the tablet and load the guest file there. Open `screen.html` on the laptop. They share everything within a couple of seconds.
+Test it at home first. With a database set, the guest form also saves each submission straight into it.

@@ -1,7 +1,6 @@
-// The show runner: host the whole night from the projector page. A "Start now" button on the title page, then a control strip at the
-// bottom (it fades out after a few seconds; move the mouse to bring it back). The strip walks you through the spelling bee, asks before
-// every karaoke roulette break, then the hot takes. It drives host.html (loaded invisibly in a frame) through window.HOSTAPI, so it uses
-// exactly the same game code as the host panel.
+// The show runner. It lives on the HOST page (the "Run the show" tab), never on the projector page, so the projector shows only the game.
+// A big Start now button, then a control panel that walks you through the icebreaker, the spelling bee (asking before every karaoke
+// break) and the hot takes. It drives the game through window.HOSTAPI, the same code the host panel buttons use.
 (function () {
   var cfg = window.GCG_CONFIG || {}, KEY = "gcg-run-" + (cfg.ROOT || "");
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
@@ -20,6 +19,13 @@
     "body.hostmode{cursor:default}",
     "#runner{position:fixed;left:0;right:0;bottom:0;z-index:90;padding:1.4vh 2.2vw 1.8vh;background:rgba(8,24,62,.96);color:#FFF4C9;font:500 clamp(12px,1.15vw,18px)/1.35 Inter,sans-serif;display:grid;gap:1.1vh;transition:opacity .35s,transform .35s;box-shadow:0 -1.2vh 3vh rgba(0,0,0,.35)}",
     "#runner.hide{opacity:0;transform:translateY(100%);pointer-events:none}",
+    "#runner.inhost{position:static;left:auto;right:auto;bottom:auto;transform:none;opacity:1;pointer-events:auto;border-radius:12px;padding:20px 22px;font-size:16px;gap:16px;box-shadow:none;margin-top:14px}",
+    "#runner.inhost button{font-size:15px;padding:1em 1.3em}",
+    "#runner.inhost button.go{font-size:22px;padding:.9em 1.8em}",
+    "#runner.inhost button.opt{font-size:24px}",
+    "#runner.inhost .ask .q{font-size:30px}",
+    "#runner.inhost .st{font-size:17px}",
+    "#startbtn{position:static;transform:none;display:block;margin:0;font-size:28px;padding:1em 3em;border-radius:12px}",
     "#runner .row{display:flex;gap:.8vw;align-items:center;flex-wrap:wrap}",
     "#runner .st{flex:1;min-width:14vw;opacity:.85}",
     "#runner .st b{font-weight:700;opacity:1;color:#F5D76E}",
@@ -39,16 +45,18 @@
   ].join("\n");
   document.head.appendChild(css);
 
-  var frame = document.createElement("iframe"); frame.id = "hostframe"; frame.src = "host.html?embed=1"; frame.setAttribute("aria-hidden", "true"); frame.tabIndex = -1; document.body.appendChild(frame);
-  var strip = document.createElement("div"); strip.id = "runner"; strip.className = "hide"; document.body.appendChild(strip);
-  var startBtn = document.createElement("button"); startBtn.id = "startbtn"; startBtn.type = "button"; startBtn.textContent = "Start now"; startBtn.hidden = true; document.body.appendChild(startBtn);
+  var panel = document.getElementById("runpanel");
+  if (!panel) return;   // only runs on the host page
+  var strip = document.createElement("div"); strip.id = "runner"; strip.className = "inhost"; panel.appendChild(strip);
+  var startBtn = document.createElement("button"); startBtn.id = "startbtn"; startBtn.type = "button"; startBtn.textContent = "Start now"; startBtn.hidden = true; panel.insertBefore(startBtn, strip);
 
-  function api() { try { return frame.contentWindow && frame.contentWindow.HOSTAPI; } catch (e) { return null; } }
+  function api() { return window.HOSTAPI; }
   var st = { mode: "home" };
   var A = null, G = null, hideT = 0, sig = "";
 
   // ---- show / hide the strip with the mouse ----
   function poke() {
+    if (true) return;
     document.body.classList.add("hostmode"); strip.classList.remove("hide"); clearTimeout(hideT);
     hideT = setTimeout(function () { if (!needsAttention()) { strip.classList.add("hide"); document.body.classList.remove("hostmode"); } }, 4500);
   }
@@ -150,11 +158,12 @@
     reset: function () { run.phase = "idle"; run.ret = ""; run.ask = false; run.paused = null; save(); A.setState({ mode: "home" }); }
   };
   strip.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("button"); if (!b || b.disabled) return; A = api(); if (!A) return;
+    var b = e.target.closest && e.target.closest("button"); if (!b || b.disabled) return; A = api(); if (!A) return; fresh();
     if (b.dataset.pick) { A.beePick(b.dataset.pick); return; }
     var f = ACT[b.dataset.act]; if (f) { f(); setTimeout(function () { paint(true); }, 60); }
   });
   document.addEventListener("keydown", function (e) {
+    if (!document.getElementById("p-run").classList.contains("on")) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) return;
     var k = e.key;
     if (run.phase === "idle" && (k === " " || k === "Enter") && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
@@ -172,10 +181,12 @@
   function btn(label, act, cls, extra) { return '<button type="button" data-act="' + act + '"' + (cls ? ' class="' + cls + '"' : "") + (extra || "") + ">" + label + "</button>"; }
   function countTurn(key) { if (run.counted !== key) { run.counted = key; run.sinceK++; save(); } }
 
+  function fresh() { var a = api(); if (a && a.get) { var g = a.get(); if (g && g.state && g.state.mode) st = g.state; else st = { mode: "home" }; } }
   function paint(force) {
+    fresh();
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
-    startBtn.hidden = !(run.phase === "idle" && (m === "home" || !m));
-    if (run.phase === "idle") { if (hint) { strip.innerHTML = '<div class="row"><span class="st"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
+    startBtn.hidden = run.phase !== "idle";
+    if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();
 

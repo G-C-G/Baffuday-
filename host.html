@@ -39,10 +39,11 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 .nudge{position:sticky;top:8px;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--ink);color:var(--cream);padding:12px 16px;border-radius:6px;box-shadow:0 6px 20px rgba(8,24,62,.35)}.nudge[hidden]{display:none}
 .nudge b{font:400 24px/1 var(--serif)}
 .nudge .btn.ghost{color:var(--cream);border-color:var(--cream)}.nudge .btn:not(.ghost){background:var(--cream);color:var(--ink);border-color:var(--cream)}
-.herewrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
-.herewrap button{font:inherit;font-size:15px;text-align:left;padding:14px 12px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
-.herewrap button small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
-.herewrap button.on{background:var(--ink);color:var(--cream)}
+.herewrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 28px;max-width:980px}
+.herewrap button{font:inherit;font-size:19px;text-align:left;padding:13px 4px;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--ink);cursor:pointer;display:flex;gap:14px;align-items:center}
+.herewrap button .bx{flex:none;width:28px;height:28px;border:2px solid var(--ink);border-radius:5px;display:grid;place-items:center;font-size:20px;line-height:1;color:transparent}
+.herewrap button.on .bx{background:var(--ink);color:var(--cream)}
+.herewrap button:hover{background:rgba(8,24,62,.06)}
 .note{color:var(--muted);font-size:12px;max-width:70ch}
 </style>
 </head>
@@ -131,7 +132,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <section class="panel" id="p-night">
     <p class="note">Set the night up here, on this screen only. The projector never shows any of this. When you are ready, open <b>screen.html</b> on the projector and press <b>Start now</b>. Everything saves as you change it.</p>
     <div><span class="k">Who is here tonight</span>
-      <p class="note">Tap each person as they arrive. Only the people marked here are put in the icebreaker groups, the spelling bee, the karaoke wheel and the hot takes, so nobody is called who is not in the room. You can change it at any time.</p>
+      <p class="note">Tick each person as they arrive. Only the people ticked here are put in the icebreaker groups, the spelling bee, the karaoke wheel and the hot takes, so nobody is called who is not in the room. You can change it at any time.</p>
       <div class="bar"><button type="button" class="btn ghost" id="hall">Everyone is here</button><button type="button" class="btn ghost" id="hnone">Clear all</button><span class="note" id="hcount"></span></div>
       <div class="herewrap" id="here"></div></div>
     <div class="side" id="nready"></div>
@@ -716,7 +717,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   function drawHere() {
     var L = list().slice().sort(function (a, b) { return a.name.localeCompare(b.name); }), n = L.filter(present).length;
     $("hcount").textContent = hereMap ? n + " of " + L.length + " are here" : "Nobody is marked yet. Tap people as they arrive, or press Everyone is here.";
-    $("here").innerHTML = L.map(function (g) { return '<button type="button" data-here="' + g.id + '" class="' + (present(g) ? "on" : "") + '">' + esc(g.name) + "<small>" + (present(g) ? "here" : "not yet") + "</small></button>"; }).join("");
+    $("here").innerHTML = L.map(function (g) { return '<button type="button" data-here="' + g.id + '" class="' + (present(g) ? "on" : "") + '"><span class="bx">&#10003;</span>' + esc(g.name) + "</button>"; }).join("");
   }
   function saveHere(m) { hereMap = m; store.set("setup/here", m); drawNight(); render(); drawTakes(); }
   $("here").addEventListener("click", function (e) {

@@ -56,6 +56,12 @@
           for (var q = 0; q < Math.max(g.a.length, g.b.length); q++) { var host = groups[to % groups.length]; to++; if (g.a[q]) host.a.push(g.a[q]); if (g.b[q]) host.b.push(g.b[q]); }
         });
       }
+      // Nobody is left out: anyone not in a group joins the smallest one, on their own side if that keeps it fair, else on the other side.
+      if (groups.length) A.concat(B).filter(function (p) { return !used[p.name]; }).forEach(function (p) {
+        var g = groups.slice().sort(function (x, y) { return x.a.length + x.b.length - y.a.length - y.b.length; })[0];
+        var side = g[p.side].length <= g[p.side === "a" ? "b" : "a"].length ? p.side : (p.side === "a" ? "b" : "a");
+        g[side].push(mem(p, side)); used[p.name] = 1; counts[p.name] = (counts[p.name] || 0) + 1;
+      });
       // Spread the meetings: swap people between groups (same picked side, same role) so that as few pairs as possible have already met.
       var pairsOf = function (g) { var m = [].concat(g.a, g.b), r = []; for (var i = 0; i < m.length; i++) for (var j = i + 1; j < m.length; j++) r.push(pairKey(m[i].name, m[j].name)); return r; };
       var cost = function () { var c = 0; groups.forEach(function (g) { pairsOf(g).forEach(function (k) { c += (met[k] || 0) * 100; }); var sa = g.a.reduce(function (s, m) { return s + m.n; }, 0) / g.a.length, sb = g.b.reduce(function (s, m) { return s + m.n; }, 0) / g.b.length; c += Math.abs(sa - sb) * (g.real ? 1 : 0.2); }); return c; };

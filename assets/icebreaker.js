@@ -3,7 +3,7 @@
 // 2. When a take is lopsided (most of Ghana picks the same side) the rest are still put in balanced groups of 4: the two with the weakest
 //    feelings in each group are asked to argue the side they did NOT pick (flip: true), so every group is 2 against 2.
 // 3. At most 3 people are left over for a take; they listen.
-// Same guests + same seed always give the same groups, in any browser. People who said Rather not / Please no to hot takes are never in a group.
+// Same guests + same seed always give the same groups, in any browser. Everyone who is here is in the icebreaker, including people who said Rather not / Please no to hot takes (that only affects who is called up in Twisted Hot Takes).
 (function (root) {
   function h(str) { var x = 2166136261; for (var i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
   function rnd(seed, key) { var x = h(seed + "|" + key); x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; return (x >>> 0) / 4294967296; }
@@ -13,11 +13,10 @@
     seed = seed || 1;
     var counts = {}, out = [], met = {};   // met["a|b"] = how many rounds two people have already shared a group
     var pairKey = function (x, y) { return x < y ? x + "|" + y : y + "|" + x; };
-    var pk = root.pick || function (v) { return v && v.s ? v : null; }, into = root.into || function () { return true; };
+    var pk = root.pick || function (v) { return v && v.s ? v : null; };
     takes.forEach(function (t) {
       var A = [], B = [];
       guests.forEach(function (g) {
-        if (!into(g, "takes")) return;
         var p = pk((g.picks || {})[t.id]); if (!p) return;
         (p.s === "agree" ? A : B).push({ name: g.name, n: p.n || 3, side: p.s === "agree" ? "a" : "b" });
       });

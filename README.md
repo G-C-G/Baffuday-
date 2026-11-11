@@ -297,3 +297,10 @@ The host panel now opens on two steps: **1. Get ready** (load the guest file, ti
 - **Karaoke finale.** After the last hot take, if anyone who said yes has not sung yet, the strip stays open with "Spin for the next singer" until they all have. "That is everyone" ends the night. "Finish the night now" asks first if some have not sung.
 - People who said Rather not or Please no are never called, and people not ticked as here are never called.
 - The Get ready page shows the cost: how many songs and roughly how many minutes (`MIN_PER_SONG` in `config.js`, default 5).
+
+## Built for up to about 40 people
+
+- **Icebreaker screen scales:** up to 6 groups on two columns, 7 to 12 groups on three columns, more on four. Tested with 40 guests (9 groups fit on one screen).
+- **Most singers** (Get ready tab): everyone who said yes (default), or up to 12, 16, 20 or 24. The keenest are called first, the strip's breaks and the karaoke finale respect the cap, and the Get ready page shows the songs and minutes.
+- **Spelling bee stage** is capped (`BEE_MAX_STAGE`, default 14, and `BEE_MAX_EVERYONE`, default 24) so a bigger crowd cannot run the bee past its 46 prompts. Everyone else is the audience.
+- Time is the real limit: about 105 minutes plus about 4 minutes per guest if everyone who said yes sings. With 40 guests, cap the singers.

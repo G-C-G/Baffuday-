@@ -128,7 +128,15 @@ body.flashred{animation:flashred .6s ease 2}
 .clock.low{color:#C41E3A;animation:pulse .7s ease-in-out infinite}
 .clock.find{font-size:calc(var(--major)*.9);line-height:1}
 .clocksub{font:600 var(--lab)/1.3 var(--sans);letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin-top:1.2vh}
-.groups{display:grid;grid-template-columns:1fr 1fr;gap:1.6vh 1.2vw}
+.groups{display:grid;grid-template-columns:repeat(var(--cols,2),1fr);gap:1.4vh 1vw;--gs:1}
+.groups.c3{--cols:3;--gs:.72}.groups.c4{--cols:4;--gs:.6}
+.groups.c3 .grp,.groups.c4 .grp{padding:.9vh .7vw}
+.groups.c3 .grp .body,.groups.c4 .grp .body{grid-template-columns:1fr;gap:.2vh}
+.groups.c3 .grp .vs,.groups.c4 .grp .vs{display:none}
+.groups.c3 .grp .side + .side,.groups.c4 .grp .side + .side{border-top:1px solid currentColor;padding-top:.5vh;margin-top:.3vh;opacity:.95}
+.groups.c3 .grp .side b,.groups.c4 .grp .side b{font-size:calc(var(--second)*.8*var(--gs))}
+.groups.c3 .grp .gn,.groups.c4 .grp .gn{margin-bottom:.4vh}
+.ice.many{grid-template-columns:20vw 1fr}.ice.many .take{font-size:calc(var(--second)*1.05)}.ice.many .clock.find{font-size:calc(var(--major)*.75)}
 .grp{border:2px solid currentColor;border-radius:8px;padding:1.1vh 1vw 1.2vh;background:rgba(255,255,255,.35)}
 .grp.hot{background:var(--ink);color:var(--cream);border-color:var(--ink)}
 .grp .gn{font:700 calc(var(--lab)*.95)/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;opacity:.75;margin:0 0 .9vh;display:flex;justify-content:space-between}
@@ -213,7 +221,7 @@ body.flashred{animation:flashred .6s ease 2}
     }).join("") || '<p class="second">Everyone picked the same side. Nothing to argue.</p>';
     var listen = (s.listeners || []).length ? '<span class="listen"><b>Listening this round:</b> ' + esc(s.listeners.join(", ")) + "</span>" : "";
     var side = (s.note ? '<div class="nb">' + esc(s.note) + "</div>" : "") + '<p class="hint">Listen closely. Keep an open mind.</p>';
-    return { theme: "cream", html: frame("Icebreaker " + num, '<div class="ice"><div><p class="take">' + esc(s.text) + "</p>" + clock + side + '</div><div><div class="groups">' + cards + "</div>" + listen + "</div></div>", "", "high") };
+    return { theme: "cream", html: frame("Icebreaker " + num, '<div class="ice' + (G.length > 6 ? " many" : "") + '"><div><p class="take">' + esc(s.text) + "</p>" + clock + side + '</div><div><div class="groups' + (G.length > 12 ? " c4" : G.length > 6 ? " c3" : "") + '">' + cards + "</div>" + listen + "</div></div>", "", "high") };
   }
   // Each view returns { theme, html }.
   function view(s) {

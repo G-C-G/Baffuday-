@@ -90,7 +90,8 @@
   }
   function startBee() {
     A = api(); G = A.get();
-    A.beeLoad(run.stage === "everyone" || G.keenest < 6 ? 0 : G.keenest); A.beeRules();
+    var MAXS = cfg.BEE_MAX_STAGE || 14;   // a bigger stage would run past the 46 prompts
+    A.beeLoad(run.stage === "everyone" || G.keenest < 6 ? Math.min(G.eligible, cfg.BEE_MAX_EVERYONE || 24) : Math.min(G.keenest, MAXS)); A.beeRules();
     run.phase = "bee"; run.sinceK = 0; run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
   }
   // ---- icebreaker: every take is debated first, in groups; the clock runs on the projector ----

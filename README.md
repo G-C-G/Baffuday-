@@ -286,3 +286,7 @@ The control strip and Start now button now live on the **host page**, in the **R
 2. Paste its address (like `https://your-project-default-rtdb.firebaseio.com`) into `DB_URL` in `config.js`.
 3. Open `host.html` on the tablet and load the guest file there. Open `screen.html` on the laptop. They share everything within a couple of seconds.
 Test it at home first. With a database set, the guest form also saves each submission straight into it.
+
+## The host panel, simplified
+
+The host panel now opens on two steps: **1. Get ready** (load the guest file, tick who is here, pick the icebreaker length, the bee stage, how many hot takes, and whether to be asked about karaoke breaks) and **2. Run the show**. Everything else (Guests table, Who's coming, Allergies, Engagement, Spelling bee, Show control, the stats row, CSV export) is behind the **More** button. The icebreaker groups are in a collapsed "See the icebreaker groups" section.

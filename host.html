@@ -39,6 +39,13 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
 .nudge{position:sticky;top:8px;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--ink);color:var(--cream);padding:12px 16px;border-radius:6px;box-shadow:0 6px 20px rgba(8,24,62,.35)}.nudge[hidden]{display:none}
 .nudge b{font:400 24px/1 var(--serif)}
 .nudge .btn.ghost{color:var(--cream);border-color:var(--cream)}.nudge .btn:not(.ghost){background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.more{display:none}body.showmore .more{display:flex}
+body:not(.showmore) .stats,body:not(.showmore) .livebar{display:none}
+.orow{display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.orow .k{margin:0}
+details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}details.plan summary{cursor:pointer;font-weight:600}
+.runlive{font-size:13px;opacity:.75;margin:6px 0 0}
+@media(max-width:640px){.orow{grid-template-columns:1fr}}
 .herewrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 28px;max-width:980px}
 .herewrap button{font:inherit;font-size:19px;text-align:left;padding:13px 4px;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--ink);cursor:pointer;display:flex;gap:14px;align-items:center}
 .herewrap button .bx{flex:none;width:28px;height:28px;border:2px solid var(--ink);border-radius:5px;display:grid;place-items:center;font-size:20px;line-height:1;color:transparent}
@@ -59,20 +66,24 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   <div class="stats" id="stats"></div>
 
   <div class="bar" id="tabs">
-    <button class="btn ghost on" data-p="guests">Guests</button>
+    <button class="btn on" data-p="night">1. Get ready</button>
+    <button class="btn ghost" data-p="run">2. Run the show</button>
+    <span class="sp"></span>
+    <button class="btn ghost" id="moretoggle">More</button>
+  </div>
+  <div class="bar more" id="moretabs">
+    <button class="btn ghost" data-p="guests">Guests</button>
     <button class="btn ghost" data-p="roster">Who's coming</button>
     <button class="btn ghost" data-p="food">Allergies &amp; diet</button>
     <button class="btn ghost" data-p="people">Engagement</button>
     <button class="btn ghost" data-p="bee">Spelling bee</button>
-    <button class="btn ghost" data-p="night">Night setup</button>
-    <button class="btn ghost" data-p="run">Run the show</button>
     <button class="btn ghost" data-p="show">Show control</button>
     <span class="sp"></span>
     <button class="btn ghost" id="csv">Export CSV</button>
     <a class="btn ghost" href="screen.html" target="_blank" style="text-decoration:none">Open screen</a>
   </div>
 
-  <section class="panel on" id="p-guests">
+  <section class="panel" id="p-guests">
     <div class="bar"><label class="btn ghost" style="cursor:pointer">Import answer PDFs<input type="file" id="imp" accept="application/pdf" multiple hidden></label>
       <label class="btn ghost" style="cursor:pointer">Import guest file (.json)<input type="file" id="impjson" accept="application/json,.json" hidden></label>
       <span class="note" id="impmsg">Guests download a PDF at the end of the form and send it to you. Pick as many as you like; importing the same PDF twice just updates that guest.</span></div>
@@ -131,30 +142,26 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   </section>
 
   <section class="panel" id="p-run">
-    <p class="note">Run the whole night from here. The projector page shows only the game: no buttons, no setup. Press <b>Start now</b>, then the big gold button always does the next step (Space or Enter). Keys: P pause, K karaoke now, S skip, 1 to 3 pick an answer.</p>
     <div id="runpanel"></div>
+    <p class="runlive">On the projector now: <b id="runlive">the title</b>. Space or Enter does the big gold button. P pause, K karaoke, S skip.</p>
   </section>
 
-  <section class="panel" id="p-night">
-    <p class="note">Set the night up here, on this screen only. The projector never shows any of this. When you are ready, open <b>screen.html</b> on the projector and press <b>Start now</b>. Everything saves as you change it.</p>
-    <div><span class="k">Who is here tonight</span>
-      <p class="note">Tick each person as they arrive. Only the people ticked here are put in the icebreaker groups, the spelling bee, the karaoke wheel and the hot takes, so nobody is called who is not in the room. You can change it at any time.</p>
-      <div class="bar"><button type="button" class="btn ghost" id="hall">Everyone is here</button><button type="button" class="btn ghost" id="hnone">Clear all</button><span class="note" id="hcount"></span></div>
-      <div class="herewrap" id="here"></div></div>
+  <section class="panel on" id="p-night">
     <div class="side" id="nready"></div>
-    <div><span class="k">Icebreaker debates (before the spelling bee)</span>
-      <div class="bar" id="nice"></div>
-      <p class="note">Every hot take is debated first, in groups of 3 or 4 made of people who picked opposite sides. The projector shows who is in each group and runs the clock, and everyone finds their group. These are the groups the projector will show (the strongest feelings are matched first):</p>
+    <div class="bar" id="nload"><label class="btn ghost" style="cursor:pointer">Load guest file<input type="file" id="impjson2" accept="application/json,.json" hidden></label><span class="note" id="impmsg2"></span></div>
+    <div><span class="k">Who is here</span>
+      <div class="bar" style="margin-top:6px"><button type="button" class="btn ghost" id="hall">Everyone is here</button><button type="button" class="btn ghost" id="hnone">Clear all</button><span class="note" id="hcount"></span></div>
+      <div class="herewrap" id="here"></div></div>
+    <div>
+      <div class="orow"><span class="k">Icebreaker</span><div class="bar" id="nice"></div></div>
+      <div class="orow"><span class="k">Spelling bee</span><div class="bar" id="nstage"></div></div>
+      <div class="orow"><span class="k">Hot takes</span><div class="bar" id="ntakes"></div></div>
+      <div class="orow"><span class="k">Karaoke breaks</span><div class="bar" id="nk"></div></div>
+    </div>
+    <details class="plan"><summary>See the icebreaker groups</summary>
+      <p class="note" id="nmeet" style="margin-top:10px"></p>
       <div class="bar"><button type="button" class="btn ghost" id="nshuffle">Shuffle the groups</button><button type="button" class="btn ghost" id="nprint">Print the groups</button></div>
-      <p class="note" id="nmeet"></p>
-      <div class="tbl"><table id="nplan"></table></div></div>
-    <div><span class="k">Spelling bee: who goes on stage</span>
-      <div class="bar" id="nstage"></div></div>
-    <div><span class="k">Twisted hot takes to play</span>
-      <div class="bar" id="ntakes"></div></div>
-    <div><span class="k">Karaoke roulette breaks</span>
-      <div class="bar" id="nk"></div>
-      <p class="note">When on, the projector page asks you (on the strip, with a chime) whether to run a karaoke break after every few bee turns and between hot takes.</p></div>
+      <div class="tbl" style="margin-top:10px"><table id="nplan"></table></div></details>
   </section>
 
   <section class="panel" id="p-show">
@@ -214,11 +221,13 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
   $("ttl").textContent = window.GCG_CONFIG.TITLE || "";
   if (store.demo) $("demo").hidden = false;
 
-  $("tabs").addEventListener("click", function (e) {
+  function openTab(e) {
     var p = e.target.dataset && e.target.dataset.p; if (!p) return;
-    document.querySelectorAll("#tabs [data-p]").forEach(function (b) { b.classList.toggle("on", b === e.target); });
+    document.querySelectorAll("#tabs [data-p], #moretabs [data-p]").forEach(function (b) { b.classList.toggle("on", b === e.target); });
     document.querySelectorAll(".panel").forEach(function (s) { s.classList.toggle("on", s.id === "p-" + p); });
-  });
+  }
+  $("tabs").addEventListener("click", openTab); $("moretabs").addEventListener("click", openTab);
+  $("moretoggle").onclick = function () { var on = document.body.classList.toggle("showmore"); this.classList.toggle("on", on); this.textContent = on ? "Less" : "More"; };
 
   function list() {
     return Object.keys(guests || {}).map(function (id) { var g = guests[id]; g.id = id; return g; })
@@ -255,7 +264,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("kinfo").textContent = (state.mode === "karaoke" || state.mode === "roulette") && state.name ? "On screen: " + state.name + " - " + state.song : "";
     document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", state.mode === b.dataset.m); });
     var mm = state.mode, lt = { home: "Name screen", menu: "Menu", tonight: "Tonight", karaoke: "Karaoke: " + (state.name || ""), roulette: "Karaoke roulette: " + (state.name || ""), icebreaker: "Icebreaker " + (state.num || "") + (state.phase === "timer" ? ", clock running" : ", groups on screen"), pause: "Paused (be right back)", hottake: "Twisted hot take " + (state.num || "") + (state.phase === "twist" ? ", the twist" : state.phase === "stand" ? ", what everyone picked" : ""), beerules: "Spelling bee rules", beestage: "Spelling bee: stage count", beecall: "Spelling bee: " + (state.name || "") + " called up", beewin: "Spelling bee champion", bee: "Spelling bee: " + (state.phase === "result" ? (state.ok ? "correct" : "wrong") : "sentence") };
-    $("livetxt").textContent = lt[mm] || "Name screen";
+    $("livetxt").textContent = lt[mm] || "Name screen"; if ($("runlive")) $("runlive").textContent = lt[mm] || "the title";
     $("rback").hidden = state.mode !== "roulette";
     queue();
     drawNight();
@@ -539,6 +548,10 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     });
   });
   // A guest list saved as JSON (an array of guest records, the same shape the form saves). Used when answers arrived as screenshots, not PDFs.
+  $("impjson2").addEventListener("change", function () {
+    try { var dt = new DataTransfer(); dt.items.add(this.files[0]); $("impjson").files = dt.files; $("impjson").dispatchEvent(new Event("change")); $("impmsg2").textContent = "Loading..."; } catch (e) { $("impmsg2").textContent = "Use More, Guests, Import guest file."; }
+    var self = this; setTimeout(function () { $("impmsg2").textContent = $("impmsg").textContent; self.value = ""; }, 1500);
+  });
   $("impjson").addEventListener("change", function () {
     var f = this.files[0], self = this; if (!f) return;
     $("impmsg").textContent = "Reading " + f.name + "...";
@@ -703,12 +716,13 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     drawHere();
     var L = plist(), keen = L.filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length, all = L.filter(function (g) { return into(g, "bee"); }).length;
     var wheel = L.filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, takers = L.filter(function (g) { return into(g, "takes"); }).length;
-    $("nready").innerHTML = L.length ? '<b>' + L.length + (hereMap ? ' here tonight.</b> ' : ' guests (nobody marked yet).</b> ') + all + ' can go on the bee stage (' + keen + ' of them are the keenest), ' + wheel + ' are on the karaoke wheel, ' + takers + ' can play the hot takes. Rather not and Please no are never put on an activity.' :
-      '<b class="flag">No guests are loaded yet.</b> Load the guest file on the Guests tab (Import guest file), then come back.';
+    var total = list().length;
+    $("nready").innerHTML = total ? (hereMap ? '<b>' + L.length + ' of ' + total + ' here.</b> ' : '<b>' + total + ' guests.</b> Tick who is here. ') + all + ' on the bee stage, ' + wheel + ' on the karaoke wheel, ' + takers + ' in the hot takes.' :
+      '<b class="flag">No guests yet.</b> Load the guest file below.';
     var pill = function (on, attr, label) { return '<button type="button" class="btn ' + (on ? "" : "ghost") + '" ' + attr + '>' + label + '</button>'; };
-    $("nstage").innerHTML = (keen >= 6 ? pill(show.stage === "keenest", 'data-ns="keenest"', "The keenest " + keen + " (about 40 min)") : "") + pill(show.stage === "everyone" || keen < 6, 'data-ns="everyone"', "Everyone " + all + " (about 65 min)");
+    $("nstage").innerHTML = (keen >= 6 ? pill(show.stage === "keenest", 'data-ns="keenest"', "Keenest " + keen) : "") + pill(show.stage === "everyone" || keen < 6, 'data-ns="everyone"', "Everyone " + all);
     $("ntakes").innerHTML = [3, 4, 5, 6, 8].filter(function (n) { return n <= TAKES.length; }).map(function (n) { return pill(show.takes === n, 'data-nt="' + n + '"', n); }).join("");
-    $("nice").innerHTML = pill(show.ice === 0, 'data-ni="0"', "Off") + pill(show.ice === 60, 'data-ni="60"', "1 minute per take (about 16 min)") + pill(show.ice === 120, 'data-ni="120"', "2 minutes per take (about 25 min)");
+    $("nice").innerHTML = pill(show.ice === 0, 'data-ni="0"', "Off") + pill(show.ice === 60, 'data-ni="60"', "1 min each") + pill(show.ice === 120, 'data-ni="120"', "2 min each");
     var gnames = function (arr, other) { return arr.map(function (m) { return esc(m.name) + (m.flip ? " <span class=\"dim\">[picked " + esc(other) + "]</span>" : ""); }).join(", "); };
     var P = icePlan(), cv = P.coverage, rows = ["<tr><th>#</th><th>Take</th><th>Groups (2 v 2; [ ] = argues the side they did not pick)</th><th>Listening</th></tr>"];
     P.forEach(function (t, i) {
@@ -718,7 +732,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     });
     $("nplan").innerHTML = rows.join("");
     $("nmeet").innerHTML = cv && cv.people ? "<b>Mixing:</b> across all 8 takes each person is in a group with " + cv.avg.toFixed(1) + " of the other " + cv.others + " people on average (the fewest anyone meets is " + cv.min + "). " + (cv.never ? cv.never + " pairs never share a group." : "Everyone meets everyone.") : "";
-    $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each karaoke break") + pill(!show.k, 'data-nk="0"', "No breaks, I will start them myself");
+    $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each one") + pill(!show.k, 'data-nk="0"', "No breaks");
   }
   function drawHere() {
     var L = list().slice().sort(function (a, b) { return a.name.localeCompare(b.name); }), n = L.filter(present).length;

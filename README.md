@@ -290,3 +290,10 @@ Test it at home first. With a database set, the guest form also saves each submi
 ## The host panel, simplified
 
 The host panel now opens on two steps: **1. Get ready** (load the guest file, tick who is here, pick the icebreaker length, the bee stage, how many hot takes, and whether to be asked about karaoke breaks) and **2. Run the show**. Everything else (Guests table, Who's coming, Allergies, Engagement, Spelling bee, Show control, the stats row, CSV export) is behind the **More** button. The icebreaker groups are in a collapsed "See the icebreaker groups" section.
+
+## Everyone who said yes gets a karaoke turn
+
+- The strip works out how often to offer a karaoke break from how many people still have to sing (everyone who is here, said Put me on first / happy / if called, and has not sung) against how many bee turns and hot takes are left. With about 20 singers it offers a break after almost every turn; with few singers, much less often (never more than every 7 turns). You still say yes or not now each time.
+- **Karaoke finale.** After the last hot take, if anyone who said yes has not sung yet, the strip stays open with "Spin for the next singer" until they all have. "That is everyone" ends the night. "Finish the night now" asks first if some have not sung.
+- People who said Rather not or Please no are never called, and people not ticked as here are never called.
+- The Get ready page shows the cost: how many songs and roughly how many minutes (`MIN_PER_SONG` in `config.js`, default 5).

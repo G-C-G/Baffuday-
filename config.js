@@ -27,6 +27,7 @@ window.GCG_CONFIG = {
   ROULETTE_LAND_MS: 5380,
   // Hosting from the projector page ("Start now" on the title screen):
   // a karaoke break is offered after this many bee turns / hot takes (a random number in the range each time), and how many hot takes are played.
+  MIN_PER_SONG: 5,   // used for the time estimate on the Get ready page (a song plus the spin and the walk up)
   KARAOKE_EVERY_MIN: 4,
   KARAOKE_EVERY_MAX: 7,
   TAKES_TO_PLAY: 5,

@@ -6,6 +6,15 @@
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var rnd = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); };
   var EVERY = [cfg.KARAOKE_EVERY_MIN || 4, cfg.KARAOKE_EVERY_MAX || 7];
+  // How many bee turns / hot takes between karaoke breaks. It is worked out from how many people still have to sing (everyone who said yes
+  // and is here gets a turn) against how many bee turns and hot takes are left, so the breaks are spread to fit everyone in.
+  function pace() {
+    var a = window.HOSTAPI; if (!a || !a.get) return EVERY[1]; var g = a.get(), R = g.kleft || 0; if (!R) return 99;
+    var takes = Math.min(run.takes || 5, (g.takes || []).length), beeRem = 0, takesRem = takes;
+    if (run.phase === "ice" || run.phase === "bee") beeRem = Math.max(4, Math.round((g.alive || g.onStage || 10) * 1.6));
+    if (run.phase === "hot") takesRem = Math.max(0, takes - (run.takeIdx || 0) - 1);
+    return Math.max(1, Math.min(EVERY[1], Math.floor((beeRem + takesRem) / R)));
+  }
 
   // ---- state kept across a reload ----
   var run = { phase: "idle", every: rnd(EVERY[0], EVERY[1]), sinceK: 0, ret: "", takeIdx: 0, takes: cfg.TAKES_TO_PLAY || 5, stage: 0, kOn: true, counted: "", paused: null, ask: false, stageTouched: false };
@@ -82,7 +91,7 @@
   function startBee() {
     A = api(); G = A.get();
     A.beeLoad(run.stage === "everyone" || G.keenest < 6 ? 0 : G.keenest); A.beeRules();
-    run.phase = "bee"; run.sinceK = 0; run.every = rnd(EVERY[0], EVERY[1]); run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
+    run.phase = "bee"; run.sinceK = 0; run.ret = ""; run.ask = false; run.paused = null; run.counted = ""; save(); paint(true);
   }
   // ---- icebreaker: every take is debated first, in groups; the clock runs on the projector ----
   function startIce() { run.phase = "ice"; run.iceIdx = -1; run.ret = ""; run.ask = false; run.paused = null; save(); iceNext(); }
@@ -102,7 +111,7 @@
     var r = run.ret; run.ret = ""; save(); A = api();
     if (r === "bee-next") A.beeNext(); else if (r === "bee-call") A.beeCall(); else if (r === "hot-next") hotNext(); else if (r === "hot-same") A.takeShow(); else A.beeCall();
   }
-  function spinNow(ret) { A = api(); run.ret = ret; run.sinceK = 0; run.every = rnd(EVERY[0], EVERY[1]); run.ask = false; save(); A.spin(); }
+  function spinNow(ret) { A = api(); run.ret = ret; run.sinceK = 0; run.ask = false; save(); A.spin(); }
   function karaokeRet() {
     var m = st.mode;
     if (run.phase === "hot") return (m === "hottake" && st.phase === "twist") || m === "home" ? "hot-next" : "hot-same";
@@ -119,7 +128,12 @@
     if (run.takeIdx >= Math.min(run.takes, G.takes.length)) return finishNight();
     A.takePick(G.takes[run.takeIdx].id); A.takeShow();
   }
-  function finishNight() { A = api(); run.phase = "done"; run.ask = false; save(); A.setState({ mode: "home" }); }
+  // After the last hot take, anyone who is here, said yes to karaoke and has not sung yet gets their turn before the night ends.
+  function finishNight() {
+    A = api(); G = A.get();
+    if (run.kOn && G.kleft > 0 && run.phase !== "kfin") { run.phase = "kfin"; run.ask = false; save(); A.setState({ mode: "home" }); return; }
+    run.phase = "done"; run.ask = false; save(); A.setState({ mode: "home" });
+  }
 
   // ---- pause ----
   function pause() { A = api(); run.paused = st; run.pausedAt = Date.now(); save(); A.setState({ mode: "pause", resume: st }); }
@@ -143,8 +157,10 @@
     hnext: function () { hotNext(); },
     hskip: function () { if (confirm("Skip this take?")) hotNext(); },
     hend: function () { if (confirm("End the hot takes and finish the night?")) finishNight(); },
+    kspin: function () { A.spin(); },
+    kdone: function () { if (G && G.kleft > 0 && !confirm(G.kleft + " people who said yes have not sung yet. Finish the night anyway?")) return; run.phase = "done"; run.ask = false; save(); A.setState({ mode: "home" }); },
     kyes: function () { spinNow(karaokeRet()); },
-    kno: function () { run.ask = false; run.sinceK = Math.max(0, run.every - 3); save(); },
+    kno: function () { run.ask = false; run.sinceK = Math.max(0, pace() - 1); save(); },
     know: function () { spinNow(karaokeRet()); },
     kback: function () { returnFromKaraoke(); },
     kagain: function () { A.spinAgain(); },
@@ -193,6 +209,10 @@
     if (m === "pause") {
       status = "<b>Paused.</b> The screen says we'll be right back.";
       primary = btn("Resume", "resume", "go"); sec = [];
+    } else if (run.phase === "kfin") {
+      status = "<b>Karaoke finale.</b> " + G.kleft + " still to sing &middot; " + G.ksung + " have sung" + ((m === "roulette" || m === "karaoke") && st.name ? " &middot; now: <b>" + esc(st.name) + "</b>" : "");
+      primary = G.kleft > 0 ? btn("Spin for the next singer", "kspin", "go") : btn("That is everyone: finish the night", "kdone", "go");
+      sec = [btn("Not here? Spin again", "kagain", "sec"), btn("Finish the night now", "kdone", "sec"), btn("Pause", "pause", "sec")];
     } else if (m === "roulette" || m === "karaoke") {
       status = "<b>Karaoke roulette.</b> " + esc(st.name || "") + (st.song ? " &middot; " + esc(st.song) : "");
       primary = btn("Back to the show", "kback", "go");
@@ -235,7 +255,7 @@
         sec = [btn("End the bee now", "endbee", "sec"), btn("Pause", "pause", "sec")];
       }
       // a karaoke break is offered between turns
-      if (run.kOn && m === "bee" && st.phase === "result" && !st.final && run.sinceK >= run.every && G.wheel > 0 && !run.ask) { run.ask = true; save(); chime(); }
+      if (run.kOn && m === "bee" && st.phase === "result" && !st.final && run.sinceK >= pace() && G.kleft > 0 && !run.ask) { run.ask = true; save(); chime(); }
       if (run.ask && !(m === "bee" && st.phase === "result" && !st.final)) { run.ask = false; save(); }
     } else if (run.phase === "hot") {
       var tk = Math.min(run.takes, G.takes.length), nowT = run.takeIdx + 1;
@@ -250,7 +270,7 @@
       } else if (m === "hottake") {
         primary = btn("Show what everyone picked", "stand", "go"); sec = [btn("Skip take", "hskip", "sec"), btn("Karaoke now", "know", "sec"), btn("Pause", "pause", "sec")];
       } else primary = btn("Show take " + nowT, "hnext", "go");
-      if (run.kOn && m === "hottake" && st.phase === "twist" && nowT < tk && run.sinceK >= Math.max(2, run.every - 3) && G.wheel > 0 && !run.ask) { run.ask = true; save(); chime(); }
+      if (run.kOn && m === "hottake" && st.phase === "twist" && nowT < tk && run.sinceK >= pace() && G.kleft > 0 && !run.ask) { run.ask = true; save(); chime(); }
       if (run.ask && !(m === "hottake" && st.phase === "twist")) { run.ask = false; save(); }
     } else if (run.phase === "done") {
       status = "<b>That's the night.</b> Thank you for coming.";
@@ -258,7 +278,7 @@
     }
 
     if (run.ask) {
-      ask = '<div class="ask"><span class="q">Karaoke roulette break? ' + G.wheel + ' on the wheel.</span>' + btn("Yes, spin the wheel", "kyes", "go") + btn("Not now", "kno") + "</div>";
+      ask = '<div class="ask"><span class="q">Karaoke roulette break? ' + G.kleft + ' still to sing.</span>' + btn("Yes, spin the wheel", "kyes", "go") + btn("Not now", "kno") + "</div>";
     }
     html = (ask || "") + (opts ? '<div class="row">' + opts + "</div>" : "") +
       '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row">' + sec.join("") + "</span></div>";

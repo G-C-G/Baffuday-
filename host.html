@@ -732,7 +732,8 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     });
     $("nplan").innerHTML = rows.join("");
     $("nmeet").innerHTML = cv && cv.people ? "<b>Mixing:</b> across all 8 takes each person is in a group with " + cv.avg.toFixed(1) + " of the other " + cv.others + " people on average (the fewest anyone meets is " + cv.min + "). " + (cv.never ? cv.never + " pairs never share a group." : "Everyone meets everyone.") : "";
-    $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each one") + pill(!show.k, 'data-nk="0"', "No breaks");
+    var sing = L.filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, per = (window.GCG_CONFIG && window.GCG_CONFIG.MIN_PER_SONG) || 5;
+    $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each one") + pill(!show.k, 'data-nk="0"', "No breaks") + (show.k ? ' <span class="note">Everyone who said yes gets a turn: ' + sing + " songs, about " + Math.round(sing * per / 5) * 5 + " min</span>" : "");
   }
   function drawHere() {
     var L = list().slice().sort(function (a, b) { return a.name.localeCompare(b.name); }), n = L.filter(present).length;
@@ -774,7 +775,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     icePlan: function () { return icePlan(); },
     get: function () {
       var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
-      return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
+      return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, kleft: plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, ksung: plist().filter(function (g) { return g.performed; }).length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
         winner: bee.winner || null, sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
         eligible: plist().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
     },

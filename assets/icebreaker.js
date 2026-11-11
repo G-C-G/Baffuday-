@@ -11,7 +11,8 @@
   // guests: array of guest records. takes: the takes in the order they will be played. Returns one entry per take.
   function plan(guests, takes, seed) {
     seed = seed || 1;
-    var counts = {}, out = [];
+    var counts = {}, out = [], met = {};   // met["a|b"] = how many rounds two people have already shared a group
+    var pairKey = function (x, y) { return x < y ? x + "|" + y : y + "|" + x; };
     var pk = root.pick || function (v) { return v && v.s ? v : null; }, into = root.into || function () { return true; };
     takes.forEach(function (t) {
       var A = [], B = [];
@@ -25,7 +26,7 @@
       A.sort(cmp); B.sort(cmp);
       var M = A.length <= B.length ? A.slice() : B.slice(), J = A.length <= B.length ? B.slice() : A.slice(), groups = [], used = {};
       var take = function (g) { [].concat(g.a, g.b).forEach(function (m) { used[m.name] = 1; counts[m.name] = (counts[m.name] || 0) + 1; }); groups.push(g); };
-      var mem = function (p, side) { return { name: p.name, n: p.n, flip: p.side !== side, side: side }; };
+      var mem = function (p, side) { return { name: p.name, n: p.n, flip: p.side !== side, side: side, origin: p.side }; };
 
       // 1. real opposites, strongest first
       var R = Math.floor(M.length / 2);
@@ -46,6 +47,20 @@
         var real = four.filter(function (p) { return !flipped[p.name]; });
         take({ a: ga, b: gb, heat: real.reduce(function (s, p) { return s + p.n; }, 0) / (real.length || 1) - 1, real: false });
       }
+      // Spread the meetings: swap people between groups (same picked side, same role) so that as few pairs as possible have already met.
+      var pairsOf = function (g) { var m = [].concat(g.a, g.b), r = []; for (var i = 0; i < m.length; i++) for (var j = i + 1; j < m.length; j++) r.push(pairKey(m[i].name, m[j].name)); return r; };
+      var cost = function () { var c = 0; groups.forEach(function (g) { pairsOf(g).forEach(function (k) { c += (met[k] || 0) * 100; }); var sa = g.a.reduce(function (s, m) { return s + m.n; }, 0) / g.a.length, sb = g.b.reduce(function (s, m) { return s + m.n; }, 0) / g.b.length; c += Math.abs(sa - sb) * (g.real ? 1 : 0.2); }); return c; };
+      var cur = cost(), it = 0, rs = rnd(seed, t.id + "|swap");
+      for (it = 0; it < 2500 && groups.length > 1 && cur > 0.01; it++) {
+        rs = rnd(seed, t.id + "|s" + it + "|" + rs);
+        var i1 = Math.floor(rs * groups.length), rs2 = rnd(seed, t.id + "|t" + it), i2 = Math.floor(rs2 * groups.length); if (i1 === i2) continue;
+        var g1 = groups[i1], g2 = groups[i2], s1 = rnd(seed, t.id + "|u" + it) < .5 ? "a" : "b", s2 = rnd(seed, t.id + "|v" + it) < .5 ? "a" : "b";
+        var m1 = g1[s1], m2 = g2[s2], k1 = Math.floor(rnd(seed, t.id + "|w" + it) * m1.length), k2 = Math.floor(rnd(seed, t.id + "|x" + it) * m2.length);
+        var p1 = m1[k1], p2 = m2[k2]; if (p1.origin !== p2.origin || p1.flip !== p2.flip || p1.side !== p2.side) continue;
+        m1[k1] = p2; m2[k2] = p1; var nc = cost();
+        if (nc < cur) cur = nc; else { m1[k1] = p1; m2[k2] = p2; }
+      }
+      groups.forEach(function (g) { pairsOf(g).forEach(function (k) { met[k] = (met[k] || 0) + 1; }); });
       var listeners = A.concat(B).filter(function (p) { return !used[p.name]; }).map(function (p) { return p.name; });
       var tot = A.length + B.length, major = A.length >= B.length ? t.a : t.b, minor = A.length >= B.length ? t.b : t.a, note = "";
       if (tot && Math.max(A.length, B.length) / tot >= 0.7) note = "Most of you picked " + major + ". If everyone in your group picked the same, two of you argue " + minor + " anyway. Talk about why someone would pick it.";
@@ -54,5 +69,23 @@
     });
     return out;
   }
-  root.ICE = { plan: plan };
+  // How well does a plan mix people? Returns, for the people who play, how many others each has met and how many pairs never meet.
+  function coverage(P) {
+    var people = {}, met = {};
+    P.forEach(function (t) { t.groups.forEach(function (g) { var m = [].concat(g.a, g.b).map(function (x) { return x.name; }); m.forEach(function (n) { people[n] = people[n] || {}; m.forEach(function (o) { if (o !== n) people[n][o] = 1; }); }); }); });
+    var names = Object.keys(people), per = names.map(function (n) { return Object.keys(people[n]).length; });
+    var avg = per.length ? per.reduce(function (s, x) { return s + x; }, 0) / per.length : 0, min = per.length ? Math.min.apply(null, per) : 0, never = 0;
+    for (var i = 0; i < names.length; i++) for (var j = i + 1; j < names.length; j++) if (!people[names[i]][names[j]]) never++;
+    return { people: names.length, avg: avg, min: min, never: never, others: names.length - 1 };
+  }
+  // Try many shuffles and keep the one where the most people meet the most others.
+  function best(guests, takes, seed, tries) {
+    var bp = null, bc = null, bs = 0;
+    for (var s = 0; s < (tries || 40); s++) {
+      var sd = (seed || 1) * 1000 + s, p = plan(guests, takes, sd), c = coverage(p);
+      if (!bc || c.never < bc.never || (c.never === bc.never && c.min > bc.min)) { bp = p; bc = c; bs = sd; }
+    }
+    bp.coverage = bc; bp.seedUsed = bs; return bp;
+  }
+  root.ICE = { plan: plan, coverage: coverage, best: best };
 })(typeof window !== "undefined" ? window : globalThis);

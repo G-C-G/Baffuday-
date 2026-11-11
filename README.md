@@ -267,3 +267,4 @@ Set on the host panel's **Night setup** tab: Off, 1 minute or 2 minutes per take
 - The screen also says "Listen closely. Keep an open mind."
 - **The groups are fixed and repeatable.** The same guests and shuffle number give the same groups in every browser. The Night setup tab lists the groups for all 8 takes, with **Shuffle the groups** and **Print the groups**. Final groups should be made after the last answers are in.
 - People who said Rather not or Please no to hot takes are never put in a group.
+- **Mixing.** The groups are spread so that people meet as many different people as possible across the 8 takes (the Night setup tab shows the result: with the 24 who can play, each person meets about 20 of the other 23 on average). A perfect "everyone meets everyone" is not possible with 2 against 2 groups and the sides people picked, so a handful of pairs never share a group.

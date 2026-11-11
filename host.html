@@ -131,6 +131,7 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
       <div class="bar" id="nice"></div>
       <p class="note">Every hot take is debated first, in groups of 3 or 4 made of people who picked opposite sides. The projector shows who is in each group and runs the clock, and everyone finds their group. These are the groups the projector will show (the strongest feelings are matched first):</p>
       <div class="bar"><button type="button" class="btn ghost" id="nshuffle">Shuffle the groups</button><button type="button" class="btn ghost" id="nprint">Print the groups</button></div>
+      <p class="note" id="nmeet"></p>
       <div class="tbl"><table id="nplan"></table></div></div>
     <div><span class="k">Spelling bee: who goes on stage</span>
       <div class="bar" id="nstage"></div></div>
@@ -689,13 +690,14 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     $("ntakes").innerHTML = [3, 4, 5, 6, 8].filter(function (n) { return n <= TAKES.length; }).map(function (n) { return pill(show.takes === n, 'data-nt="' + n + '"', n); }).join("");
     $("nice").innerHTML = pill(show.ice === 0, 'data-ni="0"', "Off") + pill(show.ice === 60, 'data-ni="60"', "1 minute per take (about 16 min)") + pill(show.ice === 120, 'data-ni="120"', "2 minutes per take (about 25 min)");
     var gnames = function (arr, other) { return arr.map(function (m) { return esc(m.name) + (m.flip ? " <span class=\"dim\">[picked " + esc(other) + "]</span>" : ""); }).join(", "); };
-    var P = icePlan(), rows = ["<tr><th>#</th><th>Take</th><th>Groups (2 v 2; [ ] = argues the side they did not pick)</th><th>Listening</th></tr>"];
+    var P = icePlan(), cv = P.coverage, rows = ["<tr><th>#</th><th>Take</th><th>Groups (2 v 2; [ ] = argues the side they did not pick)</th><th>Listening</th></tr>"];
     P.forEach(function (t, i) {
       rows.push("<tr><td>" + (i + 1) + "</td><td>" + esc(t.text) + "<br><span class=\"dim\">" + t.nA + " picked " + esc(t.a) + ", " + t.nB + " picked " + esc(t.b) + "</span></td><td>" +
         (t.groups.map(function (g, k) { return "<b>G" + (k + 1) + "</b> " + gnames(g.a, t.b) + " <span class=\"dim\">(arguing " + esc(t.a) + ")</span> v " + gnames(g.b, t.a) + " <span class=\"dim\">(arguing " + esc(t.b) + ")</span>"; }).join("<br>") || '<span class="dim">everyone agrees, skip</span>') +
         '</td><td class="dim">' + esc(t.listeners.join(", ")) + "</td></tr>");
     });
     $("nplan").innerHTML = rows.join("");
+    $("nmeet").innerHTML = cv && cv.people ? "<b>Mixing:</b> across all 8 takes each person is in a group with " + cv.avg.toFixed(1) + " of the other " + cv.others + " people on average (the fewest anyone meets is " + cv.min + "). " + (cv.never ? cv.never + " pairs never share a group." : "Everyone meets everyone.") : "";
     $("nk").innerHTML = pill(show.k, 'data-nk="1"', "Ask me before each karaoke break") + pill(!show.k, 'data-nk="0"', "No breaks, I will start them myself");
   }
   $("p-night").addEventListener("click", function (e) {
@@ -705,7 +707,12 @@ th{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--yell
     store.set("setup/show", show); drawNight();
   });
   // The icebreaker plays the takes from the lightest to the spiciest (the hot takes list is spiciest first, so it is reversed here).
-  function icePlan() { return ICE.plan(list(), TAKES.slice().reverse(), show.seed || 1); }
+  var iceCache = { k: "", p: null };
+  function icePlan() {
+    var L = list(), k = (show.seed || 1) + "|" + L.map(function (g) { return g.id + ":" + JSON.stringify(g.picks || {}) + ":" + (g.involve ? g.involve.takes : g.involve) + (g.updatedAt || ""); }).join(",");
+    if (iceCache.k !== k) iceCache = { k: k, p: ICE.best(L, TAKES.slice().reverse(), show.seed || 1, 40) };
+    return iceCache.p;
+  }
   $("nshuffle").onclick = function () { show.seed = (show.seed || 1) + 1; store.set("setup/show", show); drawNight(); };
   $("nprint").onclick = function () {
     var w = window.open("", "_blank"); if (!w) return;

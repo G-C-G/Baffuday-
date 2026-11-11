@@ -101,7 +101,7 @@
     while (i < P.length && !P[i].groups.length) i++;               // nobody to argue: skip
     if (i >= P.length) return startBee();
     run.iceIdx = i; save(); var t = P[i];
-    A.setState({ mode: "icebreaker", phase: "groups", num: i + 1, total: P.length, takeId: t.takeId, text: t.text, a: t.a, b: t.b, groups: t.groups, listeners: t.listeners, note: t.note || "", durMs: run.iceLen * 1000 });
+    A.setState({ mode: "icebreaker", phase: "groups", num: i + 1, total: P.length, takeId: t.takeId, text: t.text, a: t.a, b: t.b, groups: t.groups, listeners: t.listeners, durMs: run.iceLen * 1000 });
   }
   function iceGo() { A = api(); A.setState(Object.assign({}, st, { phase: "timer", startAt: Date.now(), noReplay: true })); }
   function iceAdd() { A = api(); A.setState(Object.assign({}, st, { durMs: st.durMs + 30000, noReplay: true })); }
@@ -221,6 +221,7 @@
     } else if (run.phase === "ice") {
       var P2 = A.icePlan(), idx = run.iceIdx || 0, lastIce = !P2.slice(idx + 1).some(function (t) { return t.groups.length; });
       status = "<b>Icebreaker.</b> Take " + (idx + 1) + " of " + P2.length;
+      if (P2[idx] && P2[idx].note) status += '<br><span style="color:#F5D76E"><b>Tell the room:</b> ' + esc(P2[idx].note) + "</span>";
       if (m === "icebreaker" && st.phase === "timer") {
         var left = st.startAt + st.durMs - Date.now();
         status += left > 0 ? " &middot; clock running (" + Math.ceil(left / 1000) + "s left)" : " &middot; <b>time</b>";

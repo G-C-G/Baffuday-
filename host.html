@@ -148,7 +148,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
 
   <section class="panel on" id="p-night">
     <div class="side" id="nready"></div>
-    <div class="bar" id="nload"><label class="btn ghost" style="cursor:pointer">Load guest file<input type="file" id="impjson2" accept="application/json,.json" hidden></label><span class="note" id="impmsg2"></span></div>
+    <div class="bar" id="nload"><label class="btn ghost" style="cursor:pointer">Load guest file<input type="file" id="impjson2" accept="application/json,.json" hidden></label><button class="btn" id="loadtonight" type="button">Load tonight's guests</button><span class="note" id="impmsg2"></span></div>
     <div><span class="k">Who is here</span>
       <div class="bar" style="margin-top:6px"><button type="button" class="btn ghost" id="hall">Everyone is here</button><button type="button" class="btn ghost" id="hnone">Clear all</button><span class="note" id="hcount"></span></div>
       <div class="herewrap" id="here"></div></div>
@@ -549,6 +549,11 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     });
   });
   // A guest list saved as JSON (an array of guest records, the same shape the form saves). Used when answers arrived as screenshots, not PDFs.
+  $("loadtonight").onclick = function () {
+    $("impmsg2").textContent = "Loading...";
+    fetch("assets/tonight.json?" + Date.now()).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (t) { return window.HOSTAPI.importJson(t); })
+      .then(function (n) { $("impmsg2").textContent = "Loaded " + n + " guests."; }).catch(function () { $("impmsg2").textContent = "Could not load the guest list. Use Load guest file instead."; });
+  };
   $("impjson2").addEventListener("change", function () {
     try { var dt = new DataTransfer(); dt.items.add(this.files[0]); $("impjson").files = dt.files; $("impjson").dispatchEvent(new Event("change")); $("impmsg2").textContent = "Loading..."; } catch (e) { $("impmsg2").textContent = "Use More, Guests, Import guest file."; }
     var self = this; setTimeout(function () { $("impmsg2").textContent = $("impmsg").textContent; self.value = ""; }, 1500);

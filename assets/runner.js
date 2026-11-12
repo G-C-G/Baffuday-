@@ -174,6 +174,8 @@
     pause: function () { pause(); },
     icego: function () { iceGo(); },
     icenext: function () { iceNext(); },
+    iceprev: function () { run.iceIdx = Math.max(-1, (run.iceIdx || 0) - 2); save(); iceNext(); },
+    hotprev: function () { A = api(); G = A.get(); run.takeIdx = Math.max(0, run.takeIdx - 1); save(); A.takePick(G.takes[run.takeIdx].id); A.takeShow(); },
     icelast: function () { startBee(); },
     iceadd: function () { iceAdd(); },
     iceskip: function () { if (confirm("Skip the rest of the icebreaker and go to the spelling bee?")) startBee(); },
@@ -234,10 +236,10 @@
         var left = st.startAt + st.durMs - Date.now();
         status += left > 0 ? " &middot; clock running (" + Math.ceil(left / 1000) + "s left)" : " &middot; <b>time</b>";
         primary = btn("Continue", lastIce ? "icelast" : "icenext", "go");
-        sec = [btn("Restart timer", "icego", "sec"), btn("+30 seconds", "iceadd", "sec"), btn("Pause", "pause", "sec")];
+        sec = (idx > 0 ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Restart timer", "icego", "sec"), btn("+30 seconds", "iceadd", "sec"), btn("Pause", "pause", "sec")]);
       } else if (m === "icebreaker") {
         primary = btn("Start timer", "icego", "go");
-        sec = [btn("Continue", lastIce ? "icelast" : "icenext", "sec"), btn("Skip the icebreaker", "iceskip", "sec"), btn("Pause", "pause", "sec")];
+        sec = (idx > 0 ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Continue", lastIce ? "icelast" : "icenext", "sec"), btn("Skip the icebreaker", "iceskip", "sec"), btn("Pause", "pause", "sec")]);
       } else primary = btn("Show the groups", "icenext", "go");
     } else if (run.phase === "bee") {
       var stand = G.alive + " standing" + (G.sudden ? " &middot; sudden death" : ""), who = G.cur ? " &middot; up: <b>" + esc(G.cur) + "</b>" : "";
@@ -274,7 +276,7 @@
         countTurn("h" + st.takeId);
         primary = nowT >= tk ? btn("Finish the night", "hend", "go") : btn("Next take", "hnext", "go");
         if (nowT >= tk) ACT.hend = function () { finishNight(); };
-        sec = [btn("Karaoke now", "know", "sec"), btn("Pause", "pause", "sec")];
+        sec = (run.takeIdx > 0 ? [btn("Back", "hotprev", "sec")] : []).concat([btn("Karaoke now", "know", "sec"), btn("Pause", "pause", "sec")]);
         var wn = (run.win || {})[st.takeId] || "";
         opts = '<span class="st">Ask the room: who was the most convincing? Tap the winner.</span>' + (st.people || []).map(function (p) { return btn(esc(p.name), "hwin", "opt" + (wn === p.name ? " on" : ""), ' data-w="' + esc(p.name) + '"'); }).join("");
       } else if (m === "hottake" && st.phase === "stand") {

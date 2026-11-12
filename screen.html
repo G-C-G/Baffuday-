@@ -349,7 +349,7 @@ body.flashred{animation:flashred .6s ease 2}
   // If the groups would run into the clock (lots of groups, or a long instruction), shrink the group text until they fit.
   function fitIce() {
     var g = document.querySelector(".groups"), main = g && g.closest(".main"), foot = document.querySelector(".foot"); if (!g || !main || !foot) return;
-    var last = function () { return main.lastElementChild.getBoundingClientRect().bottom; }, lim = foot.getBoundingClientRect().top - 10;
+    var last = function () { return main.lastElementChild.getBoundingClientRect().bottom; }, lim = foot.getBoundingClientRect().top - Math.round(window.innerHeight * 0.035);
     var lo = .4, hi = 2.4;   // find the biggest text size (names first) that still fits above the clock
     for (var i = 0; i < 9; i++) { var mid = (lo + hi) / 2; g.style.setProperty("--gs", mid.toFixed(3)); if (last() <= lim) lo = mid; else hi = mid; }
     g.style.setProperty("--gs", lo.toFixed(3));

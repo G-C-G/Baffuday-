@@ -779,6 +779,8 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true, ice: 120, seed: 1, kmax: 0 }, v || {}); drawNight(); });
 
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
+  // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
+  if (/[?&]play\b/.test(location.search)) { $("tabs").style.display = "none"; $("moretabs").style.display = "none"; var pb = document.querySelector('[data-p="run"]'); if (pb) setTimeout(function () { pb.click(); }, 50); }
   window.HOSTAPI = {
     icePlan: function () { return icePlan(); },
     get: function () {

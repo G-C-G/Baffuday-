@@ -163,6 +163,9 @@
     kyes: function () { spinNow(karaokeRet()); },
     kno: function () { run.ask = false; run.sinceK = Math.max(0, pace() - 1); save(); },
     know: function () { spinNow(karaokeRet()); },
+    jice: function () { A = api(); G = A.get(); if ((run.iceIdx || -1) >= 0) { run.phase = "ice"; run.ret = ""; run.ask = false; run.iceIdx = run.iceIdx - 1; save(); iceNext(); } else startIce(); },
+    jbee: function () { A = api(); G = A.get(); if (G.n > 0 && !G.winner) { run.phase = "bee"; run.ret = ""; run.ask = false; save(); A.beeCall(); } else startBee(); },
+    jhot: function () { A = api(); G = A.get(); if (run.takeIdx > 0 || (st.mode === "hottake")) { run.phase = "hot"; run.ret = ""; run.ask = false; save(); A.takeShow(); } else startHot(); },
     kback: function () { returnFromKaraoke(); },
     kagain: function () { A.spinAgain(); },
     pause: function () { pause(); },
@@ -286,8 +289,9 @@
     if (run.ask) {
       ask = '<div class="ask"><span class="q">Karaoke roulette break? ' + G.kleft + ' still to sing.</span>' + btn("Yes, spin the wheel", "kyes", "go") + btn("Not now", "kno") + "</div>";
     }
+    var jump = run.phase === "idle" || run.phase === "done" ? "" : '<div class="row"><span class="st">Jump to</span>' + btn("Icebreaker", "jice", run.phase === "ice" ? "opt on" : "opt") + btn("Spelling bee", "jbee", run.phase === "bee" ? "opt on" : "opt") + btn("Karaoke roulette", "know", "opt") + btn("Hot takes", "jhot", run.phase === "hot" ? "opt on" : "opt") + "</div>";
     html = (ask || "") + (opts ? '<div class="row">' + opts + "</div>" : "") +
-      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row">' + sec.join("") + "</span></div>";
+      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row">' + sec.join("") + "</span></div>" + jump;
     var s2 = html + "|" + (strip.classList.contains("hide") ? 1 : 0);
     if (force || s2.split("|")[0] !== sig) { sig = s2.split("|")[0]; strip.innerHTML = html; }
     if (needsAttention() || run.ask) poke();

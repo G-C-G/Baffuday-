@@ -231,7 +231,7 @@ body.flashred{animation:flashred .6s ease 2}
     var n = G.length, cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 12 ? 4 : n <= 20 ? 5 : 6, stack = n > 9;
     var listen = (s.listeners || []).length ? '<span class="lnote"><b>Listening this round:</b> ' + esc(s.listeners.join(", ")) + "</span>" : "";
     var main = '<p class="ice-h">Find your group</p><p class="ice-q">' + esc(s.text) + "</p>" + '<div class="groups g' + cols + (stack ? " stack" : "") + '">' + cards + "</div>" + (listen ? '<div style="margin-top:.8vh">' + listen + "</div>" : "");
-    var foot = iceClockHtml(left, s.durMs, timer) + '<span class="listen">Listen closely. Keep an open mind.</span>';
+    var foot = iceClockHtml(left, s.durMs, timer) + '<span class="listen">Listen closely or regret.</span>';
     return { theme: "cream", html: frame("Icebreaker " + num, main, foot, "icemain") };
   }
   // Each view returns { theme, html }.
@@ -563,7 +563,7 @@ body.flashred{animation:flashred .6s ease 2}
 </script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
-(function () { if (window.parent === window) return; var last = 0;
+(function () { if (window.parent === window) return; var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var last = 0;
   document.addEventListener("keydown", function (e) { if (/^( |Enter|p|P|k|K|s|S)$/.test(e.key)) { e.preventDefault(); try { window.parent.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } }, true); ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, function () { var n = Date.now(); if (n - last > 300) { last = n; try { window.parent.postMessage("gcg-attention", "*"); } catch (x) {} } }, { passive: true }); }); })();
 </script>
 </body>

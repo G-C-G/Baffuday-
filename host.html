@@ -782,8 +782,46 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
   if (/[?&]embed\b/.test(location.search)) {
     var es = document.createElement("style");
-    es.textContent = "html,body{background:transparent!important}body{margin:0}.wrap{max-width:none;padding:0!important;margin:0!important}.wrap>*{display:none!important}.wrap>#p-run{display:block!important}#p-run>.runlive{display:none}#runner.inhost{margin:0;border-radius:0;padding:12px 18px;gap:10px}#runner.inhost button.go{font-size:20px;padding:.7em 1.4em}#runner.inhost button.opt{font-size:17px;padding:.6em 1em}#runner.inhost .ask .q{font-size:24px}";
+    es.textContent = "html,body{background:transparent!important;overflow:hidden}body{margin:0}.wrap{max-width:none;padding:0!important;margin:0!important}.wrap>*{display:none!important}.wrap>#p-run{display:block!important}#p-run>.runlive{display:none}" +
+      "#runpanel{width:max-content;max-width:560px;margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;padding:4px}" +
+      "#runner.inhost{margin:0;width:max-content;max-width:560px;background:transparent;box-shadow:none;padding:0;gap:6px;border-radius:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-end}" +
+      "#runner.inhost>.row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;flex:none}#runner.inhost>.ask{order:0}#runner.inhost .st{display:none}#runner.inhost .secs{display:contents}" +
+      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]){display:none!important}#runner .jump,#runner button.mini{display:none!important}" +
+      "#runner.inhost button{font-size:15px;line-height:1;width:40px;height:40px;min-width:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(8,24,62,.94);border:1.5px solid rgba(255,244,201,.9);color:#FFF4C9;box-shadow:0 2px 8px rgba(0,0,0,.25);letter-spacing:0;text-transform:none}" +
+      "#runner.inhost button.go{width:52px!important;height:52px!important;min-width:0!important;max-width:52px!important;padding:0!important;font-size:20px;background:#F5D76E;color:#08183E;border-color:#08183E;order:3;flex:none}#runner.inhost button.go[disabled]{opacity:.45}" +
+      "#runner.inhost button.opt{width:auto;height:36px;border-radius:999px;padding:0 14px;font-size:13px;letter-spacing:.04em;text-transform:uppercase}#runner.inhost button.opt.on{background:#FFF4C9;color:#08183E}" +
+      "#runner.inhost .ask{background:rgba(8,24,62,.94);border:1.5px solid #F5D76E;border-radius:999px;padding:4px 6px 4px 14px;gap:6px;flex-wrap:nowrap;align-items:center;display:flex}#runner.inhost .ask .q{font:700 12px/1 Inter,sans-serif;min-width:0;flex:none;color:#F5D76E;white-space:nowrap}" +
+      "#runner.inhost .ask button{width:auto;height:34px;border-radius:999px;padding:0 14px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;box-shadow:none}#runner.inhost .ask button.go{width:auto;height:34px;font-size:11px}" +
+      "#startbtn{width:56px!important;height:56px!important;padding:0!important;border-radius:50%!important;font-size:22px!important;display:inline-flex!important;align-items:center;justify-content:center}#startbtn[hidden]{display:none!important}";
+    // Symbols only: a play triangle starts, two bars pause, a loop restarts, a skip arrow continues. The words stay as the tooltip.
+    var IC = {
+      play: '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+      pause: '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
+      restart: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg>',
+      next: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 5v14l9-7z"/><rect x="16.5" y="5" width="2.8" height="14" rx="1"/></svg>',
+      check: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+    };
+    var SYM = function (b) {
+      if (b.closest(".ask")) return null;
+      var act = b.dataset.act || "";
+      if (b.dataset.pick !== undefined || b.dataset.w !== undefined || b.classList.contains("opt")) return null;
+      if (act === "pause") return "pause";
+      if (act === "resume") return "play";
+      if (act === "icego") return b.classList.contains("go") ? "play" : "restart";
+      if (act === "lock") return "check";
+      if (act === "icenext" || act === "icelast") return "next";
+      if (b.classList.contains("go")) return "next";
+      return null;
+    };
+    var applySym = function () {
+      var r = document.getElementById("runner"); if (!r) return;
+      r.querySelectorAll("button").forEach(function (b) { var s = SYM(b); if (s && b.dataset.sym !== s) { if (!b.title) b.title = b.textContent.trim(); b.setAttribute("aria-label", b.title); b.innerHTML = IC[s]; b.dataset.sym = s; } });
+      var sb = document.getElementById("startbtn"); if (sb && sb.dataset.sym !== "1") { sb.title = "Start"; sb.innerHTML = IC.play; sb.dataset.sym = "1"; }
+    };
+    new MutationObserver(function () { applySym(); }).observe(document.body, { childList: true, subtree: true });
+    setInterval(applySym, 300);
     document.head.appendChild(es); document.body.classList.add("embed");
+    setInterval(function () { try { var rp = document.querySelector("#runpanel").getBoundingClientRect(); window.parent.postMessage({ gcgh: Math.ceil(rp.height) + 8, gcgw: Math.ceil(rp.width) + 8 }, "*"); } catch (e) {} }, 350);
   }
   if (/[?&]play\b/.test(location.search)) { $("tabs").style.display = "none"; $("moretabs").style.display = "none"; var pb = document.querySelector('[data-p="run"]'); if (pb) setTimeout(function () { pb.click(); }, 50); }
   window.HOSTAPI = {

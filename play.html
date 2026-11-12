@@ -4,16 +4,16 @@
 html,body{margin:0;height:100%;background:#F5D76E;overflow:hidden}
 iframe{border:0;position:fixed;left:0;width:100%}
 #scr{top:0;height:100%}
-#hst{bottom:0;height:42vh;transform:translateY(105%);transition:transform .25s;background:transparent}
-body.show #hst{transform:none}
-#tools{position:fixed;top:10px;left:10px;z-index:5;display:flex;gap:8px;opacity:0;transition:opacity .25s}
+#hst{left:auto;right:12px;bottom:6px;width:560px;height:66px;transform:translateY(130%);opacity:0;transition:transform .25s,opacity .25s;background:transparent;color-scheme:normal}
+body.show #hst{transform:none;opacity:1}
+#tools{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:8px;opacity:0;transition:opacity .25s}
 body.show #tools{opacity:1}
-#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
+#tools #fs{font-size:18px;width:40px;height:40px;padding:0;border-radius:50%;background:#F5D76E;color:#08183E;border:2px solid #08183E}#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
 body{cursor:default}body:not(.show){cursor:none}
 </style></head><body>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" src="host.html?play=1&embed=1" allow="autoplay"></iframe>
-<div id="tools"><a href="host.html">Setup</a><button id="fs" type="button">Fullscreen</button><button id="pin" type="button">Keep buttons up</button></div>
+<div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
 <script>
 (function () {
   var b = document.body, t = 0, pinned = false;
@@ -23,11 +23,15 @@ body{cursor:default}body:not(.show){cursor:none}
   // the game frame has focus only for sound; the host frame takes the keys (Space or Enter = the big gold button)
   function toHost() { try { document.getElementById("hst").contentWindow.focus(); } catch (e) {} }
   document.getElementById("hst").addEventListener("load", toHost);
-  document.addEventListener("keydown", function (e) { if (/^( |Enter|p|P|k|K|s|S)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
-  document.getElementById("fs").onclick = function () { var d = document.documentElement; (d.requestFullscreen || d.webkitRequestFullscreen).call(d); };
-  document.getElementById("pin").onclick = function () { pinned = !pinned; this.textContent = pinned ? "Auto-hide buttons" : "Keep buttons up"; show(); };
+  document.addEventListener("keydown", function (e) { if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
+  function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function toggleFs() { var d = document.documentElement; if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } else { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } }
+  document.getElementById("fs").onclick = function () { pinned = false; toggleFs(); show(); };
+  document.addEventListener("fullscreenchange", function () { document.getElementById("fst").textContent = isFs() ? "\u2715" : "\u26F6"; });
+  // until you have gone fullscreen once, the buttons stay up so the first step is obvious
+  pinned = true;
   // Messages from the host frame (a karaoke question or a pause needs you) bring the buttons up.
-  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
+  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
   show();
 })();
 </script></body></html>

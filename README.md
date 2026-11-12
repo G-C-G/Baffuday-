@@ -304,3 +304,6 @@ The host panel now opens on two steps: **1. Get ready** (load the guest file, ti
 - **Most singers** (Get ready tab): everyone who said yes (default), or up to 12, 16, 20 or 24. The keenest are called first, the strip's breaks and the karaoke finale respect the cap, and the Get ready page shows the songs and minutes.
 - **Spelling bee stage** is capped (`BEE_MAX_STAGE`, default 14, and `BEE_MAX_EVERYONE`, default 24) so a bigger crowd cannot run the bee past its 46 prompts. Everyone else is the audience.
 - Time is the real limit: about 105 minutes plus about 4 minutes per guest if everyone who said yes sings. With 40 guests, cap the singers.
+
+## Play page (one device, no separate host panel during the night)
+`play.html` shows the projector full screen with the host buttons floating on top. Move the mouse, touch the screen or press a key and the buttons come up for 5 seconds, then hide so the room sees only the game. Space / Enter = the big gold button, P pause, K karaoke, S skip. "Setup" (top left, when the buttons are up) goes back to the host panel. Set up first on `host.html` (load guests, tick who is here, pick the settings), then open `play.html` in the same browser.

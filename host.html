@@ -780,6 +780,11 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
 
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
   // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
+  if (/[?&]embed\b/.test(location.search)) {
+    var es = document.createElement("style");
+    es.textContent = "html,body{background:transparent!important}body{margin:0}.wrap{max-width:none;padding:0!important;margin:0!important}.wrap>*{display:none!important}.wrap>#p-run{display:block!important}#p-run>.runlive{display:none}#runner.inhost{margin:0;border-radius:0;padding:12px 18px;gap:10px}#runner.inhost button.go{font-size:20px;padding:.7em 1.4em}#runner.inhost button.opt{font-size:17px;padding:.6em 1em}#runner.inhost .ask .q{font-size:24px}";
+    document.head.appendChild(es); document.body.classList.add("embed");
+  }
   if (/[?&]play\b/.test(location.search)) { $("tabs").style.display = "none"; $("moretabs").style.display = "none"; var pb = document.querySelector('[data-p="run"]'); if (pb) setTimeout(function () { pb.click(); }, 50); }
   window.HOSTAPI = {
     icePlan: function () { return icePlan(); },
@@ -823,5 +828,10 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
 })();
 </script>
 <script src="assets/runner.js"></script>
+<script>
+// When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
+(function () { if (window.parent === window) return; var last = 0;
+  window.addEventListener("message", function (e) { if (e.data && e.data.gcgkey) document.dispatchEvent(new KeyboardEvent("keydown", { key: e.data.gcgkey, bubbles: true })); }); ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, function () { var n = Date.now(); if (n - last > 300) { last = n; try { window.parent.postMessage("gcg-attention", "*"); } catch (x) {} } }, { passive: true }); }); })();
+</script>
 </body>
 </html>

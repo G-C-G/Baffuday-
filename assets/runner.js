@@ -65,6 +65,7 @@
 
   // ---- show / hide the strip with the mouse ----
   function poke() {
+    try { if (window.parent !== window) window.parent.postMessage("gcg-attention", "*"); } catch (e) {}
     if (true) return;
     document.body.classList.add("hostmode"); strip.classList.remove("hide"); clearTimeout(hideT);
     hideT = setTimeout(function () { if (!needsAttention()) { strip.classList.add("hide"); document.body.classList.remove("hostmode"); } }, 4500);

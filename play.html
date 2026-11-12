@@ -12,10 +12,11 @@ body.show #tools{opacity:1}
 body{cursor:default}body:not(.show){cursor:none}
 </style></head><body>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
-<iframe id="hst" src="host.html?play=1&embed=1" allow="autoplay"></iframe>
+<iframe id="hst" allow="autoplay"></iframe>
 <div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
 <script>
 (function () {
+  document.getElementById("hst").src = "host.html?play=1&embed=1" + (/[?&]everyone\b/.test(location.search) ? "&auto=everyone" : "");
   var b = document.body, t = 0, pinned = false;
   function show() { b.classList.add("show"); clearTimeout(t); if (!pinned) t = setTimeout(function () { b.classList.remove("show"); }, 5000); }
   // The room should see only the game. Move the mouse, touch the screen or press a key and the buttons come up for a few seconds.

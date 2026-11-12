@@ -779,6 +779,13 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true, ice: 120, seed: 1, kmax: 0 }, v || {}); drawNight(); });
 
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
+  // ?auto=everyone : load tonight's guests and mark everyone here (used by play.html?everyone, for trying the whole game)
+  if (/[?&]auto=everyone\b/.test(location.search)) setTimeout(function () {
+    var A = window.HOSTAPI; if (!A) return;
+    var markAll = function () { if (!A.get().hereOn) $("hall").click(); };
+    if (A.get().guests) { markAll(); return; }
+    fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.text(); }).then(function (t) { return A.importJson(t); }).then(function () { setTimeout(markAll, 400); });
+  }, 900);
   // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
   if (/[?&]embed\b/.test(location.search)) {
     var es = document.createElement("style");

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Play - Hinda's 28th</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Play - Hinda's 28th</title>
 <style>
 html,body{margin:0;height:100%;background:#F5D76E;overflow:hidden}
 iframe{border:0;position:fixed;left:0;width:100%}
@@ -10,10 +10,10 @@ body.show #hst{transform:none;opacity:1}
 body.show #tools{opacity:1}
 #tools #fs{font-size:20px;width:40px;height:40px;padding:0;border-radius:0;background:transparent;color:#08183E;border:0;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95))}#tools #fs:hover{opacity:1}#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
 body{cursor:default}body:not(.show){cursor:none}
-#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
+#fsmsg{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:6;max-width:min(560px,92vw);background:#08183E;color:#FFF4C9;font:500 14px/1.4 Inter,Arial,sans-serif;padding:12px 16px;border-radius:12px;display:none;text-align:center}#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" allow="autoplay"></iframe>
-<div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
+<div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
 <script>
 (function () {
   document.getElementById("hst").src = "host.html?play=1&embed=1" + (/[?&]everyone\b/.test(location.search) ? "&auto=everyone" : "");
@@ -26,13 +26,14 @@ body{cursor:default}body:not(.show){cursor:none}
   document.getElementById("hst").addEventListener("load", toHost);
   document.addEventListener("keydown", function (e) { if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
   function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
-  function toggleFs() { var d = document.documentElement; if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } else { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } }
+  function fsMsg() { var m = document.getElementById("fsmsg"); m.innerHTML = "Fullscreen is blocked on this device or browser.<br>Laptop: press F11 (Windows) or Ctrl+Cmd+F (Mac). iPad or iPhone: tap Share, then Add to Home Screen, and open the game from there."; m.style.display = "block"; setTimeout(function () { m.style.display = "none"; }, 9000); }
+  function toggleFs() { var d = document.documentElement; if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; } var rq = d.requestFullscreen || d.webkitRequestFullscreen; if (!rq) return fsMsg(); try { var r = rq.call(d); if (r && r.catch) r.catch(fsMsg); } catch (e) { fsMsg(); } }
   document.getElementById("fs").onclick = function () { pinned = false; toggleFs(); show(); };
   document.addEventListener("fullscreenchange", function () { document.getElementById("fst").textContent = isFs() ? "\u2715" : "\u26F6"; });
   // until you have gone fullscreen once, the buttons stay up so the first step is obvious
   pinned = true;
   // Messages from the host frame (a karaoke question or a pause needs you) bring the buttons up.
-  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
+  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
   show();
 })();
 </script></body></html>

@@ -10,7 +10,7 @@ body.show #hst{transform:none;opacity:1}
 body.show #tools{opacity:1}
 #tools #fs{font-size:20px;width:40px;height:40px;padding:0;border-radius:0;background:transparent;color:#08183E;border:0;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95))}#tools #fs:hover{opacity:1}#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
 body{cursor:default}body:not(.show){cursor:none}
-</style></head><body>
+#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" allow="autoplay"></iframe>
 <div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>

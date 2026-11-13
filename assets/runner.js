@@ -83,7 +83,7 @@
   function startShow() {
     A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
     G = A.get();
-    if (!G.guests) return say("No guests are loaded. On your host screen, load the guest file, then press Start now.");
+    if (!G.guests) return say("No guests are loaded yet. Wait a few seconds, or open host.html, load the guests and tick who is here.");
     if (!G.hereOn) return say("Mark who is here first. On your host screen, open Get ready and tick the people who have arrived, then press Start now.");
     if (G.here < 4) return say("Only " + G.here + " marked here. Tick everyone who has arrived on your host screen (Get ready).");
     var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false; run.stage = s.stage; run.iceLen = s.ice === undefined ? 120 : s.ice;
@@ -212,7 +212,7 @@
     fresh();
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
     startBtn.hidden = run.phase !== "idle";
-    if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
+    if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st hintpill"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();
 

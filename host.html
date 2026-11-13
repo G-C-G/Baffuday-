@@ -789,11 +789,11 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
   if (/[?&]embed\b/.test(location.search)) {
     var es = document.createElement("style");
-    es.textContent = "html,body{background:transparent!important;overflow:hidden}body{margin:0}#p-run,#p-run.panel{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}.wrap{max-width:none;padding:0!important;margin:0!important}.wrap>*{display:none!important}.wrap>#p-run{display:block!important}#p-run>.runlive{display:none}" +
+    es.textContent = "html,body{background:transparent!important;overflow:hidden}body{margin:0!important;padding:0!important}#p-run,#p-run.panel{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}.wrap{max-width:none;padding:0!important;margin:0!important}.wrap>*{display:none!important}.wrap>#p-run{display:block!important}#p-run>.runlive{display:none}" +
       "html,body{height:100%}#runpanel{width:max-content;max-width:560px;margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;padding:2px;min-height:100vh;box-sizing:border-box}" +
-      "#runner.inhost{margin:0;width:max-content;max-width:560px;background:transparent;box-shadow:none;padding:0;gap:6px;border-radius:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-end}" +
+      "#runner.inhost{margin:0!important;width:max-content;max-width:560px;background:transparent!important;box-shadow:none!important;padding:0!important;gap:6px;border-radius:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-end}" +
       "#runner.inhost>.row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;flex:none}#runner.inhost>.ask{order:0}#runner.inhost .st{display:none}#runner.inhost .st.hintpill{display:block;background:rgba(8,24,62,.94);color:#FFF4C9;border-radius:999px;padding:8px 14px;font-size:12px;white-space:normal;max-width:420px;line-height:1.3;filter:none}#runner.inhost .secs{display:contents}" +
-      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]){display:none!important}#runner .jump,#runner button.mini{display:none!important}" +
+      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]):not([data-act=kplay]):not([data-act=kvnext]):not([data-act=kagain]){display:none!important}#runner .jump,#runner button.mini{display:none!important}" +
       "#runner.inhost button{font-size:15px;line-height:1;width:40px;height:40px;min-width:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border:0!important;border-radius:0;background:transparent!important;color:#08183E!important;box-shadow:none!important;letter-spacing:0;text-transform:none;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));cursor:pointer}" +
       "#runner.inhost button:hover{opacity:1;background:transparent!important}#runner.inhost button svg{width:26px;height:26px}" +
       "#runner.inhost button.go{width:36px!important;height:36px!important;min-width:0!important;max-width:none!important;padding:0!important;font-size:15px;order:3;flex:none;opacity:1}#runner.inhost button.go[disabled]{opacity:.3}" +
@@ -808,6 +808,8 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       restart: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg>',
       back: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18 5v14l-9-7z"/><rect x="4.7" y="5" width="2.8" height="14" rx="1"/></svg>',
       next: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 5v14l9-7z"/><rect x="16.5" y="5" width="2.8" height="14" rx="1"/></svg>',
+      swap: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/></svg>',
+      again: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
       check: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
     };
     var SYM = function (b) {
@@ -817,6 +819,9 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       if (act === "pause") return "pause";
       if (act === "resume") return "play";
       if (act === "icego") return b.classList.contains("go") ? "play" : "restart";
+      if (act === "kplay") return "play";
+      if (act === "kvnext") return "swap";
+      if (act === "kagain") return "again";
       if (act === "lock") return "check";
       if (act === "iceprev" || act === "hotprev") return "back";
       if (act === "icenext" || act === "icelast") return "next";

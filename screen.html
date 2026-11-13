@@ -127,6 +127,7 @@ body.flashred{animation:flashred .6s ease 2}
 .ice-h{text-align:center;font:400 calc(var(--major)*.5)/.95 var(--serif);letter-spacing:-.025em;margin:0}
 .ice-q{text-align:center;font:400 calc(var(--major)*.82)/1.05 var(--serif);font-style:italic;margin:0;opacity:.95}
 .nb{border:2px solid currentColor;border-radius:8px;padding:.9vh 1vw;font:500 calc(var(--micro)*1.05)/1.35 var(--sans)}
+.kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
 .groups.g2{--cols:2}.groups.g3{--cols:3}.groups.g4{--cols:4}.groups.g5{--cols:5}.groups.g6{--cols:6}
 .grp{border:2px solid currentColor;border-radius:8px;padding:1vh 1vw 1.1vh;background:rgba(255,255,255,.35);min-width:0}
@@ -245,6 +246,9 @@ body.flashred{animation:flashred .6s ease 2}
     if (m === "menu") {
       return { theme: "cream", html: frame(esc(brand), '<div style="display:flex;gap:2vw;align-items:center"><span class="lab">The menu</span><span class="chip">Halal certified</span></div><div class="cols"><div><h3 class="lab">To eat</h3>' + ul(["Vege chow mein", "Stir fried beef", "Potato salad", "Chicken wings"]) + '</div><div><h3 class="lab">To drink</h3>' + ul(["Sobolo", "Ginger and pineapple", "Water"]) + "</div></div>",
         '<span class="second" style="font-family:var(--sans);font-size:var(--micro)"><span class="lab" style="margin-right:1.2em">Allergies</span>Tell Hinda or the host before you eat. Every dish can be checked. Please do.</span>') };
+    }
+    if (m === "karaoke" && s.video && s.video.id) {
+      return { theme: "cream", html: frame("Karaoke", '<p class="second" style="margin:0 0 1.6vh;text-align:center"><b style="font-weight:600">' + esc(s.name) + "</b> &middot; " + esc(s.video.label || s.song) + '</p><div class="kvid"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(s.video.id) + '?autoplay=1&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe></div>', "", "c") };
     }
     if (m === "karaoke") {
       return { theme: "ink", html: frame("Karaoke", (cfg.INTRO ? '<span class="lab">' + esc(cfg.INTRO) + "</span>" : "") + '<p class="hero">You\'re up.</p><p class="major" style="font-style:italic;text-decoration:underline;text-decoration-thickness:.04em;text-underline-offset:.12em">' + esc(s.name) + '</p><p class="second" style="opacity:.85">' + esc(s.song) + "</p>", micro("There is no appeal process."), "c") };
@@ -371,7 +375,7 @@ body.flashred{animation:flashred .6s ease 2}
   }
   function rouletteTick() { var q = cfg.ROULETTE_SOUND ? .5 : 1; tone(1150, 0, .03, "square", .08 * q); tone(170, 0, .05, "sine", .12 * q); }
   function runRoulette(s, fresh) {
-    var landed = function () { return view({ mode: "karaoke", name: s.name, song: s.song }); };
+    var landed = function () { return view({ mode: "karaoke", name: s.name, song: s.song, video: s.video }); };
     var recent = s.spinId && (Date.now() - s.spinId) < 20000;
     if (!(fresh && recent && s.spinId !== seenSpin)) { seenSpin = s.spinId; draw(landed()); return; }   // a reload, or an old spin: show who it landed on
     seenSpin = s.spinId;

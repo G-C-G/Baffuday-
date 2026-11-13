@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check - Hinda's 28th</title>
+<style>body{margin:0;padding:24px 18px;background:#F5D76E;color:#08183E;font:16px/1.4 Inter,Arial,sans-serif}h1{font:400 34px Georgia,serif;margin:0 0 6px}p{margin:0 0 18px;opacity:.75}.r{display:flex;gap:10px;align-items:center;padding:10px 12px;background:#FBE9A6;border-radius:10px;margin:8px 0}.r b{min-width:22px;font-size:20px}.ok b{color:#1b5e20}.no b{color:#b3261e}.r small{display:block;opacity:.7}button{margin-top:14px;font:700 14px Inter,Arial,sans-serif;background:#08183E;color:#F5D76E;border:0;border-radius:10px;padding:14px 18px}</style></head><body>
+<h1>Check this device</h1><p>Open this on the laptop you will use. Everything should show a tick. Send me a screenshot if anything has a cross.</p><div id="out"></div><button id="snd">Test sound</button>
+<script>
+var out = document.getElementById("out");
+function row(ok, name, note) { var d = document.createElement("div"); d.className = "r " + (ok ? "ok" : "no"); d.innerHTML = "<b>" + (ok ? "✓" : "✗") + "</b><div>" + name + (note ? "<small>" + note + "</small>" : "") + "</div>"; out.appendChild(d); }
+function t(name, f) { try { var r = f(); row(r !== false, name, typeof r === "string" ? r : ""); } catch (e) { row(false, name, String(e.message || e)); } }
+t("Screen is wide (landscape)", function () { return innerWidth > innerHeight || "Turn the device sideways: " + innerWidth + "x" + innerHeight; });
+t("Remembers progress (localStorage)", function () { localStorage.setItem("gcg-check", "1"); var v = localStorage.getItem("gcg-check") === "1"; localStorage.removeItem("gcg-check"); return v || "Private browsing? Use a normal window."; });
+t("Pages can talk to each other (BroadcastChannel)", function () { return typeof BroadcastChannel !== "undefined" || "Not supported in this browser"; });
+t("Sound (Web Audio)", function () { return !!(window.AudioContext || window.webkitAudioContext) || "Not supported"; });
+t("Fullscreen button works", function () { var d = document.documentElement; return !!(d.requestFullscreen || d.webkitRequestFullscreen) || "This device cannot go fullscreen (iPhone). Use a laptop or iPad."; });
+fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.json(); }).then(function (g) { row(g.length > 0, "Guest list loads", g.length + " guests"); }).catch(function (e) { row(false, "Guest list loads", String(e)); });
+["play.html", "screen.html", "host.html", "assets/sounds/roulette-roll.mp3"].forEach(function (f) { fetch(f + "?" + Date.now()).then(function (r) { row(r.ok, "Loads " + f, "HTTP " + r.status); }).catch(function (e) { row(false, "Loads " + f, String(e)); }); });
+document.getElementById("snd").onclick = function () { try { var a = new Audio("assets/sounds/yay.mp3"); a.play().then(function () { row(true, "Sound played", "If you heard it, sound works."); }).catch(function (e) { row(false, "Sound blocked", "Tap the page once and try again. " + e.message); }); } catch (e) { row(false, "Sound", String(e)); } };
+</script></body></html>

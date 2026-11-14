@@ -45,7 +45,7 @@
     "#runner button[disabled]{opacity:.35;cursor:default}",
     "#runner button.opt{font-size:clamp(15px,1.7vw,28px);padding:.7em 1.5em;letter-spacing:.1em}",
     "#runner button.opt.on{background:#FFF4C9;color:#08183E}",
-    "#runner button.mini,#runner button.rall{display:none}",
+    "#runner button.mini,#runner button.rall,#runner button.krbtn{display:none}",
     "#runner .ask{display:flex;gap:1vw;align-items:center;flex-wrap:wrap;background:rgba(245,215,110,.16);border:1.5px solid #F5D76E;border-radius:8px;padding:1.1vh 1.2vw}",
     "#runner .ask .q{flex:1;font:400 clamp(18px,2vw,32px)/1.1 'Instrument Serif',Georgia,serif;color:#F5D76E}",
     "#runner .sec{opacity:.9}",
@@ -171,6 +171,8 @@
     kyes: function () { spinNow(karaokeRet()); },
     kno: function () { run.ask = false; run.sinceK = Math.max(0, pace() - 1); save(); },
     know: function () { spinNow(karaokeRet()); },
+    krnow: function () { spinNow(karaokeRet()); },
+    bback: function () { A.beeCall(); },
     more: function () { strip.classList.toggle("open"); },
     restartall: function () { try { if (window.parent !== window) window.parent.postMessage({ gcgrestart: 1 }, "*"); else if (confirm("Are you sure you want to restart the whole game?")) { try { Object.keys(localStorage).filter(function (k) { return k.indexOf("gcg-") === 0; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} location.reload(); } } catch (e) {} },
     jice: function () { A = api(); G = A.get(); if ((run.iceIdx || -1) >= 0) { run.phase = "ice"; run.ret = ""; run.ask = false; run.iceIdx = run.iceIdx - 1; save(); iceNext(); } else startIce(); },
@@ -276,7 +278,7 @@
       } else if (m === "bee") {
         opts = (st.options || []).map(function (o, i) { return '<button type="button" class="opt" data-pick="' + esc(o) + '">' + (i + 1) + " &nbsp;" + esc(o) + "</button>"; }).join("");
         primary = '<button type="button" class="go" disabled>Tap their answer</button>';
-        sec = [btn("Skip question", "skipq", "sec"), btn("Not here, skip person", "skipp", "sec"), btn("Pause", "pause", "sec")];
+        sec = [btn("Back", "bback", "sec"), btn("Skip question", "skipq", "sec"), btn("Not here, skip person", "skipp", "sec"), btn("Pause", "pause", "sec")];
       } else if (m === "beecall") {
         primary = btn("Show the sentence", "show", "go");
         sec = [btn("Skip question", "skipq", "sec"), btn("Not here, skip person", "skipp", "sec"), btn("Karaoke now", "know", "sec"), btn("End the bee now", "endbee", "sec"), btn("Pause", "pause", "sec")];
@@ -317,7 +319,7 @@
     }
     var jump = run.phase === "idle" || run.phase === "done" ? "" : '<div class="row jump"><span class="st">Jump to</span>' + btn("Icebreaker", "jice", run.phase === "ice" ? "opt on" : "opt") + btn("Spelling bee", "jbee", run.phase === "bee" ? "opt on" : "opt") + btn("Karaoke roulette", "know", "opt") + btn("Hot takes", "jhot", run.phase === "hot" ? "opt on" : "opt") + "</div>";
     html = (ask || "") + (opts ? '<div class="row">' + opts + "</div>" : "") +
-      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row secs">' + sec.join("") + '</span><button type="button" data-act="more" class="mini" title="More">&middot;&middot;&middot;</button><button type="button" data-act="restartall" class="rall" title="Restart the whole game">Restart the whole game</button></div>' + jump;
+      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row secs">' + sec.join("") + '</span><button type="button" data-act="more" class="mini" title="More">&middot;&middot;&middot;</button><button type="button" data-act="restartall" class="rall" title="Restart the whole game">Restart the whole game</button>' + (m === "roulette" || m === "karaoke" || m === "pause" ? "" : '<button type="button" data-act="krnow" class="krbtn" title="Start a karaoke roulette round now">KR</button>') + '</div>' + jump;
     var s2 = html + "|" + (strip.classList.contains("hide") ? 1 : 0);
     if (force || s2.split("|")[0] !== sig) { sig = s2.split("|")[0]; strip.innerHTML = html; }
     if (needsAttention() || run.ask) poke();

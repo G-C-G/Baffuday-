@@ -779,12 +779,16 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true, ice: 120, seed: 1, kmax: 0 }, v || {}); drawNight(); });
 
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
-  // ?auto=everyone : load tonight's guests and mark everyone here (used by play.html?everyone, for trying the whole game)
+  // ?auto=everyone (play.html always sets it): load every registered guest (assets/tonight.json) that this browser does not have yet, and, the first time, mark everyone as here.
+  // After that, who is here is whatever you set with the + / minus on the game screen, and it is kept when the page reloads.
   if (/[?&]auto=everyone\b/.test(location.search)) setTimeout(function () {
     var A = window.HOSTAPI; if (!A) return;
     var markAll = function () { if (!A.get().hereOn) $("hall").click(); };
-    if (A.get().guests) { markAll(); return; }
-    fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.text(); }).then(function (t) { return A.importJson(t); }).then(function () { setTimeout(markAll, 400); });
+    fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.json(); }).then(function (arr) {
+      var have = {}; list().forEach(function (g) { have[String(g.name).toLowerCase()] = 1; });
+      var fresh = arr.filter(function (x) { return !have[String(x.name).toLowerCase()]; });
+      return fresh.length ? A.importJson(JSON.stringify(fresh)) : 0;
+    }).then(function () { setTimeout(markAll, 400); }).catch(function () { markAll(); });
   }, 900);
   // play.html asks for the guest list and adds late arrivals ("here") through these messages
   window.addEventListener("message", function (e) {
@@ -846,9 +850,9 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       var sb = document.getElementById("startbtn"); if (sb && sb.dataset.sym !== "1") { sb.title = "Start"; sb.innerHTML = IC.play; sb.dataset.sym = "1"; }
     };
     new MutationObserver(function () { applySym(); }).observe(document.body, { childList: true, subtree: true });
-    setInterval(applySym, 300);
+    setInterval(applySym, 1500);
     document.head.appendChild(es); document.body.classList.add("embed");
-    setInterval(function () { try { var rp = document.querySelector("#runner").getBoundingClientRect(); var sbb = document.getElementById("startbtn"); if (sbb && !sbb.hidden) { var q = sbb.getBoundingClientRect(); rp = { width: Math.max(rp.width, q.width), height: Math.max(rp.height, q.height) }; } window.parent.postMessage({ gcgh: Math.ceil(rp.height) + 8, gcgw: Math.ceil(rp.width) + 8 }, "*"); } catch (e) {} }, 350);
+    setInterval(function () { try { var rp = document.querySelector("#runner").getBoundingClientRect(); var sbb = document.getElementById("startbtn"); if (sbb && !sbb.hidden) { var q = sbb.getBoundingClientRect(); rp = { width: Math.max(rp.width, q.width), height: Math.max(rp.height, q.height) }; } window.parent.postMessage({ gcgh: Math.ceil(rp.height) + 8, gcgw: Math.ceil(rp.width) + 8 }, "*"); } catch (e) {} }, 700);
   }
   if (/[?&]play\b/.test(location.search)) { $("tabs").style.display = "none"; $("moretabs").style.display = "none"; var pb = document.querySelector('[data-p="run"]'); if (pb) setTimeout(function () { pb.click(); }, 50); }
   window.HOSTAPI = {

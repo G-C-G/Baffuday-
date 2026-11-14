@@ -202,14 +202,17 @@
     if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) return;
     var k = e.key;
     // A presentation clicker sends Right / Page Down for "next", Left / Page Up for "back", and "." or B for the black-screen button.
-    var NEXT = k === " " || k === "Enter" || k === "ArrowRight" || k === "ArrowDown" || k === "PageDown", BACK = k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp";
-    if (e.repeat && (NEXT || BACK)) return;
-    if (run.phase === "idle" && NEXT && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
+    var PLAYPAUSE = k === " " || k === "MediaPlayPause" || k === "p" || k === "P" || k === "." || k === "b" || k === "B";
+    var NEXT = k === "Enter" || k === "ArrowRight" || k === "ArrowDown" || k === "PageDown" || k === "MediaTrackNext", BACK = k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp" || k === "MediaTrackPrevious";
+    if (e.repeat && (NEXT || BACK || PLAYPAUSE)) return;
+    if (run.phase === "idle" && (NEXT || PLAYPAUSE) && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
     if (run.phase === "idle" || run.phase === "done") return;
     var go = strip.querySelector("button.go:not([disabled])");
-    if (NEXT && go) { e.preventDefault(); go.click(); poke(); }
+    if (PLAYPAUSE) {   // Space / media play-pause: starts the icebreaker timer, otherwise pauses and resumes
+      e.preventDefault(); var st0 = go && go.dataset.act === "icego" ? go : strip.querySelector('[data-act="pause"],[data-act="resume"]'); if (st0) st0.click(); poke();
+    }
+    else if (NEXT && go) { e.preventDefault(); go.click(); poke(); }
     else if (BACK) { e.preventDefault(); var bk = strip.querySelector('[data-act="iceprev"],[data-act="hotprev"]'); if (bk) bk.click(); poke(); }
-    else if (k === "p" || k === "P" || k === "." || k === "b" || k === "B") { var pb = strip.querySelector('[data-act="pause"],[data-act="resume"]'); if (pb) pb.click(); poke(); }
     else if (k === "k" || k === "K") { var kb = strip.querySelector('[data-act="know"]'); if (kb) kb.click(); poke(); }
     else if (k === "s" || k === "S") { var sb = strip.querySelector('[data-act="skipq"],[data-act="hskip"]'); if (sb) sb.click(); poke(); }
     else if (/^[1-4]$/.test(k)) { var ob = strip.querySelectorAll("button.opt")[+k - 1]; if (ob) { ob.click(); poke(); } }

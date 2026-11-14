@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141342">
+<link rel="stylesheet" href="assets/style.css?v=2611141421">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -155,7 +155,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .groups{gap:1vh .8vw;margin-top:0}
 .grp{padding:.6vh .7vw .7vh;border-width:3px}
 .grp .gn{font-size:calc(var(--lab)*1.25*var(--gs,1));opacity:1;margin:0 0 .4vh;letter-spacing:.16em}
-.grp .side small{display:none}
+.grp .side small{display:block;font:800 calc(var(--second)*.62*var(--gs,1))/1.1 var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:1;margin:0 0 .5vh;padding:.15em .55em;border-radius:999px;background:var(--ink);color:#fff;width:max-content;max-width:100%}.groups.turn-a .grp .body>.side:last-child small,.groups.turn-b .grp .body>.side:first-child small{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 .25vh var(--ink)}
 .grp .vs{display:none}
 .grp .side{border-left:.5vw solid var(--ink);padding:.2vh .5vw .2vh .8vw;opacity:1}
 .grp .body>.side:last-child{border-left-style:double}
@@ -185,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141342"></script>
-<script src="assets/store.js?v=2611141342"></script>
+<script src="config.js?v=2611141421"></script>
+<script src="assets/store.js?v=2611141421"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -249,7 +249,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
     var num = pad(s.num || 1) + " / " + pad(s.total || 8), G = s.groups || [], timer = s.phase === "timer";
     var left = timer ? Math.max(0, s.startAt + s.durMs - Date.now()) : s.durMs;
     var side = function (arr, label, other) {
-      return '<div class="side"><small>Arguing ' + esc(label) + "</small>" + (arr || []).map(function (m) { return "<b>" + esc(m.name) + "" + "</b>"; }).join("") + "</div>";
+      return '<div class="side"><small>' + esc(label) + "</small>" + (arr || []).map(function (m) { return "<b>" + esc(m.name) + "" + "</b>"; }).join("") + "</div>";
     };
     var cards = G.map(function (g, i) {
       return '<div class="grp"><p class="gn"><span>Group ' + (i + 1) + '</span></p><div class="body">' + side(g.a, s.a, s.b) + '<div class="vs">VS</div>' + side(g.b, s.b, s.a) + "</div></div>";

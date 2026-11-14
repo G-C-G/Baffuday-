@@ -569,6 +569,9 @@ body.flashred{animation:flashred .6s ease 2}
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;
+  // Inside play.html the mouse pointer must be visible while you use it: show it when the mouse moves, hide it again after a few seconds of stillness.
+  var curSt = document.createElement("style"); curSt.textContent = "html.mouse,html.mouse *{cursor:default!important}"; document.head.appendChild(curSt); var curT = 0;
+  ["mousemove", "mousedown", "touchstart"].forEach(function (ev) { document.addEventListener(ev, function () { document.documentElement.classList.add("mouse"); clearTimeout(curT); curT = setTimeout(function () { document.documentElement.classList.remove("mouse"); }, 4000); }, { passive: true }); });
   // Scroll wheel / trackpad / scroller: scroll down = next, scroll up = back. One step per gesture; a short pause ignores the trackpad's coasting.
   var acc = 0, lastW = 0; document.addEventListener("wheel", function (e) { e.preventDefault(); var n = Date.now(); if (n - lastW < 900) { acc = 0; return; } acc += e.deltaY; if (Math.abs(acc) >= 40) { var k = acc > 0 ? "ArrowRight" : "ArrowLeft"; acc = 0; lastW = n; try { window.parent.postMessage({ gcgkey: k }, "*"); } catch (x) {} } }, { passive: false });
   var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var rs = document.createElement("style"); rs.textContent = ".foot{margin-bottom:4.5vh}"; document.head.appendChild(rs); var last = 0;

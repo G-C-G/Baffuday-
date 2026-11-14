@@ -45,7 +45,7 @@
     "#runner button[disabled]{opacity:.35;cursor:default}",
     "#runner button.opt{font-size:clamp(15px,1.7vw,28px);padding:.7em 1.5em;letter-spacing:.1em}",
     "#runner button.opt.on{background:#FFF4C9;color:#08183E}",
-    "#runner button.mini{display:none}",
+    "#runner button.mini,#runner button.rall{display:none}",
     "#runner .ask{display:flex;gap:1vw;align-items:center;flex-wrap:wrap;background:rgba(245,215,110,.16);border:1.5px solid #F5D76E;border-radius:8px;padding:1.1vh 1.2vw}",
     "#runner .ask .q{flex:1;font:400 clamp(18px,2vw,32px)/1.1 'Instrument Serif',Georgia,serif;color:#F5D76E}",
     "#runner .sec{opacity:.9}",
@@ -172,6 +172,7 @@
     kno: function () { run.ask = false; run.sinceK = Math.max(0, pace() - 1); save(); },
     know: function () { spinNow(karaokeRet()); },
     more: function () { strip.classList.toggle("open"); },
+    restartall: function () { try { if (window.parent !== window) window.parent.postMessage({ gcgrestart: 1 }, "*"); else if (confirm("Are you sure you want to restart the whole game?")) { try { Object.keys(localStorage).filter(function (k) { return k.indexOf("gcg-") === 0; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} location.reload(); } } catch (e) {} },
     jice: function () { A = api(); G = A.get(); if ((run.iceIdx || -1) >= 0) { run.phase = "ice"; run.ret = ""; run.ask = false; run.iceIdx = run.iceIdx - 1; save(); iceNext(); } else startIce(); },
     jbee: function () { A = api(); G = A.get(); if (G.n > 0 && !G.winner) { run.phase = "bee"; run.ret = ""; run.ask = false; save(); A.beeCall(); } else startBee(); },
     jhot: function () { A = api(); G = A.get(); if (run.takeIdx > 0 || (st.mode === "hottake")) { run.phase = "hot"; run.ret = ""; run.ask = false; save(); A.takeShow(); } else startHot(); },
@@ -316,7 +317,7 @@
     }
     var jump = run.phase === "idle" || run.phase === "done" ? "" : '<div class="row jump"><span class="st">Jump to</span>' + btn("Icebreaker", "jice", run.phase === "ice" ? "opt on" : "opt") + btn("Spelling bee", "jbee", run.phase === "bee" ? "opt on" : "opt") + btn("Karaoke roulette", "know", "opt") + btn("Hot takes", "jhot", run.phase === "hot" ? "opt on" : "opt") + "</div>";
     html = (ask || "") + (opts ? '<div class="row">' + opts + "</div>" : "") +
-      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row secs">' + sec.join("") + '</span><button type="button" data-act="more" class="mini" title="More">&middot;&middot;&middot;</button></div>' + jump;
+      '<div class="row"><span class="st">' + status + "</span>" + (run.ask ? "" : primary) + '<span class="row secs">' + sec.join("") + '</span><button type="button" data-act="more" class="mini" title="More">&middot;&middot;&middot;</button><button type="button" data-act="restartall" class="rall" title="Restart the whole game">Restart the whole game</button></div>' + jump;
     var s2 = html + "|" + (strip.classList.contains("hide") ? 1 : 0);
     if (force || s2.split("|")[0] !== sig) { sig = s2.split("|")[0]; strip.innerHTML = html; }
     if (needsAttention() || run.ask) poke();

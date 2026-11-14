@@ -5,12 +5,12 @@ html,body{margin:0;height:100%;background:#F5D76E;overflow:hidden!important;over
 iframe{border:0;position:fixed;left:0;width:100%}
 #scr{top:0;height:100%}
 #hst{left:auto;right:12px;bottom:2px;width:560px;height:66px;transform:translateY(130%);opacity:0;transition:transform .25s,opacity .25s;background:transparent;color-scheme:normal}
-body.show #hst{transform:none;opacity:1}
+body.show #hst,body.keep #hst{transform:none;opacity:1}
 #tools{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:5;display:flex;gap:8px;opacity:0;transition:opacity .25s}
 body.show #tools{opacity:1}
 #tools #fs{font-size:20px;width:40px;height:40px;padding:0;border-radius:0;background:transparent;color:#08183E;border:0;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95))}#tools #fs:hover{opacity:1}#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
 body{cursor:default}body:not(.show){cursor:none}
-#dup{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#B3261E;color:#fff;font:600 15px/1.35 Inter,Arial,sans-serif;padding:12px 18px;border-radius:12px;max-width:min(640px,92vw);text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}#fsmsg{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:6;max-width:min(560px,92vw);background:#08183E;color:#FFF4C9;font:500 14px/1.4 Inter,Arial,sans-serif;padding:12px 16px;border-radius:12px;display:none;text-align:center}#add{position:fixed;top:30px;right:7vw;z-index:7;opacity:0;transition:opacity .25s}body.show #add,#add.open{opacity:1}
+#dup{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#B3261E;color:#fff;font:600 15px/1.35 Inter,Arial,sans-serif;padding:12px 18px;border-radius:12px;max-width:min(640px,92vw);text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}#rs{position:fixed;inset:0;z-index:30;background:rgba(8,24,62,.72);display:none;align-items:center;justify-content:center}#rs.on{display:flex}#rs div{background:#F5D76E;color:#08183E;border-radius:16px;padding:26px 28px;max-width:min(460px,90vw);text-align:center;font:500 16px/1.4 Inter,Arial,sans-serif;box-shadow:0 14px 50px rgba(0,0,0,.45)}#rs h2{font:400 34px/1.05 "Instrument Serif",Georgia,serif;margin:0 0 8px}#rs p{margin:0 0 18px}#rs button{font:700 13px Inter,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:13px 20px;margin:0 5px;cursor:pointer;border:2px solid #08183E;background:transparent;color:#08183E}#rs button.y{background:#08183E;color:#F5D76E}#fsmsg{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:6;max-width:min(560px,92vw);background:#08183E;color:#FFF4C9;font:500 14px/1.4 Inter,Arial,sans-serif;padding:12px 16px;border-radius:12px;display:none;text-align:center}#add{position:fixed;top:30px;right:7vw;z-index:7;opacity:0;transition:opacity .25s}body.show #add,#add.open{opacity:1}
 #add>button{width:40px;height:40px;border:0;background:transparent;color:#08183E;cursor:pointer;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));padding:0}#add>button:hover,#add.open>button{opacity:1}#add svg{width:26px;height:26px}
 #addp{display:none;position:absolute;top:46px;right:0;width:min(340px,86vw);background:#08183E;color:#FFF4C9;border-radius:14px;padding:10px;box-shadow:0 10px 36px rgba(0,0,0,.4);font:500 15px/1.3 Inter,Arial,sans-serif}
 #add.open #addp{display:block}#addq{width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:12px 14px;font:500 16px Inter,Arial,sans-serif;background:#FFF4C9;color:#08183E;outline:none}
@@ -19,14 +19,14 @@ body{cursor:default}body:not(.show){cursor:none}
 #adde{padding:10px 6px;opacity:.7}#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" allow="autoplay"></iframe>
-<div id="add"><button id="addb" type="button" title="Add someone who has arrived"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div id="addp"><input id="addq" type="text" placeholder="Search for a name" autocomplete="off" spellcheck="false"><ul id="addl"></ul></div></div><div id="dup"></div><div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
+<div id="add"><button id="addb" type="button" title="Add someone who has arrived"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div id="addp"><input id="addq" type="text" placeholder="Search for a name" autocomplete="off" spellcheck="false"><ul id="addl"></ul></div></div><div id="rs"><div><h2>Restart the whole game?</h2><p>Everything goes back to the very start: the icebreaker, the spelling bee, who has sung and the hot takes. People marked as not here stay not here.</p><button id="rsn" type="button">No, keep going</button><button id="rsy" class="y" type="button">Yes, restart</button></div></div><div id="dup"></div><div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
 <script>
 (function () {
   // play.html?fresh : wipe this game's saved progress in this browser (who sang, bee progress, who is here) and start clean. Use it after a practice run.
   if (/[?&]fresh\b/.test(location.search)) { try { Object.keys(localStorage).filter(function (k) { return k.indexOf("gcg-") === 0; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} location.replace(location.pathname); return; }
   document.getElementById("hst").src = "host.html?play=1&embed=1&auto=everyone";
   var b = document.body, t = 0, pinned = false;
-  function show() { b.classList.add("show"); clearTimeout(t); if (!pinned) t = setTimeout(function () { b.classList.remove("show"); }, 5000); }
+  function show() { b.classList.add("show"); clearTimeout(t); if (!pinned) t = setTimeout(function () { b.classList.remove("show"); }, 7000); }
   // The room should see only the game. Move the mouse, touch the screen or press a key and the buttons come up for a few seconds.
   ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, show, { passive: true }); });
   // the game frame has focus only for sound; the host frame takes the keys (Space or Enter = the big gold button)
@@ -41,7 +41,7 @@ body{cursor:default}body:not(.show){cursor:none}
   // until you have gone fullscreen once, the buttons stay up so the first step is obvious
   pinned = true;
   // Messages from the host frame (a karaoke question or a pause needs you) bring the buttons up.
-  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
+  window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; b.classList.toggle("keep", !!e.data.keep); } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
 
   // Scroll down = next, scroll up = back (events over the game itself arrive through the frames; this covers the rest of the page). The + search list scrolls normally.
   var wAcc = 0, wLast = 0;
@@ -51,6 +51,17 @@ body{cursor:default}body:not(.show){cursor:none}
     tabs.onmessage = function (e) { var d = e.data || {}; if (d.hello && d.hello !== me) { tabs.postMessage({ here: 1, page: "play.html" }); showDup("play.html"); } else if (d.here) showDup(d.page); };
     function showDup(pg) { dupEl.innerHTML = "The game is also open in another tab or window (" + pg + ").<br>Close the other one, then reload this page, or the timer and controls will misbehave."; dupEl.style.display = "block"; }
     setTimeout(function () { tabs.postMessage({ hello: me }); }, 1500); } catch (e) {}
+  // Hard restart: the round arrow in the dock asks first, then wipes the saved game and starts clean (people who were marked away stay away).
+  var rsEl = document.getElementById("rs");
+  function hardRestart() { try { var raw = localStorage.getItem("gcg-demo-baffuday28"), all = raw ? JSON.parse(raw) : {}, here = (all.setup || {}).here || null, away = [];
+      if (here && all.guests) Object.keys(all.guests).forEach(function (id) { if (!here[id]) away.push(all.guests[id].name); });
+      localStorage.setItem("gcgx-away", JSON.stringify(away)); } catch (e) {}
+    try { Object.keys(localStorage).filter(function (k) { return k.indexOf("gcg-") === 0; }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+    location.replace(location.pathname); }
+  document.getElementById("rsn").onclick = function () { rsEl.classList.remove("on"); };
+  document.getElementById("rsy").onclick = hardRestart;
+  window.addEventListener("message", function (e) { if (e.data && e.data.gcgrestart) { rsEl.classList.add("on"); } });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") rsEl.classList.remove("on"); });
   // + : add a late arrival. Type a name, tap Add, and they are marked here (karaoke wheel, hot takes and the next icebreaker take include them).
   var people = [], addEl = document.getElementById("add"), addQ = document.getElementById("addq"), addL = document.getElementById("addl");
   function hostWin() { return document.getElementById("hst").contentWindow; }

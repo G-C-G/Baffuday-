@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141335">
+<link rel="stylesheet" href="assets/style.css?v=2611141338">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -151,8 +151,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .ice-h{font-size:calc(var(--major)*.3);opacity:.65}
 .ice-q{font-size:calc(var(--major)*.6);line-height:1}
 .icemain{gap:.6vh!important}
-.ice-turn{margin:.1vh 0 0;font-size:calc(var(--second)*.4)}
-.groups{gap:1vh .8vw;margin-top:.2vh}
+.ice-turn{margin:.2vh 0 1.5vh;font-size:calc(var(--second)*.4)}
+.groups{gap:1vh .8vw;margin-top:0}
 .grp{padding:.6vh .7vw .7vh;border-width:3px}
 .grp .gn{font-size:calc(var(--lab)*1.25*var(--gs,1));opacity:1;margin:0 0 .4vh;letter-spacing:.16em}
 .grp .side small{display:none}
@@ -185,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141335"></script>
-<script src="assets/store.js?v=2611141335"></script>
+<script src="config.js?v=2611141338"></script>
+<script src="assets/store.js?v=2611141338"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -660,7 +660,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
   ["mousemove", "mousedown", "touchstart"].forEach(function (ev) { document.addEventListener(ev, function () { document.documentElement.classList.add("mouse"); clearTimeout(curT); curT = setTimeout(function () { document.documentElement.classList.remove("mouse"); }, 4000); }, { passive: true }); });
   // Scroll wheel / trackpad / scroller: scroll down = next, scroll up = back. One step per gesture; a short pause ignores the trackpad's coasting.
   var acc = 0, lastW = 0; document.addEventListener("wheel", function (e) { e.preventDefault(); var n = Date.now(); if (n - lastW < 900) { acc = 0; return; } acc += e.deltaY; if (Math.abs(acc) >= 40) { var k = acc > 0 ? "ArrowRight" : "ArrowLeft"; acc = 0; lastW = n; try { window.parent.postMessage({ gcgkey: k }, "*"); } catch (x) {} } }, { passive: false });
-  var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var rs = document.createElement("style"); rs.textContent = ".foot{margin-bottom:4.5vh}"; document.head.appendChild(rs); var last = 0;
+  var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var rs = document.createElement("style"); rs.textContent = ".foot{margin-bottom:2vh}"; document.head.appendChild(rs); var last = 0;
   document.addEventListener("keydown", function (e) { if (/^( |Enter|p|P|k|K|s|S|f|F|\.|b|B|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|PageDown|PageUp|MediaPlayPause|MediaTrackNext|MediaTrackPrevious)$/.test(e.key)) { e.preventDefault(); try { window.parent.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } }, true); ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, function () { var n = Date.now(); if (n - last > 300) { last = n; try { window.parent.postMessage("gcg-attention", "*"); } catch (x) {} } }, { passive: true }); }); })();
 </script>
 <script>

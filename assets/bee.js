@@ -49,6 +49,7 @@ window.BEE_W = {
   road: "a way for vehicles", rode: "past tense of ride",
   allowed: "permitted", aloud: "out loud, not silently",
   which: "asking about a choice", witch: "a woman with magic powers",
+  maze: "a puzzle of winding paths", maize: "corn, the grain we eat",
   site: "a location", sight: "something seen, or the ability to see", cite: "to quote as a source",
   principal: "head of a school, or most important", principle: "a basic rule or belief",
   stationary: "not moving", stationery: "paper, pens and writing supplies",
@@ -104,9 +105,10 @@ window.BEE = [
   [2, "Edward sparkles in the sun, while Hinda's son is her little sunshine. Neither one is helping you spell tonight \ud83e\udd23", "Spell the word meaning a male child.", "son", ["son", "sun"]],
   [3, "The party site looks cool, the sight of this spelling bee is already concerning, and nobody better cite Hinda as a source of their misfortune. Y'all signed up for this one.", "Spell the word meaning a location.", "site", ["site", "sight", "cite"]],
   [3, "The stationery is beautiful, but you've been stationary for so long that we may need to send help.", "Spell the word meaning writing materials.", "stationery", ["stationary", "stationery"]],
+  [3, "The Maze Runners spent their days trying to escape the maze. You'll be running around in circles trying to spell maize. Yes, maize. The one we eat.", "Spell the word for the corn we eat.", "maize", ["maze", "maize"], "fixed"],
   [3, "Please be discreet about your strategy; there are already discrete groups of people hoping you lose.", "Spell the word meaning careful not to attract attention.", "discreet", ["discreet", "discrete"]],
-  [3, "The question was designed to elicit an answer, not an illicit attempt to copy your neighbour.", "Spell the word meaning illegal or forbidden.", "illicit", ["elicit", "illicit"]],
   [3, "Several people have volunteered as tribute tonight.\n\nSmall issue: this is Accra, not the Capitol.\n\nAccra is the capital of Ghana.\nThe Capitol is from The Hunger Games.\n\nThe Hunger Games is not actually happening here.\n\n\u2026right?\n\nRIGHT???\n\nAnyway, get with the programme.", "Spell the word meaning the Hunger Games city.", "capitol", ["capital", "capitol"], "fixed"],
+  [3, "The question was designed to elicit an answer, not an illicit attempt to copy your neighbour.", "Spell the word meaning illegal or forbidden.", "illicit", ["elicit", "illicit"]],
   [3, "We can ensure everyone gets a fair chance, but nobody here is prepared to insure your dignity.", "Spell the word meaning to make certain.", "ensure", ["ensure", "insure"]],
   [4, "Whether you like it or not, the weather has already decided what your hair is doing tonight.", "Spell the word meaning atmospheric conditions.", "weather", ["weather", "whether"]],
   [4, "She tied her belt at her waist and still found a way to waste the evening.", "Spell the word meaning the part of the body between the ribs and hips.", "waist", ["waist", "waste"]],
@@ -130,6 +132,7 @@ window.BEE = [
 
 // Prompts you have approved. Key = the prompt's words in alphabetical order joined with "/". Everything else in BEE is still a draft.
 window.BEE_DECIDED = [
+  "maize/maze",
   "which/witch",
   "peace/piece",
   "cereal/serial",

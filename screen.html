@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611142222">
+<link rel="stylesheet" href="assets/style.css?v=2611142232">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -185,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611142222"></script>
-<script src="assets/store.js?v=2611142222"></script>
+<script src="config.js?v=2611142232"></script>
+<script src="assets/store.js?v=2611142232"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -649,7 +649,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;
   // Tell play.html when the screen is dark, so its icons turn light (navy icons vanish on the dark screens).
-  var lastDark = null; function postTheme() { var d = /\bt-(ink|wine|black)\b/.test(document.body.className); if (d !== lastDark) { lastDark = d; try { window.parent.postMessage({ gcgdark: d }, "*"); } catch (x) {} } }
+  var lastDark = null; function postTheme() { var d = /\bt-(ink|wine|black)\b/.test(document.body.className), dk = d || !!document.querySelector(".teams .team.b"), key = d + "|" + dk; if (key !== lastDark) { lastDark = key; try { window.parent.postMessage({ gcgdark: d, gcgdock: dk }, "*"); } catch (x) {} } }
   try { new MutationObserver(postTheme).observe(document.body, { attributes: true, attributeFilter: ["class"] }); } catch (x) {} setInterval(postTheme, 700);
   // Inside play.html you can click the big answer boxes directly (click one to choose it, click the chosen one again to lock it in).
   var ost = document.createElement("style"); ost.textContent = ".foot,.foot *{pointer-events:none!important}.foot .life,.foot .life *{pointer-events:auto!important}.life{display:flex;gap:.7em;margin-top:.7vh}.life button{font:600 var(--micro) var(--sans);display:inline-flex;align-items:center;gap:.45em;background:transparent;color:inherit;border:1.5px solid currentColor;border-radius:999px;padding:.45em 1em;cursor:pointer}html.mouse .life button:hover{background:var(--ink);color:var(--cream)}.life.friend{opacity:.9;font:600 var(--micro) var(--sans);display:flex;align-items:center;gap:.5em}.micro{display:inline-block}.optbar{z-index:60}.opts span[data-w]{cursor:pointer!important;pointer-events:auto!important}html.mouse .opts span[data-w]:hover{transform:scale(1.04)}"; document.head.appendChild(ost);

@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141156">
+<link rel="stylesheet" href="assets/style.css?v=2611141200">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -130,6 +130,9 @@ body.flashred{animation:flashred .6s ease 2}
 .krt{display:block;text-align:center;font:600 var(--micro) var(--sans);letter-spacing:.14em;text-transform:uppercase;margin:-.6vh 0 1.2vh;opacity:.85}.krt b{font-size:1.7em;letter-spacing:.02em}.krt.over{color:#E01E37;opacity:1}
 #gcglogo{position:fixed;top:2.6vh;right:1.8vw;height:min(10vh,86px);width:auto;z-index:70;pointer-events:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
 body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:var(--ink)}body.t-ink .pac .pupil{fill:var(--cream)}
+.ice-turn{display:flex;justify-content:center;align-items:center;gap:1.1em;margin:.2vh 0 .6vh;font:600 calc(var(--second)*.46) var(--sans);letter-spacing:.1em;text-transform:uppercase}
+.ice-turn .tw{padding:.3em .9em;border-radius:999px;color:#fff;font-weight:800}.ice-turn.ta .tw{background:var(--ink)}.ice-turn.tb .tw{background:var(--wrong)}.ice-turn .tl{opacity:.8;letter-spacing:.06em;text-transform:none;font-weight:600}
+.groups.turn-a .grp .body>.side:last-child{opacity:.28}.groups.turn-b .grp .body>.side:first-child{opacity:.28}
 .kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
 .groups.g2{--cols:2}.groups.g3{--cols:3}.groups.g4{--cols:4}.groups.g5{--cols:5}.groups.g6{--cols:6}
@@ -166,8 +169,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141156"></script>
-<script src="assets/store.js?v=2611141156"></script>
+<script src="config.js?v=2611141200"></script>
+<script src="assets/store.js?v=2611141200"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -218,13 +221,13 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
   // Icebreaker: the take, the clock (or "Find your group"), and the groups.
   function fmtClock(ms) { ms = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(ms / 60) + ":" + (ms % 60 < 10 ? "0" : "") + (ms % 60); }
   // A real clock: a dial with a sweeping hand and a ring that empties, plus the digits.
-  function iceClockHtml(left, dur, timer) {
+  function iceClockHtml(left, dur, timer, who) {
     var p = dur ? Math.max(0, Math.min(1, left / dur)) : 1, C = 2 * Math.PI * 44, low = timer && left <= 10000 && left > 0, ticks = "";
     for (var i = 0; i < 12; i++) { var a = i * 30 * Math.PI / 180; ticks += '<line class="tick" x1="' + (50 + Math.sin(a) * 38).toFixed(1) + '" y1="' + (50 - Math.cos(a) * 38).toFixed(1) + '" x2="' + (50 + Math.sin(a) * 43).toFixed(1) + '" y2="' + (50 - Math.cos(a) * 43).toFixed(1) + '"/>'; }
     var deg = (1 - p) * 360;
     return '<div class="iceclock' + (low ? " low" : "") + '" id="iceclock"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="dial" cx="50" cy="50" r="44"/><circle class="ring" id="icering" cx="50" cy="50" r="44" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - p)).toFixed(1) + '"/>' + ticks +
       '<line class="hand" id="icehand" x1="50" y1="50" x2="50" y2="14" style="transform:rotate(' + deg.toFixed(1) + 'deg)"/><circle class="pin" cx="50" cy="50" r="3.2"/></svg>' +
-      '<div><div class="digits" id="icedigits">' + (timer && left <= 0 ? "Time." : fmtClock(left)) + '</div><div class="cap">' + (timer ? "left" : "ready") + "</div></div></div>";
+      '<div><div class="digits" id="icedigits">' + (timer && left <= 0 ? "Time." : fmtClock(left)) + '</div><div class="cap">' + (timer ? "left" : "ready") + (who ? " &middot; " + who : "") + "</div></div></div>";
   }
   function iceView(s) {
     var num = pad(s.num || 1) + " / " + pad(s.total || 8), G = s.groups || [], timer = s.phase === "timer";
@@ -237,8 +240,10 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
     }).join("") || '<p class="second">Everyone picked the same side. Nothing to argue.</p>';
     var n = G.length, cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 12 ? 4 : n <= 20 ? 5 : 6, stack = n > 9;
     var listen = (s.listeners || []).length ? '<span class="lnote"><b>Listening this round:</b> ' + esc(s.listeners.join(", ")) + "</span>" : "";
-    var main = '<p class="ice-h">Find your group</p><p class="ice-q">' + esc(s.text) + "</p>" + '<div class="groups g' + cols + (stack ? " stack" : "") + '">' + cards + "</div>" + (listen ? '<div style="margin-top:.8vh">' + listen + "</div>" : "");
-    var foot = iceClockHtml(left, s.durMs, timer) + '<span class="listen">Listen closely or regret.</span>';
+    var turn = s.turn === "b" ? "b" : "a", word = turn === "a" ? "For" : "Against", sideLabel = turn === "a" ? s.a : s.b;
+    var banner = '<p class="ice-turn t' + turn + '"><span class="tw">This time: ' + word + '</span><span class="tl">Arguing &ldquo;' + esc(sideLabel) + '&rdquo;</span></p>';
+    var main = '<p class="ice-h">Find your group</p><p class="ice-q">' + esc(s.text) + "</p>" + banner + '<div class="groups turn-' + turn + ' g' + cols + (stack ? " stack" : "") + '">' + cards + "</div>" + (listen ? '<div style="margin-top:.8vh">' + listen + "</div>" : "");
+    var foot = iceClockHtml(left, s.durMs, timer, word) + '<span class="listen">Listen closely or regret.</span>';
     return { theme: "cream", html: frame("Icebreaker " + num, main, foot, "icemain") };
   }
   // Each view returns { theme, html }.

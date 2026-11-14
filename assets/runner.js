@@ -103,9 +103,10 @@
     while (i < P.length && !P[i].groups.length) i++;               // nobody to argue: skip
     if (i >= P.length) return startBee();
     run.iceIdx = i; save(); var t = P[i];
-    A.setState({ mode: "icebreaker", phase: "groups", num: i + 1, total: P.length, takeId: t.takeId, text: t.text, a: t.a, b: t.b, groups: t.groups, listeners: t.listeners, durMs: run.iceLen * 1000 });
+    A.setState({ mode: "icebreaker", phase: "groups", num: i + 1, total: P.length, takeId: t.takeId, text: t.text, a: t.a, b: t.b, groups: t.groups, listeners: t.listeners, turn: "a", baseMs: run.iceLen * 500, durMs: run.iceLen * 500 });
   }
   function iceGo() { A = api(); A.setState(Object.assign({}, st, { phase: "timer", startAt: Date.now(), noReplay: true })); }
+  function iceTurnB() { A = api(); A.setState(Object.assign({}, st, { turn: "b", phase: "groups", startAt: 0, durMs: st.baseMs || st.durMs, noReplay: true })); }
   function iceAdd() { A = api(); A.setState(Object.assign({}, st, { durMs: st.durMs + 30000, noReplay: true })); }
   startBtn.addEventListener("click", function () { startShow(); });
 
@@ -193,7 +194,9 @@
     pause: function () { pause(); },
     icego: function () { iceGo(); },
     icenext: function () { iceNext(); },
-    iceprev: function () { run.iceIdx = Math.max(-1, (run.iceIdx || 0) - 2); save(); iceNext(); },
+    iceprev: function () { if (st.mode === "icebreaker" && st.turn === "b") { A = api(); A.setState(Object.assign({}, st, { turn: "a", phase: "groups", startAt: 0, durMs: st.baseMs || st.durMs, noReplay: true })); return; } run.iceIdx = Math.max(-1, (run.iceIdx || 0) - 2); save(); iceNext(); },
+    iceturn: function () { iceTurnB(); },
+    iceskiptake: function () { iceNext(); },
     hotprev: function () { A = api(); G = A.get(); run.takeIdx = Math.max(0, run.takeIdx - 1); save(); A.takePick(G.takes[run.takeIdx].id); A.takeShow(); },
     icelast: function () { startBee(); },
     iceadd: function () { iceAdd(); },
@@ -269,11 +272,11 @@
       if (m === "icebreaker" && st.phase === "timer") {
         var left = st.startAt + st.durMs - Date.now();
         status += left > 0 ? " &middot; clock running (" + Math.ceil(left / 1000) + "s left)" : " &middot; <b>time</b>";
-        primary = btn("Continue", lastIce ? "icelast" : "icenext", "go");
-        sec = (idx > 0 ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Restart timer", "icego", "sec"), btn("+30 seconds", "iceadd", "sec"), btn("Pause", "pause", "sec")]);
+        primary = st.turn === "b" ? btn("Continue", lastIce ? "icelast" : "icenext", "go") : btn("Next: the against side", "iceturn", "go");
+        sec = (idx > 0 || st.turn === "b" ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Restart timer", "icego", "sec"), btn("+30 seconds", "iceadd", "sec"), btn("Pause", "pause", "sec")]);
       } else if (m === "icebreaker") {
-        primary = btn("Start timer", "icego", "go");
-        sec = (idx > 0 ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Continue", lastIce ? "icelast" : "icenext", "sec"), btn("Skip the icebreaker", "iceskip", "sec"), btn("Pause", "pause", "sec")]);
+        primary = btn("Start timer: " + (st.turn === "b" ? "against" : "for"), "icego", "go");
+        sec = (idx > 0 || st.turn === "b" ? [btn("Back", "iceprev", "sec")] : []).concat([btn("Skip this take", "iceskiptake", "sec"), btn("Skip the icebreaker", "iceskip", "sec"), btn("Pause", "pause", "sec")]);
       } else primary = btn("Show the groups", "icenext", "go");
     } else if (run.phase === "bee") {
       var stand = G.alive + " standing" + (G.sudden ? " &middot; sudden death" : ""), who = G.cur ? " &middot; up: <b>" + esc(G.cur) + "</b>" : "";

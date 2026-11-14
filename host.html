@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Host panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141156">
+<link rel="stylesheet" href="assets/style.css?v=2611141200">
 <style>
 .wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -208,12 +208,12 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     </div>
   </section>
 </main>
-<script src="config.js?v=2611141156"></script>
-<script src="assets/takes.js?v=2611141156"></script>
-<script src="assets/icebreaker.js?v=2611141156"></script>
-<script src="assets/bee.js?v=2611141156"></script>
-<script src="assets/store.js?v=2611141156"></script>
-<script src="assets/answers.js?v=2611141156"></script>
+<script src="config.js?v=2611141200"></script>
+<script src="assets/takes.js?v=2611141200"></script>
+<script src="assets/icebreaker.js?v=2611141200"></script>
+<script src="assets/bee.js?v=2611141200"></script>
+<script src="assets/store.js?v=2611141200"></script>
+<script src="assets/answers.js?v=2611141200"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -724,7 +724,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   store.subscribe("state", function (v) { state = v || {}; render(); });
 
   // ---- Night setup (host screen only; the projector page reads it when you press Start now) ----
-  var show = { stage: "keenest", takes: (window.GCG_CONFIG && window.GCG_CONFIG.TAKES_TO_PLAY) || 5, k: true, ice: 60, seed: 1, kmax: 0 };
+  var show = { stage: "keenest", takes: (window.GCG_CONFIG && window.GCG_CONFIG.TAKES_TO_PLAY) || 5, k: true, ice: 120, seed: 1, kmax: 0 };
   function drawNight() {
     drawHere();
     var L = plist(), keen = L.filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length, all = L.filter(function (g) { return into(g, "bee"); }).length;
@@ -783,11 +783,11 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       icePlan().map(function (t, i) { return "<h2>" + (i + 1) + ". " + esc(t.text) + "</h2>" + (t.groups.map(function (g, k) { var nm = function (arr, o) { return arr.map(function (m) { return esc(m.name) + (m.flip ? " [picked " + esc(o) + "]" : ""); }).join(", "); }; return "<p><b>Group " + (k + 1) + ":</b> " + nm(g.a, t.b) + " <span class=d>(arguing " + esc(t.a) + ")</span> versus " + nm(g.b, t.a) + " <span class=d>(arguing " + esc(t.b) + ")</span></p>"; }).join("") || "<p class=d>Everyone agrees: skip.</p>") + "<p class=d>Listening: " + esc(t.listeners.join(", ")) + "</p>"; }).join(""));
     w.document.close(); w.focus(); setTimeout(function () { w.print(); }, 400);
   };
-  store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true, ice: 60, seed: 1, kmax: 0 }, v || {}); drawNight(); });
+  store.subscribe("setup/show", function (v) { show = Object.assign({ stage: "keenest", takes: show.takes, k: true, ice: 120, seed: 1, kmax: 0 }, v || {}); drawNight(); });
 
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
   // Tonight's plan, applied once per browser: 1-minute icebreakers, all 8 hot takes, karaoke breaks that ask first, everyone who said yes sings (keenest first).
-  if (/[?&]auto=everyone\b/.test(location.search)) { try { if (!localStorage.getItem("gcg-plan-v1")) { localStorage.setItem("gcg-plan-v1", "1"); setTimeout(function () { show = Object.assign({}, show, { stage: "keenest", takes: 8, k: true, ice: 60, kmax: 0 }); store.set("setup/show", show); }, 700); } } catch (e) {} }
+  if (/[?&]auto=everyone\b/.test(location.search)) { try { if (!localStorage.getItem("gcg-plan-v2")) { localStorage.setItem("gcg-plan-v2", "1"); setTimeout(function () { show = Object.assign({}, show, { stage: "keenest", takes: 8, k: true, ice: 120, kmax: 0 }); store.set("setup/show", show); }, 700); } } catch (e) {} }
   // ?auto=everyone (play.html always sets it): load every registered guest (assets/tonight.json) that this browser does not have yet, and, the first time, mark everyone as here.
   // After that, who is here is whatever you set with the + / minus on the game screen, and it is kept when the page reloads.
   if (/[?&]auto=everyone\b/.test(location.search)) setTimeout(function () {
@@ -836,7 +836,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       "html,body{height:100%}#runpanel{width:max-content;max-width:560px;margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;padding:2px;min-height:100vh;box-sizing:border-box}" +
       "#runner.inhost{margin:0!important;width:max-content;max-width:560px;background:transparent!important;box-shadow:none!important;padding:0!important;gap:6px;border-radius:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-end}" +
       "#runner.inhost>.row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;flex:none}#runner.inhost>.ask{order:0}#runner.inhost .st{display:none}#runner.inhost .st.hintpill{display:block;background:rgba(8,24,62,.94);color:#FFF4C9;border-radius:999px;padding:8px 14px;font-size:12px;white-space:normal;max-width:420px;line-height:1.3;filter:none}#runner.inhost .secs{display:contents}" +
-      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]):not([data-act=kplay]):not([data-act=kvnext]):not([data-act=kagain]):not([data-act=hskip]):not([data-act=skipq]):not([data-act=skipp]):not([data-act=bback]):not([data-act=unpick]){display:none!important}#runner .jump,#runner button.mini{display:none!important}#runner.inhost button.opt[data-pick]{display:none!important}#runner.inhost button.rall{display:inline-flex!important}" +
+      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]):not([data-act=kplay]):not([data-act=kvnext]):not([data-act=kagain]):not([data-act=hskip]):not([data-act=skipq]):not([data-act=skipp]):not([data-act=bback]):not([data-act=unpick]):not([data-act=iceskiptake]){display:none!important}#runner .jump,#runner button.mini{display:none!important}#runner.inhost button.opt[data-pick]{display:none!important}#runner.inhost button.rall{display:inline-flex!important}" +
       "#runner.inhost button{font-size:15px;line-height:1;width:40px;height:40px;min-width:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border:0!important;border-radius:0;background:transparent!important;color:#08183E!important;box-shadow:none!important;letter-spacing:0;text-transform:none;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));cursor:pointer}" +
       "#runner.inhost button:hover{opacity:1;background:transparent!important}#runner.inhost button svg{width:26px;height:26px}" +
       "#runner.inhost button.go{width:36px!important;height:36px!important;min-width:0!important;max-width:none!important;padding:0!important;font-size:15px;order:3;flex:none;opacity:1}#runner.inhost button.go[disabled]{opacity:.3}" +
@@ -869,7 +869,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       if (act === "resume") return "play";
       if (act === "icego") return b.classList.contains("go") ? "play" : "retimer";
       if (act === "restartall") return "restart";
-      if (act === "hskip" || act === "skipq") return "skip";
+      if (act === "hskip" || act === "skipq" || act === "iceskiptake") return "skip";
       if (act === "skipp") return "person";
       if (act === "kplay") return "play";
       if (act === "kvnext") return "swap";
@@ -943,7 +943,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   };
 })();
 </script>
-<script src="assets/runner.js?v=2611141156"></script>
+<script src="assets/runner.js?v=2611141200"></script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;

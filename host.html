@@ -911,5 +911,9 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   var last = 0;
   window.addEventListener("message", function (e) { if (e.data && e.data.gcgkey) document.dispatchEvent(new KeyboardEvent("keydown", { key: e.data.gcgkey, bubbles: true })); }); ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, function () { var n = Date.now(); if (n - last > 300) { last = n; try { window.parent.postMessage("gcg-attention", "*"); } catch (x) {} } }, { passive: true }); }); })();
 </script>
+<script>
+// If the game is also open in another tab or window of this browser, the two fight over the same saved state. Answer the "is anyone else open?" check from play.html.
+(function () { if (window.parent !== window || typeof BroadcastChannel === "undefined") return; try { var c = new BroadcastChannel("gcg-tabs"); c.onmessage = function (e) { if (e.data && e.data.hello) c.postMessage({ here: 1, page: location.pathname.split("/").pop() || "index" }); }; } catch (x) {} })();
+</script>
 </body>
 </html>

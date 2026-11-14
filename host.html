@@ -786,6 +786,18 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     if (A.get().guests) { markAll(); return; }
     fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.text(); }).then(function (t) { return A.importJson(t); }).then(function () { setTimeout(markAll, 400); });
   }, 900);
+  // play.html asks for the guest list and adds late arrivals ("here") through these messages
+  window.addEventListener("message", function (e) {
+    var d = e.data || {}; if (!(d.gcgreq === "people" || d.gcgadd || d.gcgdel)) return;
+    if (d.gcgadd && hereMap) { var m = Object.assign({}, hereMap); m[d.gcgadd] = true; saveHere(m); }
+    if (d.gcgdel && hereMap) {   // someone left: not here any more, and out of the bee if they were on the stage
+      var m2 = Object.assign({}, hereMap); m2[d.gcgdel] = false; saveHere(m2);
+      var gg = list().filter(function (g) { return g.id === d.gcgdel; })[0];
+      if (gg && gg.beeStat && gg.beeStat.on) { var bsn = Object.assign({}, gg.beeStat, { out: true }); gg.beeStat = bsn; store.update("guests/" + gg.id, { beeStat: bsn }); try { renderBee(); } catch (x) {} }
+    }
+    var out = list().map(function (g) { return { id: g.id, name: g.name, here: hereMap ? !!hereMap[g.id] : true }; });
+    try { window.parent.postMessage({ gcgpeople: out, added: d.gcgadd || d.gcgdel || "" }, "*"); } catch (x) {}
+  });
   // host.html?play : the game screen only (no setup tabs), for running the night from the tablet
   if (/[?&]embed\b/.test(location.search)) {
     var es = document.createElement("style");

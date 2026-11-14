@@ -170,7 +170,7 @@ body.flashred{animation:flashred .6s ease 2}
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
   var cfg = window.GCG_CONFIG || {}, title = cfg.TITLE || "", brand = title.toUpperCase();
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
-  var live = '<span class="chip dot">Live</span>';
+  var live = "";
   function bee(size) {
     return '<svg class="mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"' + (size ? ' style="width:' + size + '"' : "") + '>' +
       '<ellipse cx="32" cy="38" rx="10.5" ry="15"/><path d="M22 33h20M21.5 39h21M23 45h18"/><circle cx="32" cy="19" r="3.6"/>' +

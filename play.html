@@ -10,10 +10,16 @@ body.show #hst{transform:none;opacity:1}
 body.show #tools{opacity:1}
 #tools #fs{font-size:20px;width:40px;height:40px;padding:0;border-radius:0;background:transparent;color:#08183E;border:0;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95))}#tools #fs:hover{opacity:1}#tools a,#tools button{font:700 13px/1 Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:#F5D76E;background:#08183E;border:0;border-radius:8px;padding:11px 14px;cursor:pointer}
 body{cursor:default}body:not(.show){cursor:none}
-#fsmsg{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:6;max-width:min(560px,92vw);background:#08183E;color:#FFF4C9;font:500 14px/1.4 Inter,Arial,sans-serif;padding:12px 16px;border-radius:12px;display:none;text-align:center}#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
+#fsmsg{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:6;max-width:min(560px,92vw);background:#08183E;color:#FFF4C9;font:500 14px/1.4 Inter,Arial,sans-serif;padding:12px 16px;border-radius:12px;display:none;text-align:center}#add{position:fixed;top:30px;right:7vw;z-index:7;opacity:0;transition:opacity .25s}body.show #add,#add.open{opacity:1}
+#add>button{width:40px;height:40px;border:0;background:transparent;color:#08183E;cursor:pointer;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));padding:0}#add>button:hover,#add.open>button{opacity:1}#add svg{width:26px;height:26px}
+#addp{display:none;position:absolute;top:46px;right:0;width:min(340px,86vw);background:#08183E;color:#FFF4C9;border-radius:14px;padding:10px;box-shadow:0 10px 36px rgba(0,0,0,.4);font:500 15px/1.3 Inter,Arial,sans-serif}
+#add.open #addp{display:block}#addq{width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:12px 14px;font:500 16px Inter,Arial,sans-serif;background:#FFF4C9;color:#08183E;outline:none}
+#addl{list-style:none;margin:8px 0 0;padding:0;max-height:46vh;overflow:auto}#addl li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 6px;border-top:1px solid rgba(255,244,201,.15)}#addl li:first-child{border-top:0}
+#addl small{opacity:.6;display:block;font-size:12px}#addl button{border:0;border-radius:999px;background:#F5D76E;color:#08183E;font:700 12px Inter,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;cursor:pointer}#addl button.out{background:transparent;color:#FFF4C9;border:1px solid rgba(255,244,201,.5)}
+#adde{padding:10px 6px;opacity:.7}#rotate{display:none;position:fixed;inset:0;z-index:99;background:#F5D76E;color:#08183E;align-items:center;justify-content:center;text-align:center;font:400 28px/1.15 "Instrument Serif",Georgia,serif}#rotate p{margin:14px 0 6px}#rotate span{font:500 14px Inter,Arial,sans-serif;opacity:.7}@media (orientation:portrait) and (max-width:900px){#rotate{display:flex}}</style></head><body><div id="rotate"><div><svg viewBox="0 0 64 64" width="72" height="72" fill="none" stroke="#08183E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="8" width="20" height="36" rx="4"/><path d="M12 50c10 8 30 8 40 0M46 44l6 6-8 3"/></svg><p>Turn your phone sideways</p><span>This game is built for a wide screen</span></div></div>
 <iframe id="scr" src="screen.html" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" allow="autoplay"></iframe>
-<div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
+<div id="add"><button id="addb" type="button" title="Add someone who has arrived"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div id="addp"><input id="addq" type="text" placeholder="Search for a name" autocomplete="off" spellcheck="false"><ul id="addl"></ul></div></div><div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
 <script>
 (function () {
   document.getElementById("hst").src = "host.html?play=1&embed=1" + (/[?&]everyone\b/.test(location.search) ? "&auto=everyone" : "");
@@ -24,7 +30,7 @@ body{cursor:default}body:not(.show){cursor:none}
   // the game frame has focus only for sound; the host frame takes the keys (Space or Enter = the big gold button)
   function toHost() { try { document.getElementById("hst").contentWindow.focus(); } catch (e) {} }
   document.getElementById("hst").addEventListener("load", toHost);
-  document.addEventListener("keydown", function (e) { if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S|f|F|\.|b|B|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|PageDown|PageUp)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
+  document.addEventListener("keydown", function (e) { if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return; if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S|f|F|\.|b|B|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|PageDown|PageUp)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
   function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
   function fsMsg() { var m = document.getElementById("fsmsg"); m.innerHTML = "Fullscreen is blocked on this device or browser.<br>Laptop: press F11 (Windows) or Ctrl+Cmd+F (Mac). iPad or iPhone: tap Share, then Add to Home Screen, and open the game from there."; m.style.display = "block"; setTimeout(function () { m.style.display = "none"; }, 9000); }
   function toggleFs() { var d = document.documentElement; if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; } var rq = d.requestFullscreen || d.webkitRequestFullscreen; if (!rq) return fsMsg(); try { var r = rq.call(d); if (r && r.catch) r.catch(fsMsg); } catch (e) { fsMsg(); } }
@@ -34,6 +40,23 @@ body{cursor:default}body:not(.show){cursor:none}
   pinned = true;
   // Messages from the host frame (a karaoke question or a pause needs you) bring the buttons up.
   window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
+
+  // + : add a late arrival. Type a name, tap Add, and they are marked here (karaoke wheel, hot takes and the next icebreaker take include them).
+  var people = [], addEl = document.getElementById("add"), addQ = document.getElementById("addq"), addL = document.getElementById("addl");
+  function hostWin() { return document.getElementById("hst").contentWindow; }
+  function askPeople() { try { hostWin().postMessage({ gcgreq: "people" }, "*"); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function drawPeople() {
+    var q = addQ.value.trim().toLowerCase(), rows = people.filter(function (x) { return !q || x.name.toLowerCase().indexOf(q) >= 0; });
+    rows.sort(function (a, b) { return (a.here - b.here) || a.name.localeCompare(b.name); });   // people not here yet first, then the ones who are
+    addL.innerHTML = rows.slice(0, 8).map(function (x) { return "<li><span>" + esc(x.name) + (x.here ? "<small>Here</small>" : "") + '</span><button type="button" class="' + (x.here ? "out" : "in") + '" data-id="' + esc(x.id) + '" data-do="' + (x.here ? "del" : "add") + '">' + (x.here ? "&minus; Leave" : "+ Add") + "</button></li>"; }).join("") || '<li id="adde">Nobody called that. Check the spelling.</li>';
+  }
+  function openAdd(o) { addEl.classList.toggle("open", o); pinned = o; if (o) { b.classList.add("show"); askPeople(); setTimeout(function () { addQ.focus(); }, 50); } else { addQ.value = ""; clearTimeout(t); t = setTimeout(function () { b.classList.remove("show"); }, 3000); } }
+  document.getElementById("addb").onclick = function () { openAdd(!addEl.classList.contains("open")); };
+  addQ.addEventListener("input", drawPeople);
+  addL.addEventListener("click", function (e) { var bt = e.target.closest("button[data-id]"); if (!bt) return; var msg = bt.dataset["do"] === "del" ? { gcgdel: bt.dataset.id } : { gcgadd: bt.dataset.id }; try { hostWin().postMessage(msg, "*"); } catch (x) {} });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && addEl.classList.contains("open")) openAdd(false); });
+  window.addEventListener("message", function (e) { if (e.data && e.data.gcgpeople) { people = e.data.gcgpeople; drawPeople(); } });
   show();
 })();
 </script></body></html>

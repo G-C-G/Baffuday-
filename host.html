@@ -796,6 +796,13 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
         list().forEach(function (g) { if (away.indexOf(String(g.name).toLowerCase()) >= 0) m[g.id] = false; }); saveHere(m); } catch (e) {}
     };
   }, 900);
+  // the big answer boxes on the game screen are clickable: first click chooses, a click on the chosen one locks it in
+  window.addEventListener("message", function (e) {
+    var d = e.data || {}; if (!d.gcgpick) return; var st0 = (window.HOSTAPI && window.HOSTAPI.get().state) || {};
+    if (st0.mode !== "bee") return;
+    if (st0.phase === "confirm" && String(st0.chosen || "").toLowerCase() === String(d.gcgpick).toLowerCase()) { var lk = document.querySelector('#runner [data-act="lock"]'); if (lk) lk.click(); }
+    else if (st0.phase === "prompt" || st0.phase === "confirm") window.HOSTAPI.beePick(d.gcgpick);
+  });
   // play.html asks for the guest list and adds late arrivals ("here") through these messages
   window.addEventListener("message", function (e) {
     var d = e.data || {}; if (!(d.gcgreq === "people" || d.gcgadd || d.gcgdel)) return;
@@ -815,7 +822,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       "html,body{height:100%}#runpanel{width:max-content;max-width:560px;margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;padding:2px;min-height:100vh;box-sizing:border-box}" +
       "#runner.inhost{margin:0!important;width:max-content;max-width:560px;background:transparent!important;box-shadow:none!important;padding:0!important;gap:6px;border-radius:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-end}" +
       "#runner.inhost>.row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;flex:none}#runner.inhost>.ask{order:0}#runner.inhost .st{display:none}#runner.inhost .st.hintpill{display:block;background:rgba(8,24,62,.94);color:#FFF4C9;border-radius:999px;padding:8px 14px;font-size:12px;white-space:normal;max-width:420px;line-height:1.3;filter:none}#runner.inhost .secs{display:contents}" +
-      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]):not([data-act=kplay]):not([data-act=kvnext]):not([data-act=kagain]):not([data-act=hskip]):not([data-act=skipq]):not([data-act=skipp]){display:none!important}#runner .jump,#runner button.mini{display:none!important}#runner.inhost button.rall{display:inline-flex!important}" +
+      "#runner .secs button:not([data-act=pause]):not([data-act=resume]):not([data-act=icego]):not([data-act=icenext]):not([data-act=icelast]):not([data-act=iceprev]):not([data-act=hotprev]):not([data-act=kplay]):not([data-act=kvnext]):not([data-act=kagain]):not([data-act=hskip]):not([data-act=skipq]):not([data-act=skipp]){display:none!important}#runner .jump,#runner button.mini{display:none!important}#runner.inhost button.opt[data-pick]{display:none!important}#runner.inhost button.rall{display:inline-flex!important}" +
       "#runner.inhost button{font-size:15px;line-height:1;width:40px;height:40px;min-width:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border:0!important;border-radius:0;background:transparent!important;color:#08183E!important;box-shadow:none!important;letter-spacing:0;text-transform:none;opacity:.7;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));cursor:pointer}" +
       "#runner.inhost button:hover{opacity:1;background:transparent!important}#runner.inhost button svg{width:26px;height:26px}" +
       "#runner.inhost button.go{width:36px!important;height:36px!important;min-width:0!important;max-width:none!important;padding:0!important;font-size:15px;order:3;flex:none;opacity:1}#runner.inhost button.go[disabled]{opacity:.3}" +

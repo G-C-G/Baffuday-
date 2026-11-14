@@ -293,7 +293,7 @@ body.flashred{animation:flashred .6s ease 2}
     var chosen = mode === "confirm" || mode === "lock" ? (s.chosen || s.said) : "", seen = false, cls = mode === "lock" ? "sel throb" : "sel";
     var opts = (s.options || []).map(function (o) {
       var hit = chosen && String(o).toLowerCase() === String(chosen).toLowerCase(); if (hit) seen = true;
-      return '<span class="' + (hit ? cls : "") + '">' + esc(o) + "</span>";
+      return '<span data-w="' + esc(o) + '" class="' + (hit ? cls : "") + '">' + esc(o) + "</span>";
     }).join("");
     if (chosen && !seen) opts += '<span class="' + cls + '">' + esc(chosen) + "</span>";
     var note = mode === "lock" ? "Locked in" : mode === "confirm" ? "Final answer?" : "";
@@ -569,6 +569,9 @@ body.flashred{animation:flashred .6s ease 2}
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;
+  // Inside play.html you can click the big answer boxes directly (click one to choose it, click the chosen one again to lock it in).
+  var ost = document.createElement("style"); ost.textContent = ".foot,.foot *{pointer-events:none!important}.optbar{z-index:60}.opts span[data-w]{cursor:pointer!important;pointer-events:auto!important}html.mouse .opts span[data-w]:hover{transform:scale(1.04)}"; document.head.appendChild(ost);
+  document.addEventListener("click", function (e) { var sp = e.target.closest && e.target.closest(".opts span[data-w]"); if (!sp && document.elementsFromPoint) { var under = document.elementsFromPoint(e.clientX, e.clientY); for (var i = 0; i < under.length; i++) { if (under[i].matches && under[i].matches(".opts span[data-w]")) { sp = under[i]; break; } } } if (sp) { try { window.parent.postMessage({ gcgpick: sp.getAttribute("data-w") }, "*"); } catch (x) {} } });
   // Inside play.html the mouse pointer must be visible while you use it: show it when the mouse moves, hide it again after a few seconds of stillness.
   var curSt = document.createElement("style"); curSt.textContent = "html.mouse,html.mouse *{cursor:default!important}"; document.head.appendChild(curSt); var curT = 0;
   ["mousemove", "mousedown", "touchstart"].forEach(function (ev) { document.addEventListener(ev, function () { document.documentElement.classList.add("mouse"); clearTimeout(curT); curT = setTimeout(function () { document.documentElement.classList.remove("mouse"); }, 4000); }, { passive: true }); });

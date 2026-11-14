@@ -112,19 +112,26 @@
   // ---- what happens after a karaoke break ----
   function returnFromKaraoke() {
     var r = run.ret; run.ret = ""; save(); A = api();
-    if (r === "bee-next") A.beeNext(); else if (r === "bee-call") A.beeCall(); else if (r === "hot-next") hotNext(); else if (r === "hot-same") A.takeShow(); else A.beeCall();
+    if (r === "bee-next") A.beeNext(); else if (r === "bee-call") A.beeCall(); else if (r === "bee-show") A.beeShow(); else if (r === "hot-next") hotNext(); else if (r === "hot-same") A.takeShow();
+    else if (r === "ice-same") { run.phase = "ice"; run.iceIdx = Math.max(-1, (run.iceIdx || 0) - 1); save(); iceNext(); }   // the same icebreaker take, clock ready
+    else A.setState({ mode: "home" });   // karaoke from the title screen: back to the title
   }
   // ---- karaoke tracks: each singer's song is pre-matched to a YouTube karaoke video (assets/karaoke.json) that allows embedding ----
   var KT = {}; try { fetch("assets/karaoke.json?" + Date.now()).then(function (x) { return x.json(); }).then(function (j) { KT = j || {}; }).catch(function () {}); } catch (e) {}
   function setVideo(opt, n) {
     var o = (KT[st.name] || [])[opt]; if (!o || !o.tracks.length) return; n = ((n % o.tracks.length) + o.tracks.length) % o.tracks.length;
-    A = api(); A.setState(Object.assign({}, st, { video: { id: o.tracks[n].id, label: o.label, opt: opt, n: n }, noReplay: true }));
+    A = api(); A.setState(Object.assign({}, st, { video: { id: o.tracks[n].id, label: o.label, opt: opt, n: n }, krtimer: st.krtimer || krTimer(), noReplay: true }));
   }
+  function krTimer() { return { at: Date.now(), dur: (cfg.KR_SECONDS || 60) * 1000 }; }
+  function startKrTimer() { A = api(); A.setState(Object.assign({}, st, { krtimer: krTimer(), noReplay: true })); }
   function spinNow(ret) { A = api(); run.ret = ret; run.sinceK = 0; run.ask = false; save(); A.spin(); }
   function karaokeRet() {
     var m = st.mode;
+    if (run.phase === "ice") return "ice-same";
+    if (run.phase === "idle" || run.phase === "done") return "home";
     if (run.phase === "hot") return (m === "hottake" && st.phase === "twist") || m === "home" ? "hot-next" : "hot-same";
-    return m === "bee" && st.phase === "result" ? "bee-next" : "bee-call";
+    if (m === "bee" && st.phase === "result") return "bee-next";
+    return m === "bee" ? "bee-show" : "bee-call";
   }
 
   // ---- hot takes ----
@@ -180,7 +187,7 @@
     jhot: function () { A = api(); G = A.get(); if (run.takeIdx > 0 || (st.mode === "hottake")) { run.phase = "hot"; run.ret = ""; run.ask = false; save(); A.takeShow(); } else startHot(); },
     kback: function () { returnFromKaraoke(); },
     kagain: function () { A.spinAgain(); },
-    kplay: function () { setVideo(0, 0); },
+    kplay: function () { if ((KT[st.name] || []).length) setVideo(0, 0); else startKrTimer(); },
     kvnext: function () { var v = st.video || { opt: 0, n: 0 }; setVideo(v.opt, v.n + 1); },
     pause: function () { pause(); },
     icego: function () { iceGo(); },
@@ -249,7 +256,7 @@
       if (st.video) sec = [btn("Another version", "kvnext", "sec"), btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")];
       else if (KO.length > 1) { opts = KO.map(function (o, i) { return '<button type="button" class="opt" data-ko="' + i + '" title="' + esc(o.label) + '">' + esc(o.short) + "</button>"; }).join(""); sec = [btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")]; }
       else if (KO.length === 1) sec = [btn("Play the track", "kplay", "sec"), btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")];
-      else sec = [btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")];
+      else sec = [btn("Start the timer", "kplay", "sec"), btn("Not here? Spin again", "kagain", "sec"), btn("Pause", "pause", "sec")];
     } else if (run.phase === "ice") {
       var P2 = A.icePlan(), idx = run.iceIdx || 0, lastIce = !P2.slice(idx + 1).some(function (t) { return t.groups.length; });
       status = "<b>Icebreaker.</b> Take " + (idx + 1) + " of " + P2.length;

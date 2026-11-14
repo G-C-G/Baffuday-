@@ -109,6 +109,17 @@
   function iceTurnB() { A = api(); A.setState(Object.assign({}, st, { turn: "b", phase: "groups", startAt: 0, durMs: st.baseMs || st.durMs, noReplay: true })); }
   function iceAdd() { A = api(); A.setState(Object.assign({}, st, { durMs: st.durMs + 30000, noReplay: true })); }
   startBtn.addEventListener("click", function () { startShow(); });
+  // "Hot takes" on the title screen: skip straight to Twisted Hot Takes (same checks as Start now)
+  var htBtn = document.createElement("button"); htBtn.id = "htbtn"; htBtn.type = "button"; htBtn.textContent = "Hot takes"; htBtn.title = "Go straight to the Twisted Hot Takes"; htBtn.hidden = true;
+  var idleRow = document.createElement("div"); idleRow.id = "idlerow"; panel.insertBefore(idleRow, strip); idleRow.appendChild(htBtn); idleRow.appendChild(startBtn);
+  htBtn.addEventListener("click", function () {
+    A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
+    G = A.get();
+    if (!G.guests) return say("No guests are loaded yet. Wait a few seconds.");
+    if (!G.hereOn || G.here < 2) return say("Add the people who are here first (the + at the top right).");
+    var s = G.show || {}; run.takes = s.takes || run.takes; run.kOn = s.k !== false; run.stage = s.stage; run.iceLen = s.ice === undefined ? 120 : s.ice;
+    run.sinceK = 0; run.paused = null; run.counted = ""; startHot();
+  });
 
   // ---- what happens after a karaoke break ----
   function returnFromKaraoke() {
@@ -242,6 +253,7 @@
     fresh();
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
     startBtn.hidden = run.phase !== "idle";
+    htBtn.hidden = run.phase !== "idle";
     if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st hintpill"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();

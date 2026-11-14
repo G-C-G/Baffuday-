@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Host panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611142104">
+<link rel="stylesheet" href="assets/style.css?v=2611142204">
 <style>
 .wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -208,12 +208,12 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     </div>
   </section>
 </main>
-<script src="config.js?v=2611142104"></script>
-<script src="assets/takes.js?v=2611142104"></script>
-<script src="assets/icebreaker.js?v=2611142104"></script>
-<script src="assets/bee.js?v=2611142104"></script>
-<script src="assets/store.js?v=2611142104"></script>
-<script src="assets/answers.js?v=2611142104"></script>
+<script src="config.js?v=2611142204"></script>
+<script src="assets/takes.js?v=2611142204"></script>
+<script src="assets/icebreaker.js?v=2611142204"></script>
+<script src="assets/bee.js?v=2611142204"></script>
+<script src="assets/store.js?v=2611142204"></script>
+<script src="assets/answers.js?v=2611142204"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -238,7 +238,8 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // Who is here tonight. hereMap is null until the host first marks anyone; after that only people marked here are called to anything.
   var hereMap = null;
   function present(g) { return hereMap ? !!hereMap[g.id] : true; }
-  function plist() { return list().filter(present); }
+  function plist() { return list().filter(present).filter(function (g) { return g.only !== "karaoke"; }); }   // karaoke-only guests (g.only) take no part in the icebreaker, bee or hot takes
+  function kplist() { return list().filter(present); }
   function dietText(g) { return Object.keys(g.diet || {}).join(", "); }
 
   function render() {
@@ -295,12 +296,12 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // Karaoke: call the most willing people first, random within the best remaining tier.
   function tier(g) { var n = level(g, "karaoke"); return n >= 5 ? "A: put me on first" : n === 4 ? "B: happy to do it" : "C: if called"; }
   function pool() {
-    var left = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); });
+    var left = kplist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); });
     var best = left.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
     return left.filter(function (g) { return tier(g) === best; });
   }
   function queue() {
-    var left = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }), t = {}, optedOut = plist().filter(function (g) { return g.song && !g.performed && noKaraoke(g); }).length;
+    var left = kplist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }), t = {}, optedOut = kplist().filter(function (g) { return g.song && !g.performed && noKaraoke(g); }).length;
     left.forEach(function (g) { t[tier(g)] = (t[tier(g)] || 0) + 1; });
     var target = window.GCG_CONFIG.KARAOKE_TARGET || 15, done = list().filter(function (g) { return g.performed; }).length;
     var willing = left.length;
@@ -385,7 +386,8 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // Default wheel: everyone who is up for it. People who said "put me on first" get 3 slices, "happy to do it" 2, "if called" 1,
   // so the keenest come up more often, spread around the wheel. Strict option: only the keenest group still waiting is on the wheel.
   function rpool() {
-    var all = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g) && !skipNow[g.id]; });
+    var all = kplist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g) && !skipNow[g.id]; });
+    var nxt = all.filter(function (g) { return g.first; }); if (nxt.length) return nxt;   // "put them on next": a guest flagged first is the next person the wheel lands on
     if (!all.length && Object.keys(skipNow).length) { skipNow = {}; return rpool(); }
     if ($("rall").checked) {
       var best = all.reduce(function (m, g) { var t = tier(g); return !m || t < m ? t : m; }, null);
@@ -403,7 +405,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     // The wheel shows EVERYONE who still has to sing, but with "keenest first" it only lands on someone from the keenest group still waiting.
     var shown = P;
     if ($("rall").checked) {
-      shown = plist().filter(function (x) { return x.song && !x.performed && !noKaraoke(x) && !skipNow[x.id]; });
+      shown = kplist().filter(function (x) { return x.song && !x.performed && !noKaraoke(x) && !skipNow[x.id]; });
       if (!shown.some(function (x) { return x.id === g.id; })) shown = shown.concat([g]);
     }
     var wIdx = shown.findIndex(function (x) { return x.id === g.id; });
@@ -902,7 +904,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     icePlan: function () { return icePlan(); },
     get: function () {
       var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
-      return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, kleft: (function () { var left = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, done = plist().filter(function (g) { return g.performed; }).length; return show.kmax ? Math.max(0, Math.min(left, show.kmax - done)) : left; })(), ksung: plist().filter(function (g) { return g.performed; }).length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
+      return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, kleft: (function () { var left = kplist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, done = kplist().filter(function (g) { return g.performed; }).length; return show.kmax ? Math.max(0, Math.min(left, show.kmax - done)) : left; })(), ksung: kplist().filter(function (g) { return g.performed; }).length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
         winner: bee.winner || null, skipUsed: !!(c && c.beeStat && c.beeStat.skipped), callUsed: !!(c && c.beeStat && c.beeStat.called), sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
         eligible: plist().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
     },
@@ -950,7 +952,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   };
 })();
 </script>
-<script src="assets/runner.js?v=2611142104"></script>
+<script src="assets/runner.js?v=2611142204"></script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;

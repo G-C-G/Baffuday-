@@ -1686,5 +1686,21 @@
    }
   },
   "diet": {}
+ },
+ {
+  "_id": "t-37",
+  "name": "Yes yes",
+  "song": "Kweku Smoke - Bra",
+  "involve": {
+   "bee": 1,
+   "karaoke": 5,
+   "takes": 1
+  },
+  "bee": "no",
+  "only": "karaoke",
+  "first": true,
+  "ownTake": "",
+  "picks": {},
+  "diet": {}
  }
 ]

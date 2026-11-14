@@ -27,7 +27,7 @@ window.GCG_CONFIG = {
   ROULETTE_LAND_MS: 5380,
   // Hosting from the projector page ("Start now" on the title screen):
   // a karaoke break is offered after this many bee turns / hot takes (a random number in the range each time), and how many hot takes are played.
-  BEE_MAX_STAGE: 14,     // the "keenest" stage is never bigger than this (the bee has 46 prompts)
+  BEE_MAX_STAGE: 16,     // the "keenest" stage is never bigger than this (the bee has 46 prompts)
   BEE_MAX_EVERYONE: 24,  // and "everyone" is capped here
   MIN_PER_SONG: 5,   // used for the time estimate on the Get ready page (a song plus the spin and the walk up)
   KARAOKE_EVERY_MIN: 4,

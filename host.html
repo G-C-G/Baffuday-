@@ -881,7 +881,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     get: function () {
       var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
       return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, kleft: (function () { var left = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, done = plist().filter(function (g) { return g.performed; }).length; return show.kmax ? Math.max(0, Math.min(left, show.kmax - done)) : left; })(), ksung: plist().filter(function (g) { return g.performed; }).length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
-        winner: bee.winner || null, sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
+        winner: bee.winner || null, skipUsed: !!(c && c.beeStat && c.beeStat.skipped), sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
         eligible: plist().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
     },
     setState: function (o) { return setState(o); },
@@ -902,7 +902,11 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     beeNext: function () { $("bnext").onclick(); },
     beeWin: function () { $("bwin").onclick(); },
     // skip this question: the same contestant gets the next prompt, nobody is scored
-    beeSkipPrompt: function () { $("bpick").style.display = "none"; bee.n = Math.min((bee.n || 0) + 1, BEE.length - 1); scored = false; saveBee(); renderBee(); $("bshow").onclick(); },
+    beeSkipPrompt: function () {
+      var gc = curGuest();   // each contestant may skip once only
+      if (gc && gc.beeStat && gc.beeStat.skipped) return false;
+      if (gc) { var sk = Object.assign({}, gc.beeStat || {}, { skipped: true }); gc.beeStat = sk; store.update("guests/" + gc.id, { beeStat: sk }); }
+      $("bpick").style.display = "none"; bee.n = Math.min((bee.n || 0) + 1, BEE.length - 1); scored = false; saveBee(); renderBee(); $("bshow").onclick(); },
     // this contestant is not here: take them off the stage and call the next one
     beeSkipPerson: function () {
       var g = curGuest(); if (g) { var s = g.beeStat || {}; s.on = false; g.beeStat = s; store.update("guests/" + g.id, { beeStat: s }); }

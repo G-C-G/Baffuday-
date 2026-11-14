@@ -1639,5 +1639,52 @@
    }
   },
   "diet": {}
+ },
+ {
+  "_id": "t-36",
+  "name": "Asaaba",
+  "song": "Whitney Houston - I Learned From the Best",
+  "involve": {
+   "bee": 3,
+   "karaoke": 3,
+   "takes": 2
+  },
+  "bee": "yes",
+  "ownTake": "You can be friends with your Ex",
+  "picks": {
+   "dramatic": {
+    "s": "disagree",
+    "n": 5
+   },
+   "jollof": {
+    "s": "disagree",
+    "n": 5
+   },
+   "onread": {
+    "s": "disagree",
+    "n": 5
+   },
+   "president": {
+    "s": "disagree",
+    "n": 1
+   },
+   "homemaker": {
+    "s": "agree",
+    "n": 3
+   },
+   "cereal": {
+    "s": "disagree",
+    "n": 2
+   },
+   "firstmove": {
+    "s": "disagree",
+    "n": 3
+   },
+   "pineapple": {
+    "s": "disagree",
+    "n": 5
+   }
+  },
+  "diet": {}
  }
 ]

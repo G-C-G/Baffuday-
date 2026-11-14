@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141115">
+<link rel="stylesheet" href="assets/style.css?v=2611141117">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -128,7 +128,7 @@ body.flashred{animation:flashred .6s ease 2}
 .ice-q{text-align:center;font:400 calc(var(--major)*.82)/1.05 var(--serif);font-style:italic;margin:0;opacity:.95}
 .nb{border:2px solid currentColor;border-radius:8px;padding:.9vh 1vw;font:500 calc(var(--micro)*1.05)/1.35 var(--sans)}
 .krt{display:block;text-align:center;font:600 var(--micro) var(--sans);letter-spacing:.14em;text-transform:uppercase;margin:-.6vh 0 1.2vh;opacity:.85}.krt b{font-size:1.7em;letter-spacing:.02em}.krt.over{color:#E01E37;opacity:1}
-#gcglogo{position:fixed;top:.8vh;right:1.6vw;height:min(12vh,104px);width:auto;z-index:70;pointer-events:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
+#gcglogo{position:fixed;top:2.6vh;right:1.8vw;height:min(10vh,86px);width:auto;z-index:70;pointer-events:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
 .kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
 .groups.g2{--cols:2}.groups.g3{--cols:3}.groups.g4{--cols:4}.groups.g5{--cols:5}.groups.g6{--cols:6}
@@ -165,8 +165,8 @@ body.flashred{animation:flashred .6s ease 2}
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141115"></script>
-<script src="assets/store.js?v=2611141115"></script>
+<script src="config.js?v=2611141117"></script>
+<script src="assets/store.js?v=2611141117"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };

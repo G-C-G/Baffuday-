@@ -400,14 +400,21 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     var P = rpool();
     if (!P.length) { $("rinfo").textContent = "Everyone who is up for it has performed."; return; }
     var w = Math.floor(Math.random() * P.length), g = P[w], who = {}; P.forEach(function (x) { who[x.id] = 1; });
+    // The wheel shows EVERYONE who still has to sing, but with "keenest first" it only lands on someone from the keenest group still waiting.
+    var shown = P;
+    if ($("rall").checked) {
+      shown = plist().filter(function (x) { return x.song && !x.performed && !noKaraoke(x) && !skipNow[x.id]; });
+      if (!shown.some(function (x) { return x.id === g.id; })) shown = shown.concat([g]);
+    }
+    var wIdx = shown.findIndex(function (x) { return x.id === g.id; });
     // remember the screen to come back to (unless a roulette is already up, then keep what it came from)
     var resume = state.mode === "roulette" ? (state.resume || null) : state.mode === "karaoke" ? null : state;
     g.performed = true; // update locally now so a quick second press cannot pick the same person
     g.took = g.took || {}; g.took.karaoke = true;
     store.update("guests/" + g.id, { performed: true, took: g.took });
     lastSpin = { id: g.id };
-    setState({ mode: "roulette", spinId: Date.now(), names: P.map(function (x) { return x.name; }), winner: w, name: g.name, song: g.song, resume: resume }).then(render);
-    $("rinfo").textContent = "Landing on " + g.name + " (" + g.song + "). The wheel has " + P.length + " slices, " + Object.keys(who).length + " people.";
+    setState({ mode: "roulette", spinId: Date.now(), names: shown.map(function (x) { return x.name; }), winner: wIdx, name: g.name, song: g.song, resume: resume }).then(render);
+    $("rinfo").textContent = "Landing on " + g.name + " (" + g.song + "). The wheel shows " + shown.length + " people and can land on " + Object.keys(who).length + ".";
     armNudge();
   }
   $("surprise").onclick = spinRoulette;
@@ -654,7 +661,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     var opts = e[4].slice(); for (var i = opts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
     $("bopts").innerHTML = opts.map(function (w) { return '<button class="btn ghost" data-said="' + esc(w) + '">' + esc(w) + "</button>"; }).join("");
     $("bother").value = ""; $("bpick").style.display = "block"; $("bchoose").style.display = "block"; $("bconfirm").style.display = "none"; pending = null;
-    promptState = { mode: "bee", phase: "prompt", exact: !!(window.BEE_EXACT || {})[e[4].slice().sort().join("/")], img: (window.BEE_IMAGES || {})[e[4].slice().sort().join("/")] || "", snd: (window.BEE_SOUNDS || {})[e[4].slice().sort().join("/")] || "", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], marks: e[4], options: opts, sudden: alive().length <= SD, contestant: c ? c.name : "", standing: alive().length };
+    promptState = { mode: "bee", phase: "prompt", lifeSkip: !(c && c.beeStat && c.beeStat.skipped), lifeCall: !(c && c.beeStat && c.beeStat.called), exact: !!(window.BEE_EXACT || {})[e[4].slice().sort().join("/")], img: (window.BEE_IMAGES || {})[e[4].slice().sort().join("/")] || "", snd: (window.BEE_SOUNDS || {})[e[4].slice().sort().join("/")] || "", round: e[0], n: (bee.n || 0) + 1, total: BEE.length, sentence: e[1], marks: e[4], options: opts, sudden: alive().length <= SD, contestant: c ? c.name : "", standing: alive().length };
     setState(promptState);
   };
   // The host taps the spelling the contestant gave; the system judges it against the right word.
@@ -796,6 +803,13 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
         list().forEach(function (g) { if (away.indexOf(String(g.name).toLowerCase()) >= 0) m[g.id] = false; }); saveHere(m); } catch (e) {}
     };
   }, 900);
+  // the two lifeline buttons under the contestant's name on the game screen: call a friend / skip, once each
+  window.addEventListener("message", function (e) {
+    var d = e.data || {}; if (!d.gcglife) return; var st1 = (window.HOSTAPI && window.HOSTAPI.get().state) || {};
+    if (st1.mode !== "bee" || st1.phase !== "prompt") return;
+    if (d.gcglife === "call") window.HOSTAPI.beeCallFriend(); else if (d.gcglife === "skip") window.HOSTAPI.beeSkipPrompt();
+  });
+  window.addEventListener("message", function (e) { var d = e.data || {}; if (typeof d.gcgdark === "boolean") document.body.classList.toggle("dark", d.gcgdark); });
   // the big answer boxes on the game screen are clickable: first click chooses, a click on the chosen one locks it in
   window.addEventListener("message", function (e) {
     var d = e.data || {}; if (!d.gcgpick) return; var st0 = (window.HOSTAPI && window.HOSTAPI.get().state) || {};
@@ -831,6 +845,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       "#runner.inhost .ask button{width:auto;height:34px;border-radius:999px;padding:0 14px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;box-shadow:none}#runner.inhost .ask button.go{width:auto;height:34px;font-size:11px}" +
       "#runner.inhost .ask button{width:auto!important;height:30px!important;padding:0 14px!important;border-radius:999px!important;background:transparent!important;color:#FFF4C9!important;filter:none!important;opacity:1!important;font:700 12px Inter,Arial,sans-serif!important;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,244,201,.55)!important}#runner.inhost .ask button.go{background:#F5D76E!important;color:#08183E!important;border-color:#F5D76E!important;max-width:none!important}" +
       "#runner.inhost button.krbtn{display:inline-flex!important;width:auto!important;padding:0 12px!important;height:34px!important;border-radius:999px!important;border:1.5px solid #08183E!important;font:800 12px Inter,Arial,sans-serif!important;letter-spacing:.08em;color:#08183E!important;opacity:.8}#runner.inhost button.krbtn:hover{opacity:1;background:#F5D76E!important}" +
+      "body.dark #runner.inhost button{color:#FFF4C9!important;filter:drop-shadow(0 0 3px rgba(8,24,62,.9))!important}body.dark #runner.inhost .ask button.go{color:#08183E!important;filter:none!important}body.dark #runner.inhost button.krbtn{border-color:#FFF4C9!important;color:#FFF4C9!important}body.dark #runner.inhost button.opt{color:#FFF4C9!important}" +
       "#startbtn{width:40px!important;height:40px!important;padding:0!important;border:0!important;background:transparent!important;color:#08183E!important;filter:drop-shadow(0 0 3px rgba(245,215,110,.95));border-radius:0!important;font-size:15px!important;display:inline-flex!important;align-items:center;justify-content:center}#startbtn svg{width:30px;height:30px}#startbtn[hidden]{display:none!important}";
     // Symbols only: a play triangle starts, two bars pause, a loop restarts, a skip arrow continues. The words stay as the tooltip.
     var IC = {
@@ -840,7 +855,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       restart: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg>',
       back: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18 5v14l-9-7z"/><rect x="4.7" y="5" width="2.8" height="14" rx="1"/></svg>',
       next: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 5v14l9-7z"/><rect x="16.5" y="5" width="2.8" height="14" rx="1"/></svg>',
-      skip: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l8 7-8 7zM13 5l8 7-8 7z"/></svg>',
+      skip: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c0-6 4-10 10-10h6M16 3l4 4-4 4"/></svg>',
       person: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-4 3.2-6 6.5-6s5.9 2 6.5 6M17 9l5 5M22 9l-5 5"/></svg>',
       swap: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/></svg>',
       again: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
@@ -881,7 +896,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     get: function () {
       var a = alive(), c = curGuest(), onStage = list().filter(function (g) { return bs(g).on; }).length;
       return { show: show, state: state, guests: list().length, hereOn: !!hereMap, here: plist().length, kleft: (function () { var left = plist().filter(function (g) { return g.song && !g.performed && !noKaraoke(g); }).length, done = plist().filter(function (g) { return g.performed; }).length; return show.kmax ? Math.max(0, Math.min(left, show.kmax - done)) : left; })(), ksung: plist().filter(function (g) { return g.performed; }).length, alive: a.length, onStage: onStage, cur: c ? c.name : "", n: bee.n || 0, total: BEE.length, round: bee.round || 1,
-        winner: bee.winner || null, skipUsed: !!(c && c.beeStat && c.beeStat.skipped), sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
+        winner: bee.winner || null, skipUsed: !!(c && c.beeStat && c.beeStat.skipped), callUsed: !!(c && c.beeStat && c.beeStat.called), sudden: a.length <= SD, wheel: rpool().length, keenest: plist().filter(function (g) { return into(g, "bee") && level(g, "bee") >= 4; }).length,
         eligible: plist().filter(function (g) { return into(g, "bee"); }).length, takes: TAKES.map(function (t) { return { id: t.id, text: t.text }; }) };
     },
     setState: function (o) { return setState(o); },
@@ -902,6 +917,13 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     beeNext: function () { $("bnext").onclick(); },
     beeWin: function () { $("bwin").onclick(); },
     // skip this question: the same contestant gets the next prompt, nobody is scored
+    beeCallFriend: function () {
+      var gc = curGuest(); if (!gc || !promptState || promptState.phase !== "prompt") return false;
+      if (gc.beeStat && gc.beeStat.called) return false;   // once only
+      var cs = Object.assign({}, gc.beeStat || {}, { called: true }); gc.beeStat = cs; store.update("guests/" + gc.id, { beeStat: cs });
+      promptState.lifeCall = false;
+      return setState(Object.assign({}, promptState, { friend: { at: Date.now(), dur: 30000 }, noReplay: true }));
+    },
     beeSkipPrompt: function () {
       var gc = curGuest();   // each contestant may skip once only
       if (gc && gc.beeStat && gc.beeStat.skipped) return false;

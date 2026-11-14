@@ -288,7 +288,15 @@ body.flashred{animation:flashred .6s ease 2}
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
   function beeSentenceView(s, mode) {
     var rd = "Round " + pad(s.round || 1) + (s.sudden ? " &middot; Sudden death" : "");
-    var foot = micro(esc(s.contestant)) + micro(esc(s.standing) + " still standing");
+    // under the contestant's name (inside play.html only): Call a friend and Skip, once each. A used one is gone for good.
+    var life = "";
+    if (mode === "prompt" && window.parent !== window) {
+      var PH = '<svg viewBox="0 0 24 24" width="1.05em" height="1.05em" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>';
+      var HP = '<svg viewBox="0 0 24 24" width="1.05em" height="1.05em" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c0-6 4-10 10-10h6M16 3l4 4-4 4"/></svg>';
+      if (s.friend) life += '<span class="life friend">' + PH + ' Calling a friend &middot; <b id="friendt">0:30</b></span>';
+      life += '<span class="life">' + (s.lifeCall ? '<button type="button" data-life="call">' + PH + " Call a friend</button>" : "") + (s.lifeSkip ? '<button type="button" data-life="skip">' + HP + " Skip</button>" : "") + "</span>";
+    }
+    var foot = micro(esc(s.contestant) + life) + micro(esc(s.standing) + " still standing");
     var n = (s.sentence || "").length, big = n > 200 ? "calc(var(--major)*.35)" : n > 110 ? "calc(var(--major)*.64)" : n > 80 ? "calc(var(--major)*.8)" : "var(--major)", wide = n > 80 ? "36ch" : "28ch";
     var chosen = mode === "confirm" || mode === "lock" ? (s.chosen || s.said) : "", seen = false, cls = mode === "lock" ? "sel throb" : "sel";
     var opts = (s.options || []).map(function (o) {
@@ -444,7 +452,12 @@ body.flashred{animation:flashred .6s ease 2}
           else { draw(beeFinal(s)); revealFx(s); }   // wrong: BAM, black, the strike, the X, the right word drops in
         }, holdMs(s));
       }, pause);
-    } else { draw(view(s)); react(s, fresh); }
+    } else {
+      draw(view(s)); react(s, fresh);
+      if (s.mode === "bee" && s.phase === "prompt" && s.friend) {   // call a friend: a 30 second countdown beside the name
+        var fr = s.friend; iceT = setInterval(function () { var el = document.getElementById("friendt"); if (!el) return; var left = Math.max(0, fr.at + fr.dur - Date.now()); el.textContent = left > 0 ? fmtClock(left) : "Time"; if (left <= 0) clearInterval(iceT); }, 250);
+      }
+    }
   });
 
   // ---- Sound and shake: wrong buzzes and shakes, right cheers. The cheer grows with the round and with how few are left. ----
@@ -569,8 +582,12 @@ body.flashred{animation:flashred .6s ease 2}
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;
+  // Tell play.html when the screen is dark, so its icons turn light (navy icons vanish on the dark screens).
+  var lastDark = null; function postTheme() { var d = /\bt-(ink|wine|black)\b/.test(document.body.className); if (d !== lastDark) { lastDark = d; try { window.parent.postMessage({ gcgdark: d }, "*"); } catch (x) {} } }
+  try { new MutationObserver(postTheme).observe(document.body, { attributes: true, attributeFilter: ["class"] }); } catch (x) {} setInterval(postTheme, 700);
   // Inside play.html you can click the big answer boxes directly (click one to choose it, click the chosen one again to lock it in).
-  var ost = document.createElement("style"); ost.textContent = ".foot,.foot *{pointer-events:none!important}.optbar{z-index:60}.opts span[data-w]{cursor:pointer!important;pointer-events:auto!important}html.mouse .opts span[data-w]:hover{transform:scale(1.04)}"; document.head.appendChild(ost);
+  var ost = document.createElement("style"); ost.textContent = ".foot,.foot *{pointer-events:none!important}.foot .life,.foot .life *{pointer-events:auto!important}.life{display:flex;gap:.7em;margin-top:.7vh}.life button{font:600 var(--micro) var(--sans);display:inline-flex;align-items:center;gap:.45em;background:transparent;color:inherit;border:1.5px solid currentColor;border-radius:999px;padding:.45em 1em;cursor:pointer}html.mouse .life button:hover{background:var(--ink);color:var(--cream)}.life.friend{opacity:.9;font:600 var(--micro) var(--sans);display:flex;align-items:center;gap:.5em}.micro{display:inline-block}.optbar{z-index:60}.opts span[data-w]{cursor:pointer!important;pointer-events:auto!important}html.mouse .opts span[data-w]:hover{transform:scale(1.04)}"; document.head.appendChild(ost);
+  document.addEventListener("click", function (e) { var lb = e.target.closest && e.target.closest("[data-life]"); if (lb) { try { window.parent.postMessage({ gcglife: lb.getAttribute("data-life") }, "*"); } catch (x) {} } });
   document.addEventListener("click", function (e) { var sp = e.target.closest && e.target.closest(".opts span[data-w]"); if (!sp && document.elementsFromPoint) { var under = document.elementsFromPoint(e.clientX, e.clientY); for (var i = 0; i < under.length; i++) { if (under[i].matches && under[i].matches(".opts span[data-w]")) { sp = under[i]; break; } } } if (sp) { try { window.parent.postMessage({ gcgpick: sp.getAttribute("data-w") }, "*"); } catch (x) {} } });
   // Inside play.html the mouse pointer must be visible while you use it: show it when the mouse moves, hide it again after a few seconds of stillness.
   var curSt = document.createElement("style"); curSt.textContent = "html.mouse,html.mouse *{cursor:default!important}"; document.head.appendChild(curSt); var curT = 0;

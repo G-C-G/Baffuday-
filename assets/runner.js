@@ -274,14 +274,14 @@
         sec = [btn("Karaoke now", "know", "sec"), btn("End the bee now", "endbee", "sec"), btn("Pause", "pause", "sec")];
       } else if (m === "bee" && st.phase === "confirm") {
         primary = btn("Lock it in: " + esc(st.chosen || ""), "lock", "go");
-        sec = [btn("Not that one", "unpick", "sec"), (G.skipUsed ? "" : btn("Skip question", "skipq", "sec")), btn("Pause", "pause", "sec")];
+        sec = [btn("Not that one", "unpick", "sec"), "", btn("Pause", "pause", "sec")];
       } else if (m === "bee") {
         opts = (st.options || []).map(function (o, i) { return '<button type="button" class="opt" data-pick="' + esc(o) + '">' + (i + 1) + " &nbsp;" + esc(o) + "</button>"; }).join("");
         primary = '<button type="button" class="go" disabled>Tap their answer</button>';
-        sec = [btn("Back", "bback", "sec"), (G.skipUsed ? "" : btn("Skip question", "skipq", "sec")), btn("Not here, skip person", "skipp", "sec"), btn("Pause", "pause", "sec")];
+        sec = [btn("Back", "bback", "sec"), "", btn("Not here, skip person", "skipp", "sec"), btn("Pause", "pause", "sec")];
       } else if (m === "beecall") {
         primary = btn("Show the sentence", "show", "go");
-        sec = [(G.skipUsed ? "" : btn("Skip question", "skipq", "sec")), btn("Not here, skip person", "skipp", "sec"), btn("Karaoke now", "know", "sec"), btn("End the bee now", "endbee", "sec"), btn("Pause", "pause", "sec")];
+        sec = ["", btn("Not here, skip person", "skipp", "sec"), btn("Karaoke now", "know", "sec"), btn("End the bee now", "endbee", "sec"), btn("Pause", "pause", "sec")];
       } else if (m === "beewin") {
         status = "<b>We have a champion.</b>";
         primary = btn("Next: Twisted Hot Takes", "hot", "go"); sec = [btn("Karaoke now", "know", "sec"), btn("Pause", "pause", "sec")];

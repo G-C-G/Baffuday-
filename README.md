@@ -271,6 +271,8 @@ Set on the host panel's **Night setup** tab: Off, 1 minute or 2 minutes per take
 
 ## Who is here tonight
 
+On the night, `play.html` loads all the guests as NOT here; tap **+** (top right) and **Add** each person as they arrive (a hard restart keeps who has arrived).
+
 The host panel's **Night setup** tab starts with **Who is here tonight**: a big tap list of every guest. Tap people as they arrive (tap again to undo), or **Everyone is here** / **Clear all**. Only the people marked here are put in the icebreaker groups, the spelling bee stage, the karaoke wheel and the hot-take teams, so nobody is called to the stage who is not in the room. You can change it at any time: someone who arrives late joins the next icebreaker take, the wheel and the hot takes straight away (the bee stage is set when the bee starts; add a late arrival from the Spelling bee tab).
 **Start now** on the projector will not start until at least 4 people are marked here, and tells you so on the strip. (Before anyone has been marked, the host panel treats everyone as present, which is only for testing.)
 

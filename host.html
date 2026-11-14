@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Host panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141422">
+<link rel="stylesheet" href="assets/style.css?v=2611141447">
 <style>
 .wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -208,12 +208,12 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     </div>
   </section>
 </main>
-<script src="config.js?v=2611141422"></script>
-<script src="assets/takes.js?v=2611141422"></script>
-<script src="assets/icebreaker.js?v=2611141422"></script>
-<script src="assets/bee.js?v=2611141422"></script>
-<script src="assets/store.js?v=2611141422"></script>
-<script src="assets/answers.js?v=2611141422"></script>
+<script src="config.js?v=2611141447"></script>
+<script src="assets/takes.js?v=2611141447"></script>
+<script src="assets/icebreaker.js?v=2611141447"></script>
+<script src="assets/bee.js?v=2611141447"></script>
+<script src="assets/store.js?v=2611141447"></script>
+<script src="assets/answers.js?v=2611141447"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -788,19 +788,24 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   // ---- The projector page runs the show through this (it loads this page invisibly). Everything calls the same code the buttons above use. ----
   // Tonight's plan, applied once per browser: 1-minute icebreakers, all 8 hot takes, karaoke breaks that ask first, everyone who said yes sings (keenest first).
   if (/[?&]auto=everyone\b/.test(location.search)) { try { if (!localStorage.getItem("gcg-plan-v2")) { localStorage.setItem("gcg-plan-v2", "1"); setTimeout(function () { show = Object.assign({}, show, { stage: "keenest", takes: 8, k: true, ice: 120, kmax: 0 }); store.set("setup/show", show); }, 700); } } catch (e) {} }
-  // ?auto=everyone (play.html always sets it): load every registered guest (assets/tonight.json) that this browser does not have yet, and, the first time, mark everyone as here.
-  // After that, who is here is whatever you set with the + / minus on the game screen, and it is kept when the page reloads.
+  // ?auto=everyone (play.html always sets it): load every registered guest (assets/tonight.json) that this browser does not have yet, all marked NOT here until added with +.
+  // Who is here is whatever you set with the + / minus on the game screen, and it is kept when the page reloads.
   if (/[?&]auto=everyone\b/.test(location.search)) setTimeout(function () {
     var A = window.HOSTAPI; if (!A) return;
-    var markAll = function () { if (!A.get().hereOn) $("hall").click(); };
+    // Guests arrive one by one: everyone starts as NOT here, and the + on the game screen adds each person as they walk in.
+    // Once per browser (gcg-arrive-v1) anyone marked here from the earlier everyone-is-here version is reset to not here.
+    var markNone = function () {
+      var first = false; try { if (!localStorage.getItem("gcg-arrive-v1")) { localStorage.setItem("gcg-arrive-v1", "1"); first = true; } } catch (e) {}
+      if (first || !A.get().hereOn) { var m = {}; list().forEach(function (g) { m[g.id] = false; }); saveHere(m); }
+    };
     fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.json(); }).then(function (arr) {
       var have = {}; list().forEach(function (g) { have[String(g.name).toLowerCase()] = 1; });
       var fresh = arr.filter(function (x) { return !have[String(x.name).toLowerCase()]; });
       return fresh.length ? A.importJson(JSON.stringify(fresh)) : 0;
-    }).then(function () { setTimeout(function () { markAll(); setTimeout(applyAway, 400); }, 400); }).catch(function () { markAll(); });
-    var applyAway = function () {   // after a hard restart: the people who were marked away stay away
-      try { var raw = localStorage.getItem("gcgx-away"); if (!raw) return; localStorage.removeItem("gcgx-away"); var away = JSON.parse(raw).map(function (n) { return String(n).toLowerCase(); }), m = Object.assign({}, hereMap || {});
-        list().forEach(function (g) { if (away.indexOf(String(g.name).toLowerCase()) >= 0) m[g.id] = false; }); saveHere(m); } catch (e) {}
+    }).then(function () { setTimeout(function () { markNone(); setTimeout(applyHere, 400); }, 400); }).catch(function () { markNone(); });
+    var applyHere = function () {   // after a hard restart: the people who had arrived stay arrived
+      try { var raw = localStorage.getItem("gcgx-here"); if (!raw) return; localStorage.removeItem("gcgx-here"); var here = JSON.parse(raw).map(function (n) { return String(n).toLowerCase(); }), m = Object.assign({}, hereMap || {});
+        list().forEach(function (g) { m[g.id] = here.indexOf(String(g.name).toLowerCase()) >= 0; }); saveHere(m); } catch (e) {}
     };
   }, 900);
   // the two lifeline buttons under the contestant's name on the game screen: call a friend / skip, once each
@@ -943,7 +948,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   };
 })();
 </script>
-<script src="assets/runner.js?v=2611141422"></script>
+<script src="assets/runner.js?v=2611141447"></script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;

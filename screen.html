@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141117">
+<link rel="stylesheet" href="assets/style.css?v=2611141130">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -129,6 +129,8 @@ body.flashred{animation:flashred .6s ease 2}
 .nb{border:2px solid currentColor;border-radius:8px;padding:.9vh 1vw;font:500 calc(var(--micro)*1.05)/1.35 var(--sans)}
 .krt{display:block;text-align:center;font:600 var(--micro) var(--sans);letter-spacing:.14em;text-transform:uppercase;margin:-.6vh 0 1.2vh;opacity:.85}.krt b{font-size:1.7em;letter-spacing:.02em}.krt.over{color:#E01E37;opacity:1}
 #gcglogo{position:fixed;top:2.6vh;right:1.8vw;height:min(10vh,86px);width:auto;z-index:70;pointer-events:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
+body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:var(--ink)}body.t-ink .pac .pupil{fill:var(--cream)}
+.krrules{list-style:none;counter-reset:r;margin:0;padding:0;display:grid;gap:1.6vh;text-align:left;max-width:min(70vw,900px)}.krrules li{counter-increment:r;font:400 calc(var(--second)*.95)/1.15 var(--serif)}.krrules li::before{content:counter(r) ".";display:inline-block;min-width:1.6em;opacity:.6}
 .kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
 .groups.g2{--cols:2}.groups.g3{--cols:3}.groups.g4{--cols:4}.groups.g5{--cols:5}.groups.g6{--cols:6}
@@ -165,8 +167,8 @@ body.flashred{animation:flashred .6s ease 2}
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141117"></script>
-<script src="assets/store.js?v=2611141117"></script>
+<script src="config.js?v=2611141130"></script>
+<script src="assets/store.js?v=2611141130"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -193,6 +195,7 @@ body.flashred{animation:flashred .6s ease 2}
     }
     return out + esc(raw.slice(last));
   }
+  var HOME_TITLE = "Hinda's<br><em class=\"t28\">2<svg class=\"pac\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path class=\"o\" d=\"M50 50 L96 22 A50 50 0 1 0 96 78 Z\"/><path class=\"c\" d=\"M50 50 L100 47 A50 50 0 1 0 100 53 Z\"/><circle class=\"eye\" cx=\"58\" cy=\"27\" r=\"9\"/><circle class=\"pupil\" cx=\"60\" cy=\"28\" r=\"4\"/></svg><span class=\"ate\"><span class=\"a\">A</span>te<svg class=\"crumbs\" viewBox=\"0 0 40 80\" aria-hidden=\"true\"><polygon points=\"8,8 20,4 16,16\"/><polygon points=\"22,34 34,30 30,44\"/><polygon points=\"6,58 16,56 12,70\"/></svg></span></em>";
   var micro = function (t) { return '<span class="micro">' + t + '</span>'; };
   var krPill = function (s) { return s.krtimer ? '<span class="krt">1 min &middot; <b id="krt" data-at="' + s.krtimer.at + '" data-dur="' + s.krtimer.dur + '">' + fmtClock(s.krtimer.dur) + "</b></span>" : ""; };
   var ul = function (a, c) { return '<ul class="list ' + (c || "") + '">' + (a || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; };
@@ -283,9 +286,10 @@ body.flashred{animation:flashred .6s ease 2}
       return beeFinal(s);
     }
     if (m === "icebreaker") return iceView(s);
-    if (m === "pause") return { theme: "ink", html: frame(esc(brand), '<p class="hero" style="font-size:calc(var(--hero)*.9)">Be right back.</p>', "", "c") };
+    if (m === "pause") return { theme: "ink", html: frame(esc(brand), '<p class="hero" style="font-size:calc(var(--hero)*.78)">' + HOME_TITLE + '</p><p class="major" style="font-style:italic;margin-top:2.4vh">Be right back.</p>', "", "c") };
+    if (m === "krhost") return { theme: "ink", html: frame("Karaoke", '<span class="chip">Karaoke starts now</span><p class="second" style="opacity:.85;margin:1.6vh 0 0">Please welcome your host.</p><p class="hero" style="font-size:calc(var(--hero)*.95)">Dr. M. Jah</p>', micro("Give it up."), "c") };
+    if (m === "krrules") return { theme: "ink", html: frame("Karaoke", '<p class="major" style="margin-bottom:2vh">The rules.</p><ol class="krrules">' + (cfg.KR_RULES || ["One minute each.", "The wheel picks you.", "Sing it like you mean it."]).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ol>", micro("Dr. M. Jah will take it from here."), "c") };
     // home
-    var HOME_TITLE = "Hinda's<br><em class=\"t28\">2<svg class=\"pac\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path class=\"o\" d=\"M50 50 L96 22 A50 50 0 1 0 96 78 Z\"/><path class=\"c\" d=\"M50 50 L100 47 A50 50 0 1 0 100 53 Z\"/><circle class=\"eye\" cx=\"58\" cy=\"27\" r=\"9\"/><circle class=\"pupil\" cx=\"60\" cy=\"28\" r=\"4\"/></svg><span class=\"ate\"><span class=\"a\">A</span>te<svg class=\"crumbs\" viewBox=\"0 0 40 80\" aria-hidden=\"true\"><polygon points=\"8,8 20,4 16,16\"/><polygon points=\"22,34 34,30 30,44\"/><polygon points=\"6,58 16,56 12,70\"/></svg></span></em>";
     return { theme: "cream", html: frame("The game night", '<p class="hero" style="font-size:calc(var(--hero)*1.2)" aria-label="' + esc(title) + '">' + HOME_TITLE + "</p>", "", "c") };
   }
   // The sentence screen in three moments: prompt (just guessing), confirm ("Is that your final answer?"), reveal (green or red + X).
@@ -464,6 +468,7 @@ body.flashred{animation:flashred .6s ease 2}
     if (s.mode === "icebreaker") { runIce(s); return; }
     if (s.mode === "hottake" && s.phase === "twist" && s.people && fresh) { runTwist(s); return; }
     if (s.mode === "hottake") s._fresh = false;
+    if (s.mode === "krhost" && s.snd && fresh) { try { var ha = new Audio(s.snd); var hp = ha.play(); if (hp && hp.catch) hp.catch(function () {}); } catch (e) {} }
     // a prompt with its own sound (BEE_SOUNDS): plays once when the prompt first comes up
     if (s.mode === "bee" && s.phase === "prompt" && s.snd && fresh) { try { var pa = new Audio(s.snd); var pp = pa.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {} }
     if (fresh && s.mode === "bee" && s.phase === "result" && s.said) {

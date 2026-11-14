@@ -124,7 +124,11 @@
   }
   function krTimer() { return { at: Date.now(), dur: (cfg.KR_SECONDS || 60) * 1000 }; }
   function startKrTimer() { A = api(); A.setState(Object.assign({}, st, { krtimer: krTimer(), noReplay: true })); }
-  function spinNow(ret) { A = api(); run.ret = ret; run.sinceK = 0; run.ask = false; save(); A.spin(); }
+  function spinNow(ret) {
+    A = api(); run.sinceK = 0; run.ask = false;
+    if (!run.kdone && !run.kintro) { run.ret = ret; run.kintro = 1; run.kintroRet = ret; save(); A.setState({ mode: "krhost", snd: cfg.KR_HOST_SOUND || "" }); paint(true); return; }   // first karaoke of the night: announce the host
+    run.ret = ret; save(); A.spin();
+  }
   function karaokeRet() {
     var m = st.mode;
     if (run.phase === "ice") return "ice-same";
@@ -173,7 +177,8 @@
     hnext: function () { hotNext(); },
     hskip: function () { if (confirm("Skip this take?")) hotNext(); },
     hend: function () { if (confirm("End the hot takes and finish the night?")) finishNight(); },
-    kspin: function () { A.spin(); },
+    kspin: function () { if (!run.kdone) spinNow(""); else A.spin(); },
+    kintro: function () { A = api(); if (run.kintro === 1) { run.kintro = 2; save(); A.setState({ mode: "krrules" }); } else { run.kintro = 0; run.kdone = true; save(); spinNow(run.kintroRet || ""); } },
     kdone: function () { if (G && G.kleft > 0 && !confirm(G.kleft + " people who said yes have not sung yet. Finish the night anyway?")) return; run.phase = "done"; run.ask = false; save(); A.setState({ mode: "home" }); },
     kyes: function () { spinNow(karaokeRet()); },
     kno: function () { run.ask = false; run.sinceK = Math.max(0, pace() - 1); save(); },
@@ -242,7 +247,10 @@
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();
 
-    if (m === "pause") {
+    if (run.kintro && m !== "pause") {
+      status = "<b>Karaoke is about to start.</b> " + (run.kintro === 1 ? "Announce the host, then continue to the rules." : "Walk them through the rules, then continue to the wheel.");
+      primary = btn("Continue", "kintro", "go"); sec = [btn("Pause", "pause", "sec")];
+    } else if (m === "pause") {
       status = "<b>Paused.</b> The screen says we'll be right back.";
       primary = btn("Resume", "resume", "go"); sec = [];
     } else if (run.phase === "kfin") {

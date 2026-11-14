@@ -201,11 +201,15 @@
     if (!document.getElementById("p-run").classList.contains("on")) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) return;
     var k = e.key;
-    if (run.phase === "idle" && (k === " " || k === "Enter") && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
+    // A presentation clicker sends Right / Page Down for "next", Left / Page Up for "back", and "." or B for the black-screen button.
+    var NEXT = k === " " || k === "Enter" || k === "ArrowRight" || k === "ArrowDown" || k === "PageDown", BACK = k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp";
+    if (e.repeat && (NEXT || BACK)) return;
+    if (run.phase === "idle" && NEXT && !startBtn.hidden) { e.preventDefault(); startShow(); return; }
     if (run.phase === "idle" || run.phase === "done") return;
     var go = strip.querySelector("button.go:not([disabled])");
-    if ((k === " " || k === "Enter") && go) { e.preventDefault(); go.click(); poke(); }
-    else if (k === "p" || k === "P") { var pb = strip.querySelector('[data-act="pause"],[data-act="resume"]'); if (pb) pb.click(); poke(); }
+    if (NEXT && go) { e.preventDefault(); go.click(); poke(); }
+    else if (BACK) { e.preventDefault(); var bk = strip.querySelector('[data-act="iceprev"],[data-act="hotprev"]'); if (bk) bk.click(); poke(); }
+    else if (k === "p" || k === "P" || k === "." || k === "b" || k === "B") { var pb = strip.querySelector('[data-act="pause"],[data-act="resume"]'); if (pb) pb.click(); poke(); }
     else if (k === "k" || k === "K") { var kb = strip.querySelector('[data-act="know"]'); if (kb) kb.click(); poke(); }
     else if (k === "s" || k === "S") { var sb = strip.querySelector('[data-act="skipq"],[data-act="hskip"]'); if (sb) sb.click(); poke(); }
     else if (/^[1-4]$/.test(k)) { var ob = strip.querySelectorAll("button.opt")[+k - 1]; if (ob) { ob.click(); poke(); } }

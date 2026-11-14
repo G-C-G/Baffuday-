@@ -24,7 +24,7 @@ body{cursor:default}body:not(.show){cursor:none}
   // the game frame has focus only for sound; the host frame takes the keys (Space or Enter = the big gold button)
   function toHost() { try { document.getElementById("hst").contentWindow.focus(); } catch (e) {} }
   document.getElementById("hst").addEventListener("load", toHost);
-  document.addEventListener("keydown", function (e) { if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
+  document.addEventListener("keydown", function (e) { if (e.key === "f" || e.key === "F") { toggleFs(); return; } if (/^( |Enter|p|P|k|K|s|S|f|F|\.|b|B|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|PageDown|PageUp)$/.test(e.key)) { e.preventDefault(); try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } });
   function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
   function fsMsg() { var m = document.getElementById("fsmsg"); m.innerHTML = "Fullscreen is blocked on this device or browser.<br>Laptop: press F11 (Windows) or Ctrl+Cmd+F (Mac). iPad or iPhone: tap Share, then Add to Home Screen, and open the game from there."; m.style.display = "block"; setTimeout(function () { m.style.display = "none"; }, 9000); }
   function toggleFs() { var d = document.documentElement; if (isFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; } var rq = d.requestFullscreen || d.webkitRequestFullscreen; if (!rq) return fsMsg(); try { var r = rq.call(d); if (r && r.catch) r.catch(fsMsg); } catch (e) { fsMsg(); } }

@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Host panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611142204">
+<link rel="stylesheet" href="assets/style.css?v=2611142218">
 <style>
 .wrap{max-width:1000px;margin:0 auto;display:grid;gap:22px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -208,12 +208,12 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
     </div>
   </section>
 </main>
-<script src="config.js?v=2611142204"></script>
-<script src="assets/takes.js?v=2611142204"></script>
-<script src="assets/icebreaker.js?v=2611142204"></script>
-<script src="assets/bee.js?v=2611142204"></script>
-<script src="assets/store.js?v=2611142204"></script>
-<script src="assets/answers.js?v=2611142204"></script>
+<script src="config.js?v=2611142218"></script>
+<script src="assets/takes.js?v=2611142218"></script>
+<script src="assets/icebreaker.js?v=2611142218"></script>
+<script src="assets/bee.js?v=2611142218"></script>
+<script src="assets/store.js?v=2611142218"></script>
+<script src="assets/answers.js?v=2611142218"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -800,13 +800,23 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
       var first = false; try { if (!localStorage.getItem("gcg-arrive-v1")) { localStorage.setItem("gcg-arrive-v1", "1"); first = true; } } catch (e) {}
       if (first || !A.get().hereOn) { var m = {}; list().forEach(function (g) { m[g.id] = false; }); saveHere(m); }
     };
-    fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.json(); }).then(function (arr) {
-      var have = {}; list().forEach(function (g) { have[String(g.name).toLowerCase()] = 1; });
-      var fresh = arr.filter(function (x) { return !have[String(x.name).toLowerCase()]; });
-      // songs: tonight.json is the source of truth, so a changed song reaches browsers that already have the guest
-      arr.forEach(function (x) { var g = list().filter(function (y) { return String(y.name).toLowerCase() === String(x.name).toLowerCase(); })[0]; if (g && x.song && g.song !== x.song) { g.song = x.song; store.update("guests/" + g.id, { song: x.song }); } });
-      return fresh.length ? A.importJson(JSON.stringify(fresh)) : 0;
-    }).then(function () { setTimeout(function () { markNone(); setTimeout(applyHere, 400); }, 400); }).catch(function () { markNone(); });
+    // Pulls tonight.json: new guests are added (not here), changed songs are updated, and anyone flagged "first" who has not sung yet is put in the room straight away.
+    var auto1 = {};   // each flagged guest is put in the room once; after that + / minus is in charge
+    var pull = function (initial) {
+      return fetch("assets/tonight.json?" + Date.now()).then(function (r) { return r.json(); }).then(function (arr) {
+        var have = {}; list().forEach(function (g) { have[String(g.name).toLowerCase()] = 1; });
+        var fresh = arr.filter(function (x) { return !have[String(x.name).toLowerCase()]; });
+        // songs: tonight.json is the source of truth, so a changed song reaches browsers that already have the guest
+        arr.forEach(function (x) { var g = list().filter(function (y) { return String(y.name).toLowerCase() === String(x.name).toLowerCase(); })[0]; if (g && x.song && g.song !== x.song) { g.song = x.song; store.update("guests/" + g.id, { song: x.song }); } });
+        return Promise.resolve(fresh.length ? A.importJson(JSON.stringify(fresh)) : 0).then(function () { return arr; });
+      }).then(function (arr) {
+        var m = Object.assign({}, hereMap || {}), ch = false;
+        arr.filter(function (x) { return x.first; }).forEach(function (x) { var g = list().filter(function (y) { return String(y.name).toLowerCase() === String(x.name).toLowerCase(); })[0]; if (g && !g.performed && !m[g.id] && !(g.took && g.took.karaoke) && !auto1[g.id]) { auto1[g.id] = 1; m[g.id] = true; ch = true; } });
+        if (ch && hereMap) saveHere(m);
+      });
+    };
+    pull().then(function () { setTimeout(function () { markNone(); setTimeout(function () { applyHere(); setTimeout(function () { pull(); }, 500); }, 400); }, 400); }).catch(function () { markNone(); });
+    setInterval(function () { if (hereMap) pull().catch(function () {}); }, 30000);   // a late addition to tonight.json reaches an open game within half a minute
     var applyHere = function () {   // after a hard restart: the people who had arrived stay arrived
       try { var raw = localStorage.getItem("gcgx-here"); if (!raw) return; localStorage.removeItem("gcgx-here"); var here = JSON.parse(raw).map(function (n) { return String(n).toLowerCase(); }), m = Object.assign({}, hereMap || {});
         list().forEach(function (g) { m[g.id] = here.indexOf(String(g.name).toLowerCase()) >= 0; }); saveHere(m); } catch (e) {}
@@ -952,7 +962,7 @@ details.plan{border:1px solid var(--border);border-radius:6px;padding:10px 14px}
   };
 })();
 </script>
-<script src="assets/runner.js?v=2611142204"></script>
+<script src="assets/runner.js?v=2611142218"></script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
 (function () { if (window.parent === window) return;

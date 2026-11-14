@@ -568,7 +568,10 @@ body.flashred{animation:flashred .6s ease 2}
 </script>
 <script>
 // When this page sits inside play.html, tell it about the mouse / touch / keys so the control buttons can come up.
-(function () { if (window.parent === window) return; var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var rs = document.createElement("style"); rs.textContent = ".foot{margin-bottom:4.5vh}"; document.head.appendChild(rs); var last = 0;
+(function () { if (window.parent === window) return;
+  // Scroll wheel / trackpad / scroller: scroll down = next, scroll up = back. One step per gesture; a short pause ignores the trackpad's coasting.
+  var acc = 0, lastW = 0; document.addEventListener("wheel", function (e) { e.preventDefault(); var n = Date.now(); if (n - lastW < 900) { acc = 0; return; } acc += e.deltaY; if (Math.abs(acc) >= 40) { var k = acc > 0 ? "ArrowRight" : "ArrowLeft"; acc = 0; lastW = n; try { window.parent.postMessage({ gcgkey: k }, "*"); } catch (x) {} } }, { passive: false });
+  var fsb = document.getElementById("fs"); if (fsb) fsb.style.display = "none"; var rs = document.createElement("style"); rs.textContent = ".foot{margin-bottom:4.5vh}"; document.head.appendChild(rs); var last = 0;
   document.addEventListener("keydown", function (e) { if (/^( |Enter|p|P|k|K|s|S|f|F|\.|b|B|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|PageDown|PageUp|MediaPlayPause|MediaTrackNext|MediaTrackPrevious)$/.test(e.key)) { e.preventDefault(); try { window.parent.postMessage({ gcgkey: e.key }, "*"); } catch (x) {} } }, true); ["mousemove", "mousedown", "touchstart", "keydown"].forEach(function (e) { document.addEventListener(e, function () { var n = Date.now(); if (n - last > 300) { last = n; try { window.parent.postMessage("gcg-attention", "*"); } catch (x) {} } }, { passive: true }); }); })();
 </script>
 </body>

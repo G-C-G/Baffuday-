@@ -41,6 +41,9 @@ body{cursor:default}body:not(.show){cursor:none}
   // Messages from the host frame (a karaoke question or a pause needs you) bring the buttons up.
   window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });
 
+  // Scroll down = next, scroll up = back (events over the game itself arrive through the frames; this covers the rest of the page). The + search list scrolls normally.
+  var wAcc = 0, wLast = 0;
+  document.addEventListener("wheel", function (e) { if (e.target.closest && e.target.closest("#addp")) return; e.preventDefault(); var n = Date.now(); if (n - wLast < 900) { wAcc = 0; return; } wAcc += e.deltaY; if (Math.abs(wAcc) >= 40) { var k = wAcc > 0 ? "ArrowRight" : "ArrowLeft"; wAcc = 0; wLast = n; try { document.getElementById("hst").contentWindow.postMessage({ gcgkey: k }, "*"); } catch (x) {} } }, { passive: false });
   // + : add a late arrival. Type a name, tap Add, and they are marked here (karaoke wheel, hot takes and the next icebreaker take include them).
   var people = [], addEl = document.getElementById("add"), addQ = document.getElementById("addq"), addL = document.getElementById("addl");
   function hostWin() { return document.getElementById("hst").contentWindow; }

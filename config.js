@@ -27,8 +27,7 @@ window.GCG_CONFIG = {
   ROULETTE_LAND_MS: 5380,
   // Hosting from the projector page ("Start now" on the title screen):
   // a karaoke break is offered after this many bee turns / hot takes (a random number in the range each time), and how many hot takes are played.
-  KR_HOST_SOUND: "",     // the sound that plays when Dr. M. Jah is announced, e.g. "assets/sounds/mjah.mp3" (empty = silent)
-  KR_RULES: ["One minute each.", "The wheel picks you. Everyone who said yes sings once.", "Sing it like you mean it.", "The room cheers. Always.", "There is no appeal process."],
+  BEE_HOST_SOUND: "",    // the sound that plays when Dr. M. Jah is announced as the spelling bee host, e.g. "assets/sounds/mjah.mp3" (empty = silent)
   KR_SECONDS: 60,        // every karaoke turn gets this long
   BEE_MAX_STAGE: 16,     // the "keenest" stage is never bigger than this (the bee has 46 prompts)
   BEE_MAX_EVERYONE: 24,  // and "everyone" is capped here

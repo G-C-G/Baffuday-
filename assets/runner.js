@@ -313,7 +313,7 @@
     }
 
     if (run.ask) {
-      ask = '<div class="ask"><span class="q">Karaoke roulette now? ' + G.kleft + ' still to sing.</span>' + btn("Yes", "kyes", "go") + btn("Skip for now", "kno") + "</div>";
+      ask = '<div class="ask"><span class="q" title="Karaoke roulette now? ' + G.kleft + ' still to sing.">KR?</span>' + btn("Yes", "kyes", "go") + btn("No", "kno") + "</div>";
     }
     var jump = run.phase === "idle" || run.phase === "done" ? "" : '<div class="row jump"><span class="st">Jump to</span>' + btn("Icebreaker", "jice", run.phase === "ice" ? "opt on" : "opt") + btn("Spelling bee", "jbee", run.phase === "bee" ? "opt on" : "opt") + btn("Karaoke roulette", "know", "opt") + btn("Hot takes", "jhot", run.phase === "hot" ? "opt on" : "opt") + "</div>";
     html = (ask || "") + (opts ? '<div class="row">' + opts + "</div>" : "") +

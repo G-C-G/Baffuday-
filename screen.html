@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141332">
+<link rel="stylesheet" href="assets/style.css?v=2611141333">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -131,7 +131,7 @@ body.flashred{animation:flashred .6s ease 2}
 #gcglogo{position:fixed;top:2.6vh;right:1.8vw;height:min(10vh,86px);width:auto;z-index:70;pointer-events:none;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
 body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:var(--ink)}body.t-ink .pac .pupil{fill:var(--cream)}
 .ice-turn{display:flex;justify-content:center;align-items:center;gap:1.1em;margin:.2vh 0 .6vh;font:600 calc(var(--second)*.46) var(--sans);letter-spacing:.1em;text-transform:uppercase}
-.ice-turn .tw{padding:.3em .9em;border-radius:999px;color:#fff;font-weight:800}.ice-turn.ta .tw{background:var(--ink)}.ice-turn.tb .tw{background:var(--wrong)}.ice-turn .tl{opacity:.8;letter-spacing:.06em;text-transform:none;font-weight:600}
+.ice-turn .tw{padding:.3em .9em;border-radius:999px;color:#fff;font-weight:800}.ice-turn.ta .tw{background:var(--ink)}.ice-turn.tb .tw{background:#2F5FD0}.ice-turn .tl{opacity:.8;letter-spacing:.06em;text-transform:none;font-weight:600}
 .groups.turn-a .grp .body>.side:first-child,.groups.turn-b .grp .body>.side:last-child{background:rgba(255,255,255,.7);border-radius:8px}
 .kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
@@ -158,7 +158,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .grp .side small{display:none}
 .grp .vs{display:none}
 .grp .side{border-left:.5vw solid var(--ink);padding:.2vh .5vw .2vh .8vw;opacity:1}
-.grp .body>.side:last-child{border-left-color:var(--wrong)}
+.grp .body>.side:last-child{border-left-color:#2F5FD0}
 .grp .body{gap:.9vw;grid-template-columns:auto auto;justify-content:space-between}.groups.stack .grp .body{grid-template-columns:1fr}
 .grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1));-webkit-text-stroke:0;white-space:nowrap;opacity:1}
 .groups.stack .grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1))}.groups.stack .grp .side{margin-top:.3vh}
@@ -173,7 +173,7 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .iceclock .hand{stroke:currentColor;stroke-width:3.2;stroke-linecap:round;transform-origin:50px 50px}
 .iceclock .pin{fill:currentColor}
 .iceclock .digits{font:400 9.5vh/.9 var(--serif);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.iceclock.low{color:#C41E3A}.iceclock.low .digits{animation:pulse .7s ease-in-out infinite}
+.iceclock.low{color:#2F5FD0}.iceclock.low .digits{animation:pulse .7s ease-in-out infinite}
 .iceclock .cap{font:700 calc(var(--lab)*.9)/1.2 var(--sans);letter-spacing:.18em;text-transform:uppercase;opacity:.65;margin-top:.3vh}
 .wheelbox{height:min(72vh,60vw);aspect-ratio:1/1}
 .wheelbox svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1.2vh 2vh rgba(0,0,0,.35))}
@@ -185,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141332"></script>
-<script src="assets/store.js?v=2611141332"></script>
+<script src="config.js?v=2611141333"></script>
+<script src="assets/store.js?v=2611141333"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };

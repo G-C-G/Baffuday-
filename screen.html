@@ -219,7 +219,7 @@ body.flashred{animation:flashred .6s ease 2}
     var deg = (1 - p) * 360;
     return '<div class="iceclock' + (low ? " low" : "") + '" id="iceclock"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="dial" cx="50" cy="50" r="44"/><circle class="ring" id="icering" cx="50" cy="50" r="44" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - p)).toFixed(1) + '"/>' + ticks +
       '<line class="hand" id="icehand" x1="50" y1="50" x2="50" y2="14" style="transform:rotate(' + deg.toFixed(1) + 'deg)"/><circle class="pin" cx="50" cy="50" r="3.2"/></svg>' +
-      '<div><div class="digits" id="icedigits">' + (timer && left <= 0 ? "Time." : fmtClock(left)) + '</div><div class="cap">' + (timer ? "left" : "on the clock") + "</div></div></div>";
+      '<div><div class="digits" id="icedigits">' + (timer && left <= 0 ? "Time." : fmtClock(left)) + '</div><div class="cap">' + (timer ? "left" : "ready") + "</div></div></div>";
   }
   function iceView(s) {
     var num = pad(s.num || 1) + " / " + pad(s.total || 8), G = s.groups || [], timer = s.phase === "timer";

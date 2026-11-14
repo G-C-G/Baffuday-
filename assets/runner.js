@@ -253,7 +253,7 @@
     fresh();
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
     startBtn.hidden = run.phase !== "idle";
-    htBtn.hidden = run.phase !== "idle";
+    htBtn.hidden = !(run.phase === "idle" || m === "home");   // on the title screen, whatever stage the night is at
     if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st hintpill"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();

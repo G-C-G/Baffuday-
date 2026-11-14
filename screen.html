@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141421">
+<link rel="stylesheet" href="assets/style.css?v=2611141422">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -155,11 +155,11 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .groups{gap:1vh .8vw;margin-top:0}
 .grp{padding:.6vh .7vw .7vh;border-width:3px}
 .grp .gn{font-size:calc(var(--lab)*1.25*var(--gs,1));opacity:1;margin:0 0 .4vh;letter-spacing:.16em}
-.grp .side small{display:block;font:800 calc(var(--second)*.62*var(--gs,1))/1.1 var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:1;margin:0 0 .5vh;padding:.15em .55em;border-radius:999px;background:var(--ink);color:#fff;width:max-content;max-width:100%}.groups.turn-a .grp .body>.side:last-child small,.groups.turn-b .grp .body>.side:first-child small{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 .25vh var(--ink)}
+.grp .side small{display:block;font:800 calc(var(--second)*.62*var(--gs,1))/1.1 var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:1;margin:0 0 .6vh;padding:0 0 .25vh;background:none;color:var(--ink);text-decoration:underline;text-decoration-thickness:.28vh;text-underline-offset:.45vh;white-space:nowrap}
 .grp .vs{display:none}
 .grp .side{border-left:.5vw solid var(--ink);padding:.2vh .5vw .2vh .8vw;opacity:1}
 .grp .body>.side:last-child{border-left-style:double}
-.grp .body{gap:.9vw;grid-template-columns:auto auto;justify-content:space-between}.groups.stack .grp .body{grid-template-columns:1fr}
+.grp .body{gap:.9vw;grid-template-columns:auto auto;justify-content:space-between;align-items:start}.groups.stack .grp .body{grid-template-columns:1fr}
 .grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1));-webkit-text-stroke:0;white-space:nowrap;opacity:1}
 .groups.stack .grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1))}.groups.stack .grp .side{margin-top:.3vh}
 .iceclock svg{height:9vh;width:9vh}.iceclock .digits{font-size:8.4vh}
@@ -185,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141421"></script>
-<script src="assets/store.js?v=2611141421"></script>
+<script src="config.js?v=2611141422"></script>
+<script src="assets/store.js?v=2611141422"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };

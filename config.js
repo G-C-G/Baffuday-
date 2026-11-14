@@ -32,7 +32,7 @@ window.GCG_CONFIG = {
   MIN_PER_SONG: 5,   // used for the time estimate on the Get ready page (a song plus the spin and the walk up)
   KARAOKE_EVERY_MIN: 4,
   KARAOKE_EVERY_MAX: 7,
-  TAKES_TO_PLAY: 5,
+  TAKES_TO_PLAY: 8,
   // The running order shown on the "Tonight" projector screen
   LINEUP: ["The Evil Spelling Bee", "Karaoke Roulette", "Twisted Hot Takes", "???", "Cake"]
 };

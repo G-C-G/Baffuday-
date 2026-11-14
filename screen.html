@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Projector</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=2611141200">
+<link rel="stylesheet" href="assets/style.css?v=2611141328">
 <style>
 /* Projector. One screen, one moment. Yellow is the ground; blue carries the type. Dramatic moments invert it: blue ground, yellow type. */
 html,body{height:100%;overflow:hidden!important;overscroll-behavior:none}
@@ -132,7 +132,7 @@ body.flashred{animation:flashred .6s ease 2}
 body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:var(--ink)}body.t-ink .pac .pupil{fill:var(--cream)}
 .ice-turn{display:flex;justify-content:center;align-items:center;gap:1.1em;margin:.2vh 0 .6vh;font:600 calc(var(--second)*.46) var(--sans);letter-spacing:.1em;text-transform:uppercase}
 .ice-turn .tw{padding:.3em .9em;border-radius:999px;color:#fff;font-weight:800}.ice-turn.ta .tw{background:var(--ink)}.ice-turn.tb .tw{background:var(--wrong)}.ice-turn .tl{opacity:.8;letter-spacing:.06em;text-transform:none;font-weight:600}
-.groups.turn-a .grp .body>.side:last-child{opacity:.28}.groups.turn-b .grp .body>.side:first-child{opacity:.28}
+.groups.turn-a .grp .body>.side:last-child{opacity:.5}.groups.turn-b .grp .body>.side:first-child{opacity:.5}
 .kvid{width:min(80vw,calc(60vh*16/9));aspect-ratio:16/9;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 10px 40px rgba(8,24,62,.35)}.kvid iframe{width:100%;height:100%;border:0;display:block}
 .groups{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:1.3vh 1vw;margin-top:.6vh}
 .groups.g2{--cols:2}.groups.g3{--cols:3}.groups.g4{--cols:4}.groups.g5{--cols:5}.groups.g6{--cols:6}
@@ -147,6 +147,22 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 .groups.stack .grp .body{grid-template-columns:1fr;gap:.2vh}.groups.stack .grp .vs{display:none}
 .groups.stack .grp .side + .side{border-top:1px solid currentColor;padding-top:.5vh;margin-top:.3vh}
 .groups.stack .grp .side b{font-size:calc(var(--second)*.8*var(--gs,1))}.groups.stack .grp .gn{margin-bottom:.3vh}
+/* Icebreaker, made for strangers reading from across the room: names first, everything else small */
+.ice-h{font-size:calc(var(--major)*.3);opacity:.65}
+.ice-q{font-size:calc(var(--major)*.6);line-height:1}
+.icemain{gap:.6vh!important}
+.ice-turn{margin:.1vh 0 0;font-size:calc(var(--second)*.4)}
+.groups{gap:1vh .8vw;margin-top:.2vh}
+.grp{padding:.6vh .7vw .7vh;border-width:3px}
+.grp .gn{font-size:calc(var(--lab)*1.25*var(--gs,1));opacity:1;margin:0 0 .4vh;letter-spacing:.16em}
+.grp .side small{display:none}
+.grp .vs{display:none}
+.grp .side{border-left:.5vw solid var(--ink);padding-left:.8vw}
+.grp .body>.side:last-child{border-left-color:var(--wrong)}
+.grp .body{gap:.9vw;grid-template-columns:auto auto;justify-content:space-between}.groups.stack .grp .body{grid-template-columns:1fr}
+.grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1));-webkit-text-stroke:.028em currentColor;white-space:nowrap}
+.groups.stack .grp .side b{font-size:calc(var(--second)*1.05*var(--gs,1))}.groups.stack .grp .side{margin-top:.3vh}
+.iceclock svg{height:9vh;width:9vh}.iceclock .digits{font-size:8.4vh}
 .listen{font:600 calc(var(--micro)*1.25)/1.3 var(--sans);letter-spacing:.02em}
 .lnote{font:400 var(--micro)/1.4 var(--sans);opacity:.85}
 .iceclock{display:flex;align-items:center;gap:1.6vw}
@@ -169,8 +185,8 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
 <canvas id="fx"></canvas>
 <div id="flash"></div>
 <button class="fs" id="fs">click once to enable sound · fullscreen</button>
-<script src="config.js?v=2611141200"></script>
-<script src="assets/store.js?v=2611141200"></script>
+<script src="config.js?v=2611141328"></script>
+<script src="assets/store.js?v=2611141328"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -372,10 +388,26 @@ body.t-ink .pac,body.t-ink .crumbs{fill:var(--cream)}body.t-ink .pac .eye{fill:v
   // If the groups would run into the clock (lots of groups, or a long instruction), shrink the group text until they fit.
   function fitIce() {
     var g = document.querySelector(".groups"), main = g && g.closest(".main"), foot = document.querySelector(".foot"); if (!g || !main || !foot) return;
-    var last = function () { return main.lastElementChild.getBoundingClientRect().bottom; }, lim = foot.getBoundingClientRect().top - Math.round(window.innerHeight * 0.035);
-    var lo = .4, hi = 2.4;   // find the biggest text size (names first) that still fits above the clock
-    for (var i = 0; i < 9; i++) { var mid = (lo + hi) / 2; g.style.setProperty("--gs", mid.toFixed(3)); if (last() <= lim) lo = mid; else hi = mid; }
-    g.style.setProperty("--gs", lo.toFixed(3));
+    var n = g.children.length, lim = foot.getBoundingClientRect().top - Math.round(window.innerHeight * 0.03);
+    var fits = function () {
+      if (main.lastElementChild.getBoundingClientRect().bottom > lim || g.scrollWidth > g.clientWidth + 1) return false;
+      for (var q = 0; q < g.children.length; q++) { var cd = g.children[q]; if (cd.scrollWidth > cd.clientWidth + 1) return false; }
+      return true;
+    };
+    var root = Math.max(1, Math.round(Math.sqrt(n))), cand = [root - 1, root, root + 1, root + 2].filter(function (c, k, a) { return c >= 2 && c <= 6 && c <= Math.max(2, n) && a.indexOf(c) === k; });
+    if (!cand.length) cand = [Math.min(2, Math.max(1, n))];
+    var best = { gs: -1, c: cand[0], st: false };
+    // try every column count, with the two sides side by side and stacked on top of each other, and keep whatever gives the biggest names
+    cand.forEach(function (c) {
+      [false, true].forEach(function (st) {
+        g.className = g.className.replace(/\bg\d\b/, "g" + c); g.classList.toggle("stack", st);
+        var lo = .3, hi = 3.2;
+        for (var k = 0; k < 9; k++) { var mid = (lo + hi) / 2; g.style.setProperty("--gs", mid.toFixed(3)); if (fits()) lo = mid; else hi = mid; }
+        if (lo > best.gs + .005) best = { gs: lo, c: c, st: st };
+      });
+    });
+    g.className = g.className.replace(/\bg\d\b/, "g" + best.c); g.classList.toggle("stack", best.st);
+    g.style.setProperty("--gs", best.gs.toFixed(3));
   }
   function runIce(s) {
     draw(iceView(s)); fitIce(); clearInterval(iceT);

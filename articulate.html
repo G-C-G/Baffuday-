@@ -200,9 +200,9 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     try { var el = new Audio(src); el.volume = vol; if (rate) el.playbackRate = rate; el.onerror = fallback; var pr = el.play(); if (pr && pr.catch) pr.catch(fallback); } catch (e) { fallback(); }
   }
   function yay(layers) { for (var i = 0; i < (layers || 1); i++) (function (i) { setTimeout(function () { clip(YAY, Math.min(1, .85 - i * .06), 1 + i * .035, i === 0 ? ding : function () {}); }, i * 150); })(i); }
-  // Right answer: a soft little tick and a quick check mark, nothing loud.
+  // Right answer: one ping and a quick check mark, nothing loud.
   function okFx() {
-    tone(1040, .07, "sine", .05); tone(1560, .09, "sine", .04, .06);
+    tone(1320, .22, "sine", .09);   // one clear ping
     var c = view.querySelector(".bigcard"); if (!c) return; var t = document.createElement("span"); t.className = "tickfx"; t.textContent = "\u2713"; c.appendChild(t); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 650);
   }
   function wrongSound() { clip(WRONG, 1, 0, function () { tone(220, .5, "sawtooth", .3); tone(165, .6, "square", .2); }); }

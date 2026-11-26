@@ -21,7 +21,7 @@ body{cursor:default}body:not(.show){cursor:none}
 <iframe id="scr" allow="autoplay; fullscreen"></iframe>
 <iframe id="hst" allow="autoplay"></iframe>
 <div id="add"><button id="addb" type="button" title="Add someone who has arrived"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div id="addp"><div id="addh"></div><input id="addq" type="text" placeholder="Search for a name" autocomplete="off" spellcheck="false"><ul id="addl"></ul></div></div><div id="rs"><div><h2>Restart the whole game?</h2><p>Everything goes back to the very start: the icebreaker, the spelling bee, who has sung and the hot takes. People you have already added stay added.</p><button id="rsn" type="button">No, keep going</button><button id="rsy" class="y" type="button">Yes, restart</button></div></div><div id="art"><iframe id="artf" title="Articulate" allow="autoplay; fullscreen"></iframe></div><div id="dup"></div><div id="fsmsg"></div><div id="tools"><button id="fs" type="button" title="Fullscreen"><span id="fst" aria-hidden="true">&#x26F6;</span></button></div>
-<script>window.GCG_VERSION = "2611261555";</script>
+<script>window.GCG_VERSION = "2611261603";</script>
 <script>
 (function () {
   // play.html?fresh : wipe this game's saved progress in this browser (who sang, bee progress, who is here) and start clean. Use it after a practice run.
@@ -46,6 +46,7 @@ body{cursor:default}body:not(.show){cursor:none}
   window.addEventListener("message", function (e) {
     var d = e.data; if (!d || typeof d !== "object") return;
     if (d.gcgart === "open") { var f = document.getElementById("artf"); if (!f.getAttribute("src")) f.src = "articulate.html?v=" + Date.now(); document.getElementById("art").classList.add("on"); document.body.classList.add("art"); setTimeout(function () { try { f.focus(); f.contentWindow.focus(); } catch (x) {} }, 150); }
+    else if (d.gcgfs) { toggleFs(); }
     else if (d.gcgartclose) { document.getElementById("art").classList.remove("on"); document.body.classList.remove("art"); }
   });
   window.addEventListener("message", function (e) { if (e.data === "gcg-attention") show(); else if (e.data && e.data.gcgh) { var hf = document.getElementById("hst"); hf.style.height = Math.min(e.data.gcgh, window.innerHeight * .8) + "px"; hf.style.width = Math.min(e.data.gcgw || 460, 560) + "px"; b.classList.toggle("keep", !!e.data.keep); } else if (e.data && typeof e.data.gcgdark === "boolean") { b.classList.toggle("dark", e.data.gcgdark); try { hostWin().postMessage({ gcgdark: typeof e.data.gcgdock === "boolean" ? e.data.gcgdock : e.data.gcgdark }, "*"); } catch (x) {} } else if (e.data && e.data.gcglife) { try { hostWin().postMessage(e.data, "*"); } catch (x) {} } else if (e.data && e.data.gcgpick) { try { hostWin().postMessage(e.data, "*"); } catch (x) {} } else if (e.data && e.data.gcgkey === "f") { toggleFs(); } else if (e.data && e.data.gcgkey) { show(); try { document.getElementById("hst").contentWindow.postMessage(e.data, "*"); } catch (x) {} } });

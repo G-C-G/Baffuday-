@@ -348,8 +348,8 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   // ---------- the spinner in the middle: used only when a team lands on a spin square ----------
   // Green: move your own team forward (+2, or +3 on the narrow green) OR move another team back by the same. Orange and red: nothing.
   var BON = [
-    { k: "g2", d: 50, c: "#2E9B4F", t: "+2" }, { k: "o", d: 45, c: "#F28C28", t: "NO BONUS" }, { k: "r", d: 45, c: "#D63A2F", t: "NO BONUS" }, { k: "g3", d: 30, c: "#2E9B4F", t: "+3" },
-    { k: "o", d: 45, c: "#F28C28", t: "NO BONUS" }, { k: "r", d: 45, c: "#D63A2F", t: "NO BONUS" }, { k: "g2", d: 50, c: "#2E9B4F", t: "+2" }, { k: "o", d: 50, c: "#F28C28", t: "NO BONUS" }
+    { k: "g2", d: 50, c: "#08183E", t: "+2" }, { k: "o", d: 45, c: "#F5D76E", t: "NO BONUS" }, { k: "r", d: 45, c: "#FFFFFF", t: "NO BONUS" }, { k: "g3", d: 30, c: "#08183E", t: "+3" },
+    { k: "o", d: 45, c: "#F5D76E", t: "NO BONUS" }, { k: "r", d: 45, c: "#FFFFFF", t: "NO BONUS" }, { k: "g2", d: 50, c: "#08183E", t: "+2" }, { k: "o", d: 50, c: "#F5D76E", t: "NO BONUS" }
   ];
   var needle = 0, spinning = false;
   function drawWheel() {
@@ -357,8 +357,8 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
     g.clearRect(0, 0, W, W); g.save(); g.translate(W / 2, W / 2);
     BON.forEach(function (sl) {
       var a = sl.d * Math.PI / 180;
-      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, cum, cum + a); g.closePath(); g.fillStyle = sl.c; g.fill(); g.lineWidth = 8; g.strokeStyle = "#08183E"; g.stroke();
-      g.save(); g.rotate(cum + a / 2); g.textAlign = "right"; g.textBaseline = "middle"; g.fillStyle = "#fff";
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, cum, cum + a); g.closePath(); g.fillStyle = sl.c; g.fill(); g.lineWidth = 8; g.strokeStyle = sl.c === "#08183E" ? "#F5D76E" : "#08183E"; g.stroke();
+      g.save(); g.rotate(cum + a / 2); g.textAlign = "right"; g.textBaseline = "middle"; g.fillStyle = sl.c === "#08183E" ? "#F5D76E" : "#08183E";
       var fs = sl.k === "g3" ? 60 : 72; g.font = "800 " + fs + "px Inter, Arial, sans-serif"; while (g.measureText(sl.t).width > R * .6 && fs > 26) { fs -= 4; g.font = "800 " + fs + "px Inter, Arial, sans-serif"; }
       g.fillText(sl.t, R - 34, 0); g.restore(); cum += a;
     });
@@ -504,15 +504,15 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   // ---------- spin bonus ----------
   function bonusIntro(t) {
     S.phase = "bspin";
-    boardView('<div class="who"><i>' + who(t) + '</i>Spin square &#8635;</div><div class="tip">You landed on a spin square by guessing. <b>Spin the arrow:</b> green means a bonus (forward 2, or 3 on the narrow green, or send another team back by the same). Orange and red mean no bonus.</div><div class="hint">Press &#9654; to spin</div>');
+    boardView('<div class="who"><i>' + who(t) + '</i>Spin square &#8635;</div><div class="tip">You landed on a spin square by guessing. <b>Spin the arrow:</b> <b>blue</b> is a bonus (forward 2, or 3 on the narrow blue, or send another team back by the same). <b>Yellow and white</b> mean no bonus.</div><div class="hint">Press &#9654; to spin</div>');
     setDock([["bspin", "Spin the arrow", ICON.play]]);
   }
   function bonusResult(sl) {
     var t = S.teams[S.cur];
-    if (sl.k === "o" || sl.k === "r") { S.phase = "bdone"; boardView('<div class="who"><i>' + who(t) + '</i>No bonus</div><div class="tip">The arrow landed on ' + (sl.k === "o" ? "orange" : "red") + '. Nothing happens.</div><div class="hint">Press &#9654; for the next team</div>'); return setDock([["bnext", "Next team", ICON.play]]); }
+    if (sl.k === "o" || sl.k === "r") { S.phase = "bdone"; boardView('<div class="who"><i>' + who(t) + '</i>No bonus</div><div class="tip">The arrow landed on ' + (sl.k === "o" ? "yellow" : "white") + '. Nothing happens.</div><div class="hint">Press &#9654; for the next team</div>'); return setDock([["bnext", "Next team", ICON.play]]); }
     var N = sl.k === "g3" ? 3 : 2; S.bonusN = N; S.phase = "bpick";
     var others = S.teams.filter(function (x) { return x.id !== t.id && x.pos > 0; });
-    boardView('<div class="who"><i>' + who(t) + '</i>Green: ' + N + '</div><div class="tip">Choose: move <b>your team forward ' + N + '</b>, or send another team <b>back ' + N + '</b>.</div><div class="aps"><button type="button" data-b="f">Forward ' + N + '</button>' + others.map(function (x) { return '<button type="button" data-b="' + x.id + '">' + x.shape + " back " + N + "</button>"; }).join("") + '</div>');
+    boardView('<div class="who"><i>' + who(t) + '</i>Blue: ' + N + '</div><div class="tip">Choose: move <b>your team forward ' + N + '</b>, or send another team <b>back ' + N + '</b>.</div><div class="aps"><button type="button" data-b="f">Forward ' + N + '</button>' + others.map(function (x) { return '<button type="button" data-b="' + x.id + '">' + x.shape + " back " + N + "</button>"; }).join("") + '</div>');
     var ab = view.querySelector(".aps"); if (ab) ab.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) bonusPick(b.dataset.b); });
     setDock([]);
   }
@@ -558,7 +558,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
       ["The goal", "<p>Each team has an animal <b>totem</b>. Get yours round the track from <b>START</b> to <b>FINISH</b>, then win the <b>Final Control</b>. The first team to do that wins.</p>"],
       ["Your turn", "<p>Your category is the <b>square you are standing on</b>. Everyone starts on <b>Object</b>.</p><p>One person describes words from that category. Their team guesses, with their backs to the screen. You have <b>" + S.secs + " seconds</b>, and the clock starts the moment the describer begins.</p><p>Every correct card moves your totem <b>one square</b> when the turn ends. There is no dice.</p>"],
       ["Describing", "<p>You can <b>not</b> say the word or any part of it, give the first letter, say how many letters it has, say what it rhymes with or sounds like, or mouth the answer. <b>Gestures and miming are allowed.</b></p><p>Break a rule and the team <b>forfeits the turn</b>: press <b>X</b>." + (warn ? " This game gives <b>" + warn + " warning" + (warn === 1 ? "" : "s") + "</b> first: the card is skipped, and the last X ends the turn but the words already got still count." : "") + "</p><p>Stuck? Press <b>P</b> to pass. You get <b>" + S.passMax + (S.passMax === 1 ? " pass" : " passes") + "</b> a turn, and after a pass you must keep going with every new card.</p>"],
-      ["Spin squares", "<p>The orange and red squares are marked <b>&#8635;</b>. Land on one by guessing and you spin the arrow in the middle:</p><p><b>Wide green:</b> move your team <b>forward 2</b>, or send another team <b>back 2</b>.<br><b>Narrow green:</b> forward or back <b>3</b>.<br><b>Orange or red:</b> no bonus. On a line? Spin again.</p><p>A bonus that lands on a spin or Control square does nothing. Nobody goes back past START, and a bonus never carries you onto FINISH.</p>"],
+      ["Spin squares", "<p>The squares marked <b>&#8635;</b> (the Action and Random squares) are spin squares. Land on one by guessing and you spin the arrow in the middle:</p><p><b>Wide blue:</b> move your team <b>forward 2</b>, or send another team <b>back 2</b>.<br><b>Narrow blue:</b> forward or back <b>3</b>.<br><b>Yellow or white:</b> no bonus. On a line? Spin again.</p><p>A bonus that lands on a spin or Control square does nothing. Nobody goes back past START, and a bonus never carries you onto FINISH.</p>"],
       ["Control squares", "<p>The white <b>&spades;</b> squares are <b>Control</b>. Land on one by guessing and the describer gives <b>one card to everybody</b>, with <b>no timer</b>. The <b>first team to shout the answer takes the next turn</b>. A tie means another card.</p>"],
       ["Winning", "<p>Reach or pass <b>FINISH</b>, then it is a <b>Final Control</b>. If your own team shouts it first, you win. If another team does, you stay on FINISH and try again on your next turn.</p><p class=\"micro\">These rules follow the publisher's rulebook. The timer length is not in it, so it is yours to set.</p>"],
       ["Keys", "<p><b>Space or &rarr;</b> start, got it, next<br><b>&larr;</b> undo<br><b>P</b> pass &nbsp; <b>X</b> rule broken &nbsp; <b>.</b> pause<br><b>1 to 8</b> pick a team in a Control or a bonus<br><b>?</b> this page &nbsp; <b>Esc</b> close</p>"]

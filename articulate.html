@@ -126,7 +126,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 #rules .rb{font:500 clamp(15px,2.8vh,28px)/1.45 var(--sans);flex:1}
 #rules .rb p{margin:0 0 1.2vh}#rules .rb b{font-weight:800}
 #rules .rf{display:flex;justify-content:space-between;align-items:center;margin-top:2vh;font:700 clamp(10px,1.6vh,14px) var(--sans);letter-spacing:.14em;text-transform:uppercase;opacity:.75}
-.wpic{max-height:26vh;max-width:40vw;border-radius:1.2vh;object-fit:cover;display:block}.wpic.em{font:400 15vh/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}
+.wpic{max-height:26vh;max-width:40vw;border-radius:1.2vh;object-fit:cover;display:block}.wpic.em{font:400 15vh/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}.startnote{margin-top:1vh;text-align:center;font:800 clamp(12px,2.1vh,20px) var(--sans);letter-spacing:.1em;text-transform:uppercase;background:var(--n);color:var(--y);border-radius:999px;padding:1vh 1.6vw;animation:pulse .8s infinite alternate}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:1.2vh;display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:.2vh .5vw}
 #dock button{width:5.6vh;height:5.6vh;border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -195,10 +195,10 @@ button{font:inherit;cursor:pointer;color:inherit}
   function people() { return Object.keys(guests).map(function (id) { return { id: id, name: guests[id].name }; }).filter(function (p) { return p.name; }).sort(function (a, b) { return a.name.localeCompare(b.name); }); }
 
   // ---------- state ----------
-  var S = { phase: "setup", sel: {}, extra: [], rules: { allplay: true, double: true, skip: false, streak: true }, mod: "", ap: false, dbl: false, apGot: [], nteams: 4, secs: 30, teams: [], cur: 0, cat: "", got: [], pass: 0, word: "", endAt: 0, left: 0, paused: false, moved: 0, winner: -1 };
+  var S = { phase: "setup", sel: {}, extra: [], rules: { allplay: true, double: true, skip: false, streak: true }, mod: "", ap: false, dbl: false, apGot: [], nteams: 4, secs: 60, teams: [], cur: 0, cat: "", got: [], pass: 0, word: "", endAt: 0, left: 0, paused: false, moved: 0, winner: -1 };
   var decks = {}, timer = 0;
   function save() { try { localStorage.setItem(KEY, JSON.stringify({ phase: S.phase, rules: S.rules, nteams: S.nteams, secs: S.secs, teams: S.teams, cur: S.cur, winner: S.winner })); } catch (e) {} }
-  function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.rules) S.rules = r.rules; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 30; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
+  function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.rules) S.rules = r.rules; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 60; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
   function nextWord() {
     var cat = S.cat, d = decks[cat];
     if (!d || d.i >= d.a.length) d = decks[cat] = { a: shuffle(window.ART_WORDS[cat] || ["(no words)"]), i: 0 };
@@ -381,13 +381,17 @@ button{font:inherit;cursor:pointer;color:inherit}
   }
   function startTurn() {
     S.ap = S.mod === "allplay"; S.dbl = S.mod === "double"; S.apGot = S.teams.map(function () { return 0; });
-    S.got = []; S.pass = 0; S.paused = false; S.word = nextWord(); S.left = S.secs * 1000; S.endAt = Date.now() + S.left; S.phase = "play";
-    drawPlay(); clearInterval(timer); startTimerOnly(); playDock();
+    S.got = []; S.pass = 0; S.paused = false; S.started = false; S.word = nextWord(); S.left = S.secs * 1000; S.endAt = 0; S.phase = "play";
+    clearInterval(timer); drawPlay(); playDock();   // the word is up and the clock waits: it starts the moment the describer begins
   }
-  function playDock() { setDock(S.ap ? [["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause]] : [["undo", "Undo last", ICON.back], ["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause], ["right", "Got it", ICON.next]]); }
+  function beginClock() {
+    if (S.phase !== "play" || S.started) return; S.started = true; S.paused = false; S.endAt = Date.now() + S.left; startTimerOnly(); beep(); updClock(); playDock();
+    var sn = $("sn"); if (sn) sn.style.display = "none";
+  }
+  function playDock() { if (!S.started) return setDock([["begin", "Start the clock", ICON.play], ["pass", "Pass", ICON.skip]]); setDock(S.ap ? [["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause]] : [["undo", "Undo last", ICON.back], ["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause], ["right", "Got it", ICON.next]]); }
   function drawPlay() {
     var ap = S.ap ? '<div class="aps">' + S.teams.map(function (t) { return '<button type="button" data-ap="' + t.id + '">' + t.shape + " " + (t.id + 1) + "<b>" + S.apGot[t.id] + "</b></button>"; }).join("") + '</div><div class="rem">All Play: tap (or press the number of) the team that shouted the answer first</div>' : '<div class="rem">' + (S.dbl ? "DOUBLE: every word counts twice &middot; " : "") + 'No part of the word, no "sounds like", no first letter, no letter count</div>';
-    view.innerHTML = '<div class="main play2">' + boardHtml(true) + '<div class="bigcard"><div class="strip">' + CATS.map(function (c) { return '<span class="' + (c === S.cat ? "on" : "") + '">' + c + "</span>"; }).join("") + '</div><div class="word" id="wd"></div><div class="clock" id="ck"></div><div class="bar"><i id="br"></i></div><div class="got" id="gt"></div>' + ap + "</div></div>";
+    view.innerHTML = '<div class="main play2">' + boardHtml(true) + '<div class="bigcard"><div class="strip">' + CATS.map(function (c) { return '<span class="' + (c === S.cat ? "on" : "") + '">' + c + "</span>"; }).join("") + '</div><div class="word" id="wd"></div><div class="clock" id="ck"></div><div class="bar"><i id="br"></i></div><div class="got" id="gt"></div>' + ap + (S.started ? "" : '<div class="startnote" id="sn">Press &#9654; the moment you start describing. The clock does not run until you do.</div>') + "</div></div>";
     drawWheel(); setWord(); updClock();
     var ab = view.querySelector(".aps"); if (ab) ab.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) award(+b.dataset.ap); });
   }
@@ -403,12 +407,12 @@ button{font:inherit;cursor:pointer;color:inherit}
   }
   function updClock() {
     var ck = $("ck"), br = $("br"); if (!ck) return; var sec = Math.ceil(S.left / 1000);
-    ck.textContent = S.paused ? "Paused" : sec; ck.classList.toggle("low", !S.paused && sec <= 10 && sec > 0);
+    ck.textContent = !S.started ? S.secs : S.paused ? "Paused" : sec; ck.classList.toggle("low", S.started && !S.paused && sec <= 10 && sec > 0);
     br.style.width = (100 * S.left / (S.secs * 1000)) + "%";
   }
-  function right() { if (S.phase !== "play" || S.paused || S.ap) return; S.got.push(S.word); ding(); S.word = nextWord(); setWord(); }
+  function right() { if (S.phase === "play" && !S.started) return beginClock(); if (S.phase !== "play" || S.paused || S.ap) return; S.got.push(S.word); ding(); S.word = nextWord(); setWord(); }
   function award(i) {
-    if (S.phase !== "play" || S.paused || !S.ap || i < 0 || i >= S.teams.length) return;
+    if (S.phase !== "play" || !S.started || S.paused || !S.ap || i < 0 || i >= S.teams.length) return;
     S.apGot[i]++; S.got.push(S.word); ding(); S.word = nextWord();
     var b = view.querySelector('.aps button[data-ap="' + i + '"] b'); if (b) b.textContent = S.apGot[i];
     setWord();
@@ -416,7 +420,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   function undo() { if (S.phase !== "play" || S.ap || !S.got.length) return; S.word = S.got.pop(); setWord(); }
   function pass() { if (S.phase !== "play" || S.paused) return; S.pass++; S.word = nextWord(); setWord(); }
   function pause() {
-    if (S.phase !== "play") return;
+    if (S.phase !== "play" || !S.started) return;
     if (!S.paused) { S.paused = true; S.left = Math.max(0, S.endAt - Date.now()); } else { S.paused = false; S.endAt = Date.now() + S.left; }
     updClock();
   }
@@ -506,9 +510,9 @@ button{font:inherit;cursor:pointer;color:inherit}
   }
   function act(a) {
     actx();
-    if (a === "spin" || a === "respin") { S.mod = ""; spin(); } else if (a === "go") primary(); else if (a === "start") startTurn();
+    if (a === "spin" || a === "respin") { S.mod = ""; spin(); } else if (a === "begin") beginClock(); else if (a === "go") primary(); else if (a === "start") startTurn();
     else if (a === "right") right(); else if (a === "rules") showRules(0);
-    else if (a === "undo") { if (S.phase === "result") { S.phase = "play"; var w = S.got.pop(); S.word = w || nextWord(); S.paused = false; S.left = 8000; S.endAt = Date.now() + 8000; drawPlay(); clearInterval(timer); startTimerOnly(); playDock(); } else undo(); }
+    else if (a === "undo") { if (S.phase === "result") { S.phase = "play"; var w = S.got.pop(); S.word = w || nextWord(); S.paused = false; S.started = true; S.left = 8000; S.endAt = Date.now() + 8000; drawPlay(); clearInterval(timer); startTimerOnly(); playDock(); } else undo(); }
     else if (a === "pass") pass(); else if (a === "pause") pause(); else if (a === "move") move(); else if (a === "newgame") { if (S.phase === "ready" && !confirm("Start a new game? Positions are lost.")) return; newGame(); }
     else if (a === "close") closeMe();
   }

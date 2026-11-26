@@ -203,10 +203,10 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   function people() { return Object.keys(guests).map(function (id) { return { id: id, name: guests[id].name }; }).filter(function (p) { return p.name; }).sort(function (a, b) { return a.name.localeCompare(b.name); }); }
 
   // ---------- state ----------
-  var S = { phase: "setup", sel: {}, extra: [], rules: { allplay: true, double: true, skip: false, streak: true }, mod: "", ap: false, dbl: false, apGot: [], nteams: 4, secs: 60, teams: [], cur: 0, cat: "", got: [], pass: 0, word: "", endAt: 0, left: 0, paused: false, moved: 0, winner: -1 };
+  var S = { phase: "setup", sel: {}, extra: [], rules: { allplay: true, double: true, skip: false, streak: true }, mod: "", ap: false, dbl: false, apGot: [], nteams: 4, secs: 60, passMax: 1, xMax: 2, xs: 0, teams: [], cur: 0, cat: "", got: [], pass: 0, word: "", endAt: 0, left: 0, paused: false, moved: 0, winner: -1 };
   var decks = {}, timer = 0;
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ phase: S.phase, rules: S.rules, nteams: S.nteams, secs: S.secs, teams: S.teams, cur: S.cur, winner: S.winner })); } catch (e) {} }
-  function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.rules) S.rules = r.rules; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 60; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ phase: S.phase, passMax: S.passMax, xMax: S.xMax, rules: S.rules, nteams: S.nteams, secs: S.secs, teams: S.teams, cur: S.cur, winner: S.winner })); } catch (e) {} }
+  function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.rules) S.rules = r.rules; if (r.passMax != null) S.passMax = r.passMax; if (r.xMax != null) S.xMax = r.xMax; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 60; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
   function nextWord() {
     var cat = S.cat, d = decks[cat];
     if (!d || d.i >= d.a.length) d = decks[cat] = { a: shuffle(window.ART_WORDS[cat] || ["(no words)"]), i: 0 };
@@ -222,7 +222,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     view.innerHTML = '<div class="setup"><div class="panel"><h2>Who is playing (' + n + ")</h2><div class=\"chips\">" + (chips || '<span style="opacity:.6">Nobody in the system yet. Add names below.</span>') + '</div>' +
       '<div class="addrow"><input id="nn" type="text" placeholder="Add someone new (not in the system)" autocomplete="off" spellcheck="false"><button class="btn" id="nadd">Add</button></div>' +
       '<div class="opts"><button class="btn ghost" id="sh">Everyone here</button><button class="btn ghost" id="sa">Everyone</button><button class="btn ghost" id="sn">Clear</button></div></div>' +
-      '<div class="panel"><h2>Teams</h2><div class="opts" style="margin:0 0 1vh"><label>Teams <span class="stp"><button id="tm">&minus;</button><b id="tc">' + S.nteams + '</b><button id="tpl">+</button></span></label><label>Seconds <span class="stp"><button id="sm">&minus;</button><b id="sc">' + S.secs + '</b><button id="sp">+</button></span></label><button class="btn ghost" id="shuf">Shuffle</button></div>' +
+      '<div class="panel"><h2>Teams</h2><div class="opts" style="margin:0 0 1vh"><label>Teams <span class="stp"><button id="tm">&minus;</button><b id="tc">' + S.nteams + '</b><button id="tpl">+</button></span></label><label>Seconds <span class="stp"><button id="sm">&minus;</button><b id="sc">' + S.secs + '</b><button id="sp">+</button></span></label><label>Passes <span class="stp"><button id="pm">&minus;</button><b id="pc2">' + S.passMax + '</b><button id="pp">+</button></span></label><label>X marks <span class="stp"><button id="xm">&minus;</button><b id="xc">' + S.xMax + '</b><button id="xp">+</button></span></label><button class="btn ghost" id="shuf">Shuffle</button></div>' +
       '<div class="teamsprev">' + tp.map(function (t, i) { return '<div class="tp"><b><span class="pc">' + SHAPES[i] + "</span>" + TOTEMS[i].n + '</b><span class="m">' + (t.map(esc).join(", ") || "&nbsp;") + "</span></div>"; }).join("") + '</div>' +
       '<h2 style="margin:1.4vh 0 0">House rules</h2><div class="rtog">' + [["allplay", "All Play spin"], ["double", "Double spin"], ["skip", "Lose a turn spin"], ["streak", BONUS_AT + "+ words = bonus square"]].map(function (r) { return '<button type="button" data-r="' + r[0] + '" class="' + (S.rules[r[0]] ? "on" : "") + '">' + r[1] + "</button>"; }).join("") + '</div><div class="foot"><button class="btn ghost" id="howto">How to play</button><button class="btn" id="go"' + (n < 2 ? " disabled" : "") + '>Start the game</button></div></div></div>';
     setDock([["close", "Close", ICON.x]]);
@@ -248,6 +248,10 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     else if (id === "tpl") { S.nteams = Math.min(8, S.nteams + 1); renderSetup(); }
     else if (id === "sm") { S.secs = Math.max(15, S.secs - 5); renderSetup(); }
     else if (id === "sp") { S.secs = Math.min(120, S.secs + 5); renderSetup(); }
+    else if (id === "pm") { S.passMax = Math.max(0, S.passMax - 1); renderSetup(); }
+    else if (id === "pp") { S.passMax = Math.min(5, S.passMax + 1); renderSetup(); }
+    else if (id === "xm") { S.xMax = Math.max(0, S.xMax - 1); renderSetup(); }
+    else if (id === "xp") { S.xMax = Math.min(5, S.xMax + 1); renderSetup(); }
     else if (id === "shuf") { prevTeams = null; renderSetup(); }
     else if (id === "go") startGame();
     else if (id === "howto") showRules();
@@ -384,19 +388,19 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   function skipTurn() { var t = S.teams[S.cur]; t.turns++; S.cur = (S.cur + 1) % S.teams.length; goReady(); }
   function landed() {
     S.phase = "landed"; var t = S.teams[S.cur];
-    boardView('<div class="who"><i>' + who(t) + " &middot; " + esc(describerOf(t)) + ' describes</i><span class="cat2">' + esc(S.cat) + "</span>" + tags() + '</div><div class="tip"><b>' + esc(S.cat) + ":</b> " + esc(CATTIP[S.cat]) + (S.mod ? " <b>" + esc(SPECIAL[S.mod].name) + ":</b> " + esc(SPECIAL[S.mod].rule) : "") + '</div><div class="tip">Guessers turn your backs. No part of the word, no "sounds like", no first letter, no letter count. Break a rule and the turn is over.</div><div class="hint">Press &#9654; to start the clock</div>');
+    boardView('<div class="who"><i>' + who(t) + " &middot; " + esc(describerOf(t)) + ' describes</i><span class="cat2">' + esc(S.cat) + "</span>" + tags() + '</div><div class="tip"><b>' + esc(S.cat) + ":</b> " + esc(CATTIP[S.cat]) + (S.mod ? " <b>" + esc(SPECIAL[S.mod].name) + ":</b> " + esc(SPECIAL[S.mod].rule) : "") + '</div><div class="tip">Guessers turn your backs. No part of the word, no "sounds like", no first letter, no letter count. Break a rule and it is an X.</div><div class="hint">Press &#9654; to start the clock</div>');
     setDock([["start", "Start", ICON.play], ["respin", "Spin again", ICON.again]]);
   }
   function startTurn() {
     S.ap = S.mod === "allplay"; S.dbl = S.mod === "double"; S.apGot = S.teams.map(function () { return 0; });
-    S.got = []; S.pass = 0; S.paused = false; S.started = false; S.word = nextWord(); S.left = S.secs * 1000; S.endAt = 0; S.phase = "play";
+    S.got = []; S.pass = 0; S.xs = 0; S.paused = false; S.started = false; S.word = nextWord(); S.left = S.secs * 1000; S.endAt = 0; S.phase = "play";
     clearInterval(timer); drawPlay(); playDock();   // the word is up and the clock waits: it starts the moment the describer begins
   }
   function beginClock() {
     if (S.phase !== "play" || S.started) return; S.started = true; S.paused = false; S.endAt = Date.now() + S.left; startTimerOnly(); beep(); updClock(); playDock();
     var sn = $("sn"); if (sn) sn.style.display = "none";
   }
-  function playDock() { if (!S.started) return setDock([["begin", "Start the clock", ICON.play], ["pass", "Pass", ICON.skip]]); setDock(S.ap ? [["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause]] : [["undo", "Undo last", ICON.back], ["pass", "Pass", ICON.skip], ["pause", "Pause", ICON.pause], ["right", "Got it", ICON.next]]); }
+  function playDock() { if (!S.started) return setDock([["begin", "Start the clock", ICON.play], ["pass", "Pass", ICON.skip]]); setDock(S.ap ? [["pass", "Pass (P)", ICON.skip], ["xmark", "Wrong / rule broken (X)", ICON.xm], ["pause", "Pause", ICON.pause]] : [["undo", "Undo last", ICON.back], ["pass", "Pass (P)", ICON.skip], ["xmark", "Wrong / rule broken (X)", ICON.xm], ["pause", "Pause", ICON.pause], ["right", "Got it", ICON.next]]); }
   function drawPlay() {
     var ap = S.ap ? '<div class="aps">' + S.teams.map(function (t) { return '<button type="button" data-ap="' + t.id + '">' + t.shape + " " + (t.id + 1) + "<b>" + S.apGot[t.id] + "</b></button>"; }).join("") + '</div><div class="rem">All Play: tap (or press the number of) the team that shouted the answer first</div>' : '<div class="rem">' + (S.dbl ? "DOUBLE: every word counts twice &middot; " : "") + 'No part of the word, no "sounds like", no first letter, no letter count</div>';
     view.innerHTML = '<div class="main play2">' + boardHtml(true) + '<div class="bigcard"><div class="strip">' + CATS.map(function (c) { return '<span class="' + (c === S.cat ? "on" : "") + '">' + c + "</span>"; }).join("") + '</div><div class="word" id="wd"></div><div class="clock" id="ck"></div><div class="bar"><i id="br"></i></div><div class="got" id="gt"></div>' + ap + (S.started ? "" : '<div class="startnote" id="sn">Press &#9654; the moment you start describing. The clock does not run until you do.</div>') + "</div></div>";
@@ -411,7 +415,8 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     var size = img || emo ? 6 : 7.2; el.style.fontSize = size + "vw"; var guard = 0;
     while ((el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2) && size > 2.2 && guard++ < 50) { size -= .3; el.style.fontSize = size + "vw"; }
     var tot = S.ap ? S.apGot.reduce(function (a, b) { return a + b; }, 0) : S.got.length;
-    $("gt").textContent = tot + (tot === 1 ? " word" : " words") + (S.pass ? " · " + S.pass + " passed" : "");
+    var pl = Math.max(0, S.passMax - S.pass), xl = S.xMax ? " · " + "\u2715".repeat(S.xs) + "\u25CB".repeat(Math.max(0, S.xMax - S.xs - 1)) + " X marks" : "";
+    $("gt").textContent = tot + (tot === 1 ? " word" : " words") + " · " + pl + (pl === 1 ? " pass left" : " passes left") + xl;
   }
   function updClock() {
     var ck = $("ck"), br = $("br"); if (!ck) return; var sec = Math.ceil(S.left / 1000);
@@ -426,7 +431,18 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     setWord();
   }
   function undo() { if (S.phase !== "play" || S.ap || !S.got.length) return; S.word = S.got.pop(); setWord(); }
-  function pass() { if (S.phase !== "play" || S.paused) return; S.pass++; S.word = nextWord(); setWord(); }
+  function pass() {
+    if (S.phase !== "play" || S.paused) return;
+    if (S.pass >= S.passMax) { toast(S.passMax ? "No passes left this turn. Keep going!" : "No passing in this game."); return; }
+    S.pass++; S.word = nextWord(); setWord();
+  }
+  // X: the word was wrong or a description rule was broken. It scores nothing and the next word comes up; reaching the limit ends the turn.
+  function xmark() {
+    if (S.phase !== "play" || !S.started || S.paused || !S.xMax) return;
+    S.xs++; tone(220, .25, "sawtooth", .22);
+    if (S.xs >= S.xMax) { clearInterval(timer); buzzer(); toast("Too many X marks: the turn is over."); return endTurn(); }
+    S.word = nextWord(); setWord();
+  }
   function pause() {
     if (S.phase !== "play" || !S.started) return;
     if (!S.paused) { S.paused = true; S.left = Math.max(0, S.endAt - Date.now()); } else { S.paused = false; S.endAt = Date.now() + S.left; }
@@ -472,13 +488,13 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     var p = [
       ["The goal", "<p>Each team has a <b>totem</b> on the board. Get yours round the track from <b>START</b> to <b>FINISH</b>. The first team there wins.</p>"],
       ["Your turn", "<p><b>1.</b> Press &#9654; to spin the arrow in the middle. It picks your category" + (S.rules.allplay || S.rules.double || S.rules.skip ? " or a special" : "") + ".</p><p><b>2.</b> One person describes. Their team guesses with their backs to the screen.</p><p><b>3.</b> You have <b>" + S.secs + " seconds</b>. Get as many words as you can. The buzzer ends the turn.</p>"],
-      ["Describing", "<p>You can not say the word, any part of it, say what it sounds like, give the first letter or say how many letters it has.</p><p>Break a rule and the turn is over. Stuck? Press <b>P</b> to pass: it is free.</p>"],
+      ["Describing", "<p>You can not say the word, any part of it, say what it sounds like, give the first letter or say how many letters it has.</p><p>Break a rule and it is an X. Stuck? Press <b>P</b> to pass. You get <b>" + S.passMax + (S.passMax === 1 ? " pass" : " passes") + "</b> each turn.</p>" + (S.xMax ? "<p>Wrong, or a rule broken? Press <b>X</b>. The word scores nothing and the next one comes up. <b>" + S.xMax + "</b> X marks ends the turn, but the words you already got still count.</p>" : "") + ""],
       ["Moving", "<p>Every correct word moves your totem <b>one square</b>.</p>" + (S.rules.streak ? "<p>Get <b>" + BONUS_AT + " or more</b> in one turn and you earn <b>+1 bonus square</b>.</p>" : "")],
       ["Categories", "<p>" + CATS.map(function (c) { return "<b>" + c + ":</b> " + esc(CATTIP[c]); }).join("</p><p>") + "</p>"]
     ];
     var sp = ["allplay", "double", "skip"].filter(function (k) { return S.rules[k]; });
     if (sp.length) p.push(["Special spins", "<p>" + sp.map(function (k) { return "<b>" + SPECIAL[k].name + ":</b> " + esc(SPECIAL[k].rule); }).join("</p><p>") + "</p>"]);
-    p.push(["Keys", "<p><b>Space or &rarr;</b> spin, start, got it, next<br><b>&larr;</b> undo<br><b>P</b> pass &nbsp; <b>.</b> pause<br><b>1 to 8</b> award a team in All Play<br><b>?</b> this page &nbsp; <b>Esc</b> close</p>"]);
+    p.push(["Keys", "<p><b>Space or &rarr;</b> spin, start, got it, next<br><b>&larr;</b> undo<br><b>P</b> pass &nbsp; <b>X</b> wrong / rule broken &nbsp; <b>.</b> pause<br><b>1 to 8</b> award a team in All Play<br><b>?</b> this page &nbsp; <b>Esc</b> close</p>"]);
     return p;
   }
   var rulesWasPaused = false;
@@ -505,6 +521,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     skip: '<svg viewBox="0 0 24 24"><path d="M5 13c0-4 3-7 8-7h3l-2-2 2-2 6 6-6 6-2-2 2-2h-3c-3 0-5 2-5 4v4H5z" transform="translate(0 1) scale(.95)"/></svg>',
     again: '<svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>',
     fs: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    xm: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none"/></svg>',
     x: '<svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>',
     q: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9.2 9.3c0-1.7 1.3-2.8 2.9-2.8 1.7 0 2.9 1 2.9 2.5 0 2-2.6 2.2-2.6 4.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12.4" cy="17.4" r="1.3"/></svg>'
   };
@@ -523,7 +540,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     if (a === "spin" || a === "respin") { S.mod = ""; spin(); } else if (a === "begin") beginClock(); else if (a === "go") primary(); else if (a === "start") startTurn();
     else if (a === "right") right(); else if (a === "rules") showRules(0);
     else if (a === "undo") { if (S.phase === "result") { S.phase = "play"; var w = S.got.pop(); S.word = w || nextWord(); S.paused = false; S.started = true; S.left = 8000; S.endAt = Date.now() + 8000; drawPlay(); clearInterval(timer); startTimerOnly(); playDock(); } else undo(); }
-    else if (a === "pass") pass(); else if (a === "pause") pause(); else if (a === "move") move(); else if (a === "newgame") { if (S.phase === "ready" && !confirm("Start a new game? Positions are lost.")) return; newGame(); }
+    else if (a === "pass") pass(); else if (a === "xmark") xmark(); else if (a === "pause") pause(); else if (a === "move") move(); else if (a === "newgame") { if (S.phase === "ready" && !confirm("Start a new game? Positions are lost.")) return; newGame(); }
     else if (a === "close") closeMe();
     else if (a === "fs") toggleFs();
   }
@@ -553,6 +570,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     if (k === " " || k === "Enter" || k === "ArrowRight" || k === "PageDown" || k === "MediaTrackNext") { e.preventDefault(); primary(); }
     else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { e.preventDefault(); if (S.phase === "play") undo(); else if (S.phase === "landed") act("respin"); }
     else if (k === "p" || k === "P") pass();
+    else if (k === "x" || k === "X") xmark();
     else if (k === "." || k === "b" || k === "B") pause();
     else if (k === "Escape") closeMe();
   });

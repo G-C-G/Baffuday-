@@ -27,7 +27,9 @@ window.ART_WORDS = {
     // general knowledge trivia
     "Zeus", "Medusa", "Hercules", "Romeo and Juliet", "Robin Hood", "Dracula", "Frankenstein", "Alice in Wonderland", "Pinocchio", "Peter Pan", "Superman", "Wonder Woman", "Thomas Edison", "Alexander Graham Bell", "Marie Curie", "Galileo", "Charles Darwin", "Stephen Hawking", "Nikola Tesla", "Pablo Picasso", "Mozart", "Beethoven", "Vincent van Gogh", "Michelangelo", "Charles Dickens", "Maya Angelou", "Dr. Seuss", "The Pied Piper", "Santa's elves", "Father Time", "Sherlock's Dr. Watson", "Count Dracula",
     // harder words: the describer explains these in their own words (no clue is shown)
-    "Sommelier", "Cartographer", "Archaeologist", "Meteorologist", "Auctioneer", "Ventriloquist", "Cobbler", "Blacksmith", "Midwife", "Taxidermist", "Locksmith", "Chauffeur", "Paparazzi", "Ibn Battuta", "Hannibal", "Genghis Khan", "Julius Caesar", "Joan of Arc", "Florence Nightingale", "Alexander the Great", "Tutankhamun", "Amelia Earhart"
+    "Sommelier", "Cartographer", "Archaeologist", "Meteorologist", "Auctioneer", "Ventriloquist", "Cobbler", "Blacksmith", "Midwife", "Taxidermist", "Locksmith", "Chauffeur", "Paparazzi", "Ibn Battuta", "Hannibal", "Genghis Khan", "Julius Caesar", "Joan of Arc", "Florence Nightingale", "Alexander the Great", "Tutankhamun", "Amelia Earhart",
+    // words with words inside them: describe the parts to get the whole
+    "An astronomer", "A biologist", "A psychologist", "A pharmacist", "A pediatrician", "A dentist", "An optician", "An electrician", "A plumber", "A carpenter", "A bricklayer", "A lifeguard", "A goalkeeper", "A shopkeeper", "A gatekeeper", "A bartender", "A babysitter", "A landlord", "A pickpocket", "A hitchhiker", "A tightrope walker", "A snake charmer", "A rainmaker", "A peacemaker", "A troublemaker", "A daydreamer", "A bookworm", "A couch potato", "An early bird", "A night owl"
   ],
   Object: [
     // everyday Ghana
@@ -45,7 +47,9 @@ window.ART_WORDS = {
     // general knowledge trivia
     "The Mona Lisa", "The telephone", "The light bulb", "The printing press", "The wheel", "A periscope", "The periodic table", "The Rosetta Stone", "The Olympic torch", "Excalibur", "Pandora's box", "The Trojan horse", "Aladdin's lamp", "A magic carpet", "A crystal ball", "A treasure map", "A message in a bottle", "A pocket watch", "A typewriter", "A film reel", "A hourglass", "A sundial", "An abacus", "A quill pen",
     // harder words: the describer explains these in their own words (no clue is shown)
-    "A sextant", "A metronome", "A kaleidoscope", "A thimble", "A colander", "A whisk", "An anvil", "A tripod", "An easel", "A boomerang", "A didgeridoo", "An accordion", "A harp", "Bagpipes", "A kora", "A djembe", "A balafon", "A shekere", "A gong", "A lantern"
+    "A sextant", "A metronome", "A kaleidoscope", "A thimble", "A colander", "A whisk", "An anvil", "A tripod", "An easel", "A boomerang", "A didgeridoo", "An accordion", "A harp", "Bagpipes", "A kora", "A djembe", "A balafon", "A shekere", "A gong", "A lantern",
+    // words with words inside them: describe the parts to get the whole
+    "A mousetrap", "A windmill", "A lighthouse", "A paperclip", "A toothbrush", "A hairbrush", "A pillowcase", "A stopwatch", "A doorbell", "A raincoat", "A bookmark", "A teapot", "A flashlight", "A fireplace", "A wheelchair", "Handcuffs", "A spacesuit", "A goalpost", "A rollercoaster", "A thermos flask", "A doorknob", "A lawnmower", "A paintbrush", "A sandcastle", "A snowball", "A bathtub", "A shoelace", "A keyboard"
   ],
   Action: [
     "Dancing azonto", "Doing the shaku shaku", "Dancing amapiano", "Hailing a trotro", "Haggling at Makola market", "Shouting \"Chale!\"", "Pounding fufu", "Washing clothes by hand", "Sweeping the compound", "Fanning yourself in the heat", "Starting a generator", "Lighting a candle during dumsor", "Cheering a Black Stars goal", "Praying loudly", "Arguing about jollof", "Winning an argument", "Tying a headwrap", "Braiding hair", "Eating with your hands", "Licking your fingers",
@@ -57,7 +61,9 @@ window.ART_WORDS = {
     // general trivia
     "Juggling", "Skateboarding", "Surfing", "Rock climbing", "Playing chess", "Playing the guitar", "Playing the drums", "Riding a bike", "Painting a wall", "Planting a tree", "Catching a ball", "Throwing a javelin", "Doing push-ups", "Doing yoga", "Meditating", "Brushing your hair", "Scoring a goal", "Taking a penalty", "A slam dunk", "Boxing", "A karate chop", "Dancing ballet", "Dancing salsa", "Walking a dog", "Feeding a baby", "Changing a tyre", "Jumping in a puddle", "Building a snowman", "Flying a kite", "Making a sandwich", "Frying an egg", "Opening a bottle", "Tying shoelaces", "Writing a letter", "Reading a book", "Whistling", "Laughing out loud", "Giggling", "Winking", "Hiccuping",
     // general knowledge trivia
-    "Flipping a coin", "Solving a puzzle", "Answering a quiz question", "Buzzing in first", "Phoning a friend", "Launching a rocket", "Crossing the equator", "Discovering fire", "Winning a quiz", "Looking through a telescope", "Doing an experiment", "Mixing chemicals", "Conducting an orchestra", "Painting a masterpiece", "Sculpting a statue", "Writing a novel", "Giving a TED talk", "Solving a Rubik's cube", "Reading a map", "Finding treasure"
+    "Flipping a coin", "Solving a puzzle", "Answering a quiz question", "Buzzing in first", "Phoning a friend", "Launching a rocket", "Crossing the equator", "Discovering fire", "Winning a quiz", "Looking through a telescope", "Doing an experiment", "Mixing chemicals", "Conducting an orchestra", "Painting a masterpiece", "Sculpting a statue", "Writing a novel", "Giving a TED talk", "Solving a Rubik's cube", "Reading a map", "Finding treasure",
+    // words with words inside them: describe the parts to get the whole
+    "Sleepwalking", "Daydreaming", "Eavesdropping", "Window shopping", "Hitchhiking", "Skydiving", "Snorkelling", "Bungee jumping", "Babysitting", "Backpacking", "Tiptoeing", "Sunbathing", "Spring cleaning", "Name-dropping", "Backseat driving", "Crowd surfing", "Moonwalking", "Cartwheeling", "Daydreaming in class", "Sleep-talking"
   ],
   World: [
     // Ghana
@@ -75,7 +81,9 @@ window.ART_WORDS = {
     // general knowledge trivia
     "The equator", "The Prime Meridian", "The Bermuda Triangle", "Atlantis", "Mount Olympus", "The Silk Road", "Pompeii", "The Panama Canal", "The Suez Canal", "The Great Rift Valley", "The Mediterranean Sea", "The Caribbean", "The Himalayas", "The Andes", "Tokyo", "Canberra", "Ottawa", "The seven continents", "The seven wonders of the world", "The International Space Station", "NASA", "The Roman Empire", "The Ottoman Empire", "The Vikings", "The Wild West", "Ancient Greece", "Ancient Rome", "The Aztecs", "The Maya",
     // harder words: the describer explains these in their own words (no clue is shown)
-    "The Atlas Mountains", "The Serengeti", "The Kalahari", "The Namib Desert", "The Okavango Delta", "Lalibela", "Gorée Island", "Mount Kenya"
+    "The Atlas Mountains", "The Serengeti", "The Kalahari", "The Namib Desert", "The Okavango Delta", "Lalibela", "Gorée Island", "Mount Kenya",
+    // words with words inside them: describe the parts to get the whole
+    "A skyscraper", "A waterfront", "A seaport", "A playground", "A graveyard", "A marketplace", "A crossroads", "A roundabout", "A motorway", "A greenhouse", "A farmyard", "A football pitch", "A courthouse", "A schoolyard", "A fishing village", "A shopping mall", "A drive-in cinema", "A bus stop", "A car park", "A rooftop"
   ],
   Nature: [
     "Cocoa pod", "A mango tree", "A baobab tree", "Harmattan", "The rainy season", "A palm tree", "A coconut", "A pineapple", "Cassava", "A yam", "A plantain", "Pepper", "Moringa", "Shea butter tree", "Sugarcane", "A kola nut",
@@ -90,7 +98,9 @@ window.ART_WORDS = {
     // general knowledge trivia
     "The solar system", "Mars", "Jupiter", "Saturn", "The Moon", "The Sun", "A comet", "A meteor shower", "The Big Dipper", "The tides", "Metamorphosis", "Hibernation", "Migration", "Camouflage", "The dodo", "A woolly mammoth", "A food chain", "An ecosystem", "Photosynthesis in a leaf", "A magnet", "An earthquake", "Erosion",
     // harder words: the describer explains these in their own words (no clue is shown)
-    "An aardvark", "A pangolin", "An okapi", "A manatee", "A narwhal", "A platypus", "A mandrill", "A meerkat", "A wildebeest", "A warthog", "A hyena"
+    "An aardvark", "A pangolin", "An okapi", "A manatee", "A narwhal", "A platypus", "A mandrill", "A meerkat", "A wildebeest", "A warthog", "A hyena",
+    // words with words inside them: describe the parts to get the whole
+    "A hummingbird", "A hippopotamus", "A rhinoceros", "A dragonfly", "An earthworm", "A starfish", "A woodpecker", "A kingfisher", "A grasshopper", "A ladybird", "A porcupine", "An armadillo", "An orangutan", "A chimpanzee", "A triceratops", "A stegosaurus", "Quicksand", "A whirlpool", "A wildfire", "A sandstorm", "A hailstorm", "A rainstorm", "A cornfield", "Seaweed", "Driftwood", "A firefly", "A bullfrog", "A sea urchin", "A tadpole"
   ],
   Random: [
     "Dumsor", "Jollof wars", "Ghana Must Go", "Group chat", "Voice note", "Plot twist", "Spoiler alert", "Season finale", "Cliffhanger", "Red carpet", "Netflix and chill", "Binge-watching", "Mobile money", "Free SHS", "Trotro mate", "ECG bill", "Borla", "Small chops", "Chop bar", "Sunday service", "Church choir", "Wedding", "Funeral", "Outdooring", "Birthday party", "Surprise party", "Sleepover",
@@ -104,7 +114,9 @@ window.ART_WORDS = {
     // general knowledge trivia
     "The Big Bang", "The theory of evolution", "Newton's apple", "Pi", "The speed of light", "Photosynthesis", "The water cycle", "The Wright brothers' first flight", "The discovery of penicillin", "The first computer", "The Great Fire of London", "The Black Death", "The French Revolution", "The American Revolution", "The Magna Carta", "A Shakespeare play", "A fairy tale", "A nursery rhyme", "A bedtime story", "A riddle", "A quiz show", "Who Wants to Be a Millionaire", "A pub quiz", "A crossword puzzle", "A tongue twister", "A proverb", "A fun fact", "A world record", "Guinness World Records", "The four seasons", "The twelve months", "The zodiac", "A horoscope", "Time travel", "The Loch Ness Monster", "Bigfoot", "The Bermuda Triangle mystery", "A UFO", "An alien", "A conspiracy theory", "Murphy's Law", "A paradox", "Nobel Prize winner",
     // harder words: the describer explains these in their own words (no clue is shown)
-    "An algorithm", "A podcast", "Procrastination", "Nostalgia", "Irony", "Sarcasm", "Karma", "Gossip", "Small talk", "A rumour", "Nepotism", "Bribery", "Inflation", "A recession", "A budget", "The stock market", "A mortgage", "A hashtag"
+    "An algorithm", "A podcast", "Procrastination", "Nostalgia", "Irony", "Sarcasm", "Karma", "Gossip", "Small talk", "A rumour", "Nepotism", "Bribery", "Inflation", "A recession", "A budget", "The stock market", "A mortgage", "A hashtag",
+    // words with words inside them: describe the parts to get the whole
+    "A barometer", "A speedometer", "Television", "A photograph", "An autograph", "A biography", "An autobiography", "Geography", "Arachnophobia", "Claustrophobia", "Insomnia", "Telepathy", "Telekinesis", "Hypothermia", "Dehydration", "A carnivore", "A herbivore", "An omnivore", "A vegetarian", "A pedestrian", "Heartburn", "Sunburn", "A hangover", "Hopscotch", "A cheerleader", "A babysitter's rules", "Homework", "Nightmare", "Daydream"
   ]
 };
 // A small picture shown with a word on the card (the describer sees it; it helps when the name alone is hard).

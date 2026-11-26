@@ -129,6 +129,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .wpic{max-height:calc(26*var(--u));max-width:40vw;border-radius:calc(1.2*var(--u));object-fit:cover;display:block}.wpic.em{font:400 calc(15*var(--u))/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}.startnote{margin-top:calc(.8*var(--u));text-align:center;font:800 clamp(9px,calc(1.9*var(--u)),18px)/1.25 var(--sans);letter-spacing:.06em;text-transform:uppercase;background:var(--n);color:var(--y);border-radius:999px;padding:calc(.9*var(--u)) 1.4vw;animation:blink .9s infinite alternate}@keyframes blink{to{opacity:.6}}
 #toast{position:fixed;left:50%;bottom:calc(9*var(--u));transform:translateX(-50%);z-index:70;max-width:80vw;background:var(--n);color:var(--y);font:700 clamp(11px,calc(2.2*var(--u)),16px) var(--sans);padding:calc(1.2*var(--u)) 2vw;border-radius:12px;display:none;text-align:center}
 html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}html.short .teamsprev{grid-template-columns:repeat(3,1fr)}html.short .tp{padding:calc(.4*var(--u)) .6vw}html.short .tp span.m{font-size:11px}html.short .tp b{font-size:11px}html.short .bigcard .rem{display:none}html.short .bigcard{padding-top:calc(1*var(--u))}html.short .bigcard .clock{font-size:clamp(36px,calc(11*var(--u)),100px)}html.short .note .tip{font-size:11px}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}@keyframes shk{0%,100%{transform:none}20%{transform:translateX(-1.2vw)}40%{transform:translateX(1.2vw)}60%{transform:translateX(-.8vw)}80%{transform:translateX(.8vw)}}.shk{animation:shk .45s}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:calc(1.2*var(--u));display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:calc(.2*var(--u)) .5vw}
 #dock button{width:calc(5.6*var(--u));height:calc(5.6*var(--u));border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -143,6 +144,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   <div class="view" id="view"></div>
 </div>
 <div id="rules"><div class="rc"><span class="rn" id="rnum"></span><h2 id="rttl"></h2><div class="rb" id="rbody"></div><div class="rf"><span>&larr; back</span><span>Space / &rarr; next &middot; Esc closes</span></div></div></div>
+<canvas id="fx"></canvas>
 <div id="toast"></div>
 <div id="dock"></div>
 <script src="config.js"></script>
@@ -191,6 +193,13 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   var ac = null;
   function actx() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch (e) {} return ac; }
   function tone(f, d, type, vol, at) { var c = actx(); if (!c) return; var o = c.createOscillator(), g = c.createGain(), t = c.currentTime + (at || 0); o.type = type || "sine"; o.frequency.value = f; g.gain.setValueAtTime(vol || .15, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .02); }
+  // The same clips as the spelling bee: yay when it is right, the wrong buzz when it is not. Synth sounds are the fallback.
+  var YAY = "assets/sounds/yay.mp3", WRONG = "assets/sounds/wrong.mp3";
+  function clip(src, vol, rate, fallback) {
+    try { var el = new Audio(src); el.volume = vol; if (rate) el.playbackRate = rate; el.onerror = fallback; var pr = el.play(); if (pr && pr.catch) pr.catch(fallback); } catch (e) { fallback(); }
+  }
+  function yay(layers) { for (var i = 0; i < (layers || 1); i++) (function (i) { setTimeout(function () { clip(YAY, Math.min(1, .85 - i * .06), 1 + i * .035, i === 0 ? ding : function () {}); }, i * 150); })(i); }
+  function wrongSound() { clip(WRONG, 1, 0, function () { tone(220, .5, "sawtooth", .3); tone(165, .6, "square", .2); }); }
   function tick() { tone(1500, .03, "square", .06); }
   function ding() { tone(880, .12, "triangle", .16); tone(1320, .18, "triangle", .14, .09); }
   function buzzer() { tone(180, .9, "sawtooth", .28); tone(140, .9, "square", .18); }
@@ -423,14 +432,26 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
     ck.textContent = !S.started ? S.secs : S.paused ? "Paused" : sec; ck.classList.toggle("low", S.started && !S.paused && sec <= 10 && sec > 0);
     br.style.width = (100 * S.left / (S.secs * 1000)) + "%";
   }
-  function right() { if (S.phase === "play" && !S.started) return beginClock(); if (S.phase !== "play" || S.paused || S.ap) return; S.got.push(S.word); ding(); S.word = nextWord(); setWord(); }
+  function right() { if (S.phase === "play" && !S.started) return beginClock(); if (S.phase !== "play" || S.paused || S.ap) return; S.got.push(S.word); yay(1); S.word = nextWord(); setWord(); }
   function award(i) {
     if (S.phase !== "play" || !S.started || S.paused || !S.ap || i < 0 || i >= S.teams.length) return;
-    S.apGot[i]++; S.got.push(S.word); ding(); S.word = nextWord();
+    S.apGot[i]++; S.got.push(S.word); yay(1); S.word = nextWord();
     var b = view.querySelector('.aps button[data-ap="' + i + '"] b'); if (b) b.textContent = S.apGot[i];
     setWord();
   }
   function undo() { if (S.phase !== "play" || S.ap || !S.got.length) return; S.word = S.got.pop(); setWord(); }
+  function shakeCard() { var c = view.querySelector(".bigcard"); if (!c) return; c.classList.remove("shk"); void c.offsetWidth; c.classList.add("shk"); }
+  var parts = [], raf = 0;
+  function confetti(n) {
+    var fx = $("fx"), g = fx.getContext("2d"); fx.width = innerWidth; fx.height = innerHeight; var cols = ["#08183E", "#ffffff", "#F5D76E", "#08183E", "#ffffff"];
+    for (var i = 0; i < n; i++) { var left = i % 2 === 0; parts.push({ x: left ? -10 : innerWidth + 10, y: innerHeight * (.35 + Math.random() * .45), vx: (left ? 1 : -1) * (5 + Math.random() * 14), vy: -8 - Math.random() * 16, s: 7 + Math.random() * 10, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length] }); }
+    cancelAnimationFrame(raf); (function step() {
+      g.clearRect(0, 0, fx.width, fx.height);
+      parts.forEach(function (p) { p.x += p.vx; p.y += p.vy; p.vy += .38; p.vx *= .985; p.r += p.vr; g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c; g.strokeStyle = "rgba(8,24,62,.35)"; g.lineWidth = 1; g.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); if (p.c === "#ffffff") g.strokeRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); g.restore(); });
+      parts = parts.filter(function (p) { return p.y < fx.height + 30; });
+      if (parts.length) raf = requestAnimationFrame(step); else g.clearRect(0, 0, fx.width, fx.height);
+    })();
+  }
   function pass() {
     if (S.phase !== "play" || S.paused) return;
     if (S.pass >= S.passMax) { toast(S.passMax ? "No passes left this turn. Keep going!" : "No passing in this game."); return; }
@@ -439,8 +460,8 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   // X: the word was wrong or a description rule was broken. It scores nothing and the next word comes up; reaching the limit ends the turn.
   function xmark() {
     if (S.phase !== "play" || !S.started || S.paused || !S.xMax) return;
-    S.xs++; tone(220, .25, "sawtooth", .22);
-    if (S.xs >= S.xMax) { clearInterval(timer); buzzer(); toast("Too many X marks: the turn is over."); return endTurn(); }
+    S.xs++; wrongSound(); shakeCard();
+    if (S.xs >= S.xMax) { clearInterval(timer); toast("Too many X marks: the turn is over."); return endTurn(); }
     S.word = nextWord(); setWord();
   }
   function pause() {
@@ -477,7 +498,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   function finishMove() {
     var t = S.teams[S.cur]; t.turns++;
     var w = S.teams.filter(function (x) { return x.pos >= FIN; })[0];
-    if (w) { S.winner = w.id; S.phase = "win"; save(); fanfare(); view.innerHTML = '<div class="view msg"><div class="small">We have a winner</div><div class="big"><em>' + esc(who(w)) + '</em></div><div class="words">' + w.members.map(function (m) { return "<span>" + esc(m) + "</span>"; }).join("") + '</div><div class="small">Press &#9654; for a new game</div></div>'; setDock([["newgame", "New game", ICON.again]]); return; }
+    if (w) { S.winner = w.id; S.phase = "win"; save(); fanfare(); yay(6); confetti(260); setTimeout(function () { confetti(220); }, 700); setTimeout(function () { confetti(160); }, 1500); view.innerHTML = '<div class="view msg"><div class="small">We have a winner</div><div class="big"><em>' + esc(who(w)) + '</em></div><div class="words">' + w.members.map(function (m) { return "<span>" + esc(m) + "</span>"; }).join("") + '</div><div class="small">Press &#9654; for a new game</div></div>'; setDock([["newgame", "New game", ICON.again]]); return; }
     S.cur = (S.cur + 1) % S.teams.length; goReady();
   }
   function newGame() { try { localStorage.removeItem(KEY); } catch (e) {} S.phase = "setup"; S.winner = -1; prevTeams = null; renderSetup(); }
@@ -578,7 +599,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
   // wake the parent's top icons when the mouse moves in here
   document.addEventListener("mousemove", function () { if (inFrame) try { window.parent.postMessage("gcg-attention", "*"); } catch (e) {} });
 
-  if (/[?&]test\b/.test(location.search)) window.__art = { setWord: setWord, S: S, resolve: resolve, DIAL: DIAL, goReady: goReady, startTurn: startTurn, endTurn: endTurn, primary: primary };
+  if (/[?&]test\b/.test(location.search)) window.__art = { finishMove: finishMove, confetti: confetti, wrongSound: wrongSound, yay: yay, setWord: setWord, S: S, resolve: resolve, DIAL: DIAL, goReady: goReady, startTurn: startTurn, endTurn: endTurn, primary: primary };
   // ---------- start ----------
   loadPeople().then(function () {
     if (restore()) { goReady(); }

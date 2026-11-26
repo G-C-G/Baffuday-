@@ -316,3 +316,5 @@ The host panel now opens on two steps: **1. Get ready** (load the guest file, ti
 Keys: Space / Right = spin, start, got it; Left = undo; P = pass; "." = pause; Esc = close.
 
 Articulate rules the game explains as it goes (wording in `CATTIP` / `SPECIAL` at the top of the script in `articulate.html`): the spinner is a dial with an arrow; extra slices **All Play**, **Double** and **Lose a turn** can be switched on or off in setup; **5+ words in a turn = +1 bonus square**; each team has an animal totem. `?` (or the ? icon) opens a page-by-page How to play.
+
+**Articulate rules (updated to the publisher's rulebook):** category = the square a team stands on (everyone starts on Object); one square per correct card, no dice; orange and red squares carry a bonus spin (green: forward 2/3 or send another team back 2/3; orange and red: nothing); white Control squares are a one-card-for-everybody challenge (first to shout takes the next turn); breaking a describing rule forfeits the turn (optional warnings in setup); one pass per turn; reach Finish then win the Final Control. Gestures are allowed.

@@ -126,7 +126,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 #rules .rb{font:500 clamp(15px,2.8vh,28px)/1.45 var(--sans);flex:1}
 #rules .rb p{margin:0 0 1.2vh}#rules .rb b{font-weight:800}
 #rules .rf{display:flex;justify-content:space-between;align-items:center;margin-top:2vh;font:700 clamp(10px,1.6vh,14px) var(--sans);letter-spacing:.14em;text-transform:uppercase;opacity:.75}
-.wpic{max-height:26vh;max-width:40vw;border-radius:1.2vh;object-fit:cover;display:block}.wpic.em{font:400 15vh/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}.hnt{display:block;max-width:52vw;font:500 clamp(14px,2.7vh,28px)/1.3 var(--sans);opacity:.72;margin-top:.4vh}
+.wpic{max-height:26vh;max-width:40vw;border-radius:1.2vh;object-fit:cover;display:block}.wpic.em{font:400 15vh/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:1.2vh;display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:.2vh .5vw}
 #dock button{width:5.6vh;height:5.6vh;border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -393,10 +393,10 @@ button{font:inherit;cursor:pointer;color:inherit}
   }
   function setWord() {
     var el = $("wd"); if (!el) return;
-    var img = (window.ART_IMG || {})[S.word], emo = (window.ART_EMOJI || {})[S.word], hnt = (window.ART_HINT || {})[S.word];
-    el.innerHTML = (img ? '<img class="wpic" alt="" src="' + esc(img) + '">' : emo ? '<span class="wpic em">' + emo + "</span>" : "") + '<span class="wt">' + esc(S.word) + "</span>" + (hnt ? '<span class="hnt">' + esc(hnt) + "</span>" : "");
+    var img = (window.ART_IMG || {})[S.word], emo = (window.ART_EMOJI || {})[S.word];
+    el.innerHTML = (img ? '<img class="wpic" alt="" src="' + esc(img) + '">' : emo ? '<span class="wpic em">' + emo + "</span>" : "") + '<span class="wt">' + esc(S.word) + "</span>";
     el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
-    var size = img || emo || hnt ? 6 : 7.2; el.style.fontSize = size + "vw"; var guard = 0;
+    var size = img || emo ? 6 : 7.2; el.style.fontSize = size + "vw"; var guard = 0;
     while ((el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2) && size > 2.2 && guard++ < 50) { size -= .3; el.style.fontSize = size + "vw"; }
     var tot = S.ap ? S.apGot.reduce(function (a, b) { return a + b; }, 0) : S.got.length;
     $("gt").textContent = tot + (tot === 1 ? " word" : " words") + (S.pass ? " · " + S.pass + " passed" : "");

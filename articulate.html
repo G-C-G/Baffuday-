@@ -393,7 +393,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   }
   function setWord() {
     var el = $("wd"); if (!el) return;
-    var img = (window.ART_IMG || {})[S.word], emo = (window.ART_EMOJI || {})[S.word];
+    var img = (window.ART_IMG || {})[S.word], emo = "";   // no picture hints: the card shows the word and nothing else
     el.innerHTML = (img ? '<img class="wpic" alt="" src="' + esc(img) + '">' : emo ? '<span class="wpic em">' + emo + "</span>" : "") + '<span class="wt">' + esc(S.word) + "</span>";
     el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
     var size = img || emo ? 6 : 7.2; el.style.fontSize = size + "vw"; var guard = 0;

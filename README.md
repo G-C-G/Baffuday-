@@ -314,3 +314,5 @@ The host panel now opens on two steps: **1. Get ready** (load the guest file, ti
 ## Articulate (describing game)
 `articulate.html` is opened from the **Articulate** button on the title screen of `play.html` (an overlay, so fullscreen stays on). Round board with the category wheel in the middle, one token per team, a word card, a 30 second timer (changeable in setup), words guessed move the token. Players come from the shared guest list; anyone not in the system can be added on the setup screen (they are flagged `only: "articulate"` so the other games ignore them). Words live in `assets/articulate-words.js`.
 Keys: Space / Right = spin, start, got it; Left = undo; P = pass; "." = pause; Esc = close.
+
+Articulate rules the game explains as it goes (wording in `CATTIP` / `SPECIAL` at the top of the script in `articulate.html`): the spinner is a dial with an arrow; extra slices **All Play**, **Double** and **Lose a turn** can be switched on or off in setup; **5+ words in a turn = +1 bonus square**; each team has an animal totem. `?` (or the ? icon) opens a page-by-page How to play.

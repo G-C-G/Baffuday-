@@ -309,3 +309,8 @@ The host panel now opens on two steps: **1. Get ready** (load the guest file, ti
 
 ## Play page (one device, no separate host panel during the night)
 `play.html` shows the projector full screen with the host buttons floating on top. Move the mouse, touch the screen or press a key and the buttons come up for 5 seconds, then hide so the room sees only the game. Space / Enter = the big gold button, P pause, K karaoke, S skip. "Setup" (top left, when the buttons are up) goes back to the host panel. Set up first on `host.html` (load guests, tick who is here, pick the settings), then open `play.html` in the same browser.
+
+
+## Articulate (describing game)
+`articulate.html` is opened from the **Articulate** button on the title screen of `play.html` (an overlay, so fullscreen stays on). Round board with the category wheel in the middle, one token per team, a word card, a 30 second timer (changeable in setup), words guessed move the token. Players come from the shared guest list; anyone not in the system can be added on the setup screen (they are flagged `only: "articulate"` so the other games ignore them). Words live in `assets/articulate-words.js`.
+Keys: Space / Right = spin, start, got it; Left = undo; P = pass; "." = pause; Esc = close.

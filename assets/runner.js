@@ -111,7 +111,7 @@
   startBtn.addEventListener("click", function () { startShow(); });
   // "Hot takes" on the title screen: skip straight to Twisted Hot Takes (same checks as Start now)
   var htBtn = document.createElement("button"); htBtn.id = "htbtn"; htBtn.type = "button"; htBtn.textContent = "Hot takes"; htBtn.title = "Go straight to the Twisted Hot Takes"; htBtn.hidden = true;
-  var idleRow = document.createElement("div"); idleRow.id = "idlerow"; panel.insertBefore(idleRow, strip); idleRow.appendChild(htBtn); idleRow.appendChild(startBtn);
+  var idleRow = document.createElement("div"); idleRow.id = "idlerow"; panel.insertBefore(idleRow, strip); var artBtn = document.createElement("button"); artBtn.id = "artbtn"; artBtn.type = "button"; artBtn.textContent = "Articulate"; artBtn.title = "Open the Articulate game"; artBtn.addEventListener("click", function () { try { window.parent.postMessage({ gcgart: "open" }, "*"); } catch (e) {} }); idleRow.appendChild(artBtn); idleRow.appendChild(htBtn); idleRow.appendChild(startBtn);
   htBtn.addEventListener("click", function () {
     A = api(); if (!A || !A.get) return say("Still loading. Try again in a moment.");
     G = A.get();
@@ -253,7 +253,7 @@
     fresh();
     var m = st.mode || "home", html = "", status = "", primary = "", sec = [], opts = "", ask = "";
     startBtn.hidden = run.phase !== "idle";
-    htBtn.hidden = !(run.phase === "idle" || m === "home");   // on the title screen, whatever stage the night is at
+    htBtn.hidden = !(run.phase === "idle" || m === "home"); artBtn.hidden = htBtn.hidden;   // on the title screen, whatever stage the night is at
     if (run.phase === "idle") { strip.classList.remove("hide"); if (hint) { strip.innerHTML = '<div class="row"><span class="st hintpill"><b>' + esc(hint) + "</b></span></div>"; strip.classList.remove("hide"); } else strip.classList.add("hide"); return; }
     A = api(); if (!A || !A.get) { strip.innerHTML = '<div class="row"><span class="st">Loading the show...</span></div>'; return; }
     G = A.get();

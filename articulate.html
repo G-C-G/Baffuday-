@@ -90,7 +90,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .bigcard .strip{display:flex;gap:.6vw;justify-content:center}
 .bigcard .strip span{display:inline-grid;place-items:center;min-width:5vh;height:5vh;padding:0 1vw;border:2px solid var(--n);border-radius:999px;font:800 1.7vh var(--sans);letter-spacing:.12em;text-transform:uppercase;background:var(--yl)}
 .bigcard .strip span.on{background:var(--n);color:var(--y)}
-.bigcard .word{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font:400 8vw/1.02 var(--serif);word-break:break-word;min-height:0}
+.bigcard .word{flex-direction:column;gap:1vh;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font:400 8vw/1.02 var(--serif);word-break:break-word;min-height:0}
 .bigcard .clock{text-align:center;font:400 clamp(44px,12vh,130px)/1 var(--serif);font-variant-numeric:tabular-nums}
 .bigcard .clock.low{animation:pulse .5s infinite alternate}
 .bigcard .bar{width:100%;margin:1vh 0}
@@ -126,6 +126,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 #rules .rb{font:500 clamp(15px,2.8vh,28px)/1.45 var(--sans);flex:1}
 #rules .rb p{margin:0 0 1.2vh}#rules .rb b{font-weight:800}
 #rules .rf{display:flex;justify-content:space-between;align-items:center;margin-top:2vh;font:700 clamp(10px,1.6vh,14px) var(--sans);letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.wpic{max-height:26vh;max-width:40vw;border-radius:1.2vh;object-fit:cover;display:block}.wpic.em{font:400 15vh/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}.wt{display:block}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:1.2vh;display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:.2vh .5vw}
 #dock button{width:5.6vh;height:5.6vh;border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -391,8 +392,11 @@ button{font:inherit;cursor:pointer;color:inherit}
     var ab = view.querySelector(".aps"); if (ab) ab.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) award(+b.dataset.ap); });
   }
   function setWord() {
-    var el = $("wd"); if (!el) return; el.textContent = S.word; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
-    var size = 7.2; el.style.fontSize = size + "vw"; var guard = 0;
+    var el = $("wd"); if (!el) return;
+    var img = (window.ART_IMG || {})[S.word], emo = (window.ART_EMOJI || {})[S.word];
+    el.innerHTML = (img ? '<img class="wpic" alt="" src="' + esc(img) + '">' : emo ? '<span class="wpic em">' + emo + "</span>" : "") + '<span class="wt">' + esc(S.word) + "</span>";
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    var size = img || emo ? 6 : 7.2; el.style.fontSize = size + "vw"; var guard = 0;
     while ((el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2) && size > 2.2 && guard++ < 50) { size -= .3; el.style.fontSize = size + "vw"; }
     var tot = S.ap ? S.apGot.reduce(function (a, b) { return a + b; }, 0) : S.got.length;
     $("gt").textContent = tot + (tot === 1 ? " word" : " words") + (S.pass ? " · " + S.pass + " passed" : "");
@@ -531,7 +535,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   // wake the parent's top icons when the mouse moves in here
   document.addEventListener("mousemove", function () { if (inFrame) try { window.parent.postMessage("gcg-attention", "*"); } catch (e) {} });
 
-  if (/[?&]test\b/.test(location.search)) window.__art = { S: S, resolve: resolve, DIAL: DIAL, goReady: goReady, startTurn: startTurn, endTurn: endTurn, primary: primary };
+  if (/[?&]test\b/.test(location.search)) window.__art = { setWord: setWord, S: S, resolve: resolve, DIAL: DIAL, goReady: goReady, startTurn: startTurn, endTurn: endTurn, primary: primary };
   // ---------- start ----------
   loadPeople().then(function () {
     if (restore()) { goReady(); }

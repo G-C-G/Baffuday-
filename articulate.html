@@ -133,6 +133,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
 .bigcard{position:relative}.tickfx{position:absolute;right:3vw;top:calc(14*var(--u));font:800 calc(12*var(--u))/1 var(--sans);color:var(--n);opacity:0;animation:tickpop .6s ease-out}@keyframes tickpop{0%{opacity:0;transform:scale(.6)}30%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:translateY(-1dvh)}}
 html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));height:calc(24*var(--u))}html.short .turn .who{font-size:calc(7*var(--u))}html.short .turn .cat2{font-size:calc(5*var(--u));margin-top:.4dvh}
 .tp .m{display:flex;flex-wrap:wrap;gap:.4dvh .4vw;margin-top:.5dvh}.mem{border:2px solid var(--n);background:transparent;border-radius:999px;padding:.3dvh .8vw;font:600 clamp(11px,1.9dvh,17px) var(--sans)}.mem.on{background:var(--n);color:var(--y)}.emp{opacity:.55;font-size:clamp(10px,1.6dvh,14px)}
+.mem{touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}.tp.over{outline:calc(.5*var(--u)) dashed var(--n);outline-offset:-2px;background:var(--yl)}.dragghost{position:fixed;pointer-events:none;z-index:95;opacity:.95;transform:translate(-50%,-50%) scale(1.15);box-shadow:0 1dvh 2.4dvh rgba(0,0,0,.35);background:var(--n)!important;color:var(--y)!important}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:calc(1.2*var(--u));display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:calc(.2*var(--u)) .5vw}
 #dock button{width:calc(5.6*var(--u));height:calc(5.6*var(--u));border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -237,7 +238,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
       '<div class="opts"><button class="btn ghost" id="sh">Everyone here</button><button class="btn ghost" id="sa">Everyone</button><button class="btn ghost" id="sn">Clear</button></div></div>' +
       '<div class="panel"><h2>Teams</h2><div class="opts" style="margin:0 0 1vh"><label>Teams <span class="stp"><button id="tm">&minus;</button><b id="tc">' + S.nteams + '</b><button id="tpl">+</button></span></label><label>Seconds <span class="stp"><button id="sm">&minus;</button><b id="sc">' + S.secs + '</b><button id="sp">+</button></span></label><label>Passes <span class="stp"><button id="pm">&minus;</button><b id="pc2">' + S.passMax + '</b><button id="pp">+</button></span></label><label>Warnings <span class="stp"><button id="xm">&minus;</button><b id="xc">' + (S.xMax - 1) + '</b><button id="xp">+</button></span></label><button class="btn ghost" id="shuf">Shuffle</button></div>' +
       '<div class="teamsprev">' + tp.map(function (t, i) { return '<div class="tp" data-tm="' + i + '"><b data-tm="' + i + '"><span class="pc">' + SHAPES[i] + "</span>" + TOTEMS[i].n + '</b><span class="m">' + (t.map(function (n) { return '<button type="button" class="mem' + (pickM === n ? " on" : "") + '" data-m="' + esc(n) + '">' + esc(n) + "</button>"; }).join("") || '<i class="emp">empty: tap here to move the picked person in</i>') + "</span></div>"; }).join("") + '</div>' +
-      '<p class="micro" style="margin:1.2dvh 0 0">To choose teams: tap a name, then tap the team to move them to (or tap another name to swap). Official rules: a broken rule loses the turn. Warnings are optional leniency (0 is the real thing).</p><div class="foot"><button class="btn ghost" id="howto">How to play</button><button class="btn" id="go"' + (n < 2 ? " disabled" : "") + '>Start the game</button></div></div></div>';
+      '<p class="micro" style="margin:1.2dvh 0 0">To choose teams: drag a name onto a team (or onto another name to swap). Tapping a name, then a team, also works. Official rules: a broken rule loses the turn. Warnings are optional leniency (0 is the real thing).</p><div class="foot"><button class="btn ghost" id="howto">How to play</button><button class="btn" id="go"' + (n < 2 ? " disabled" : "") + '>Start the game</button></div></div></div>';
     setDock([["close", "Close", ICON.x]]);
     $("sub").textContent = "Set up";
   }
@@ -290,7 +291,33 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
     var rec = { name: nm, song: "", involve: { bee: 1, karaoke: 1, takes: 1 }, bee: "no", only: "articulate", ownTake: "", picks: {}, diet: {}, createdAt: Date.now() };
     window.store.push("guests", rec).then(function (id) { guests[id] = rec; S.sel[id] = true; renderSetup(); var n2 = $("nn"); if (n2) n2.focus(); });
   }
-  view.addEventListener("click", function (e) { if (S.phase === "setup") setupClick(e); });
+  // Drag a name onto a team (or onto another name to swap). Works with a mouse or a finger; tapping a name then a team still works too.
+  var drag = null, justDragged = 0;
+  function overTeam(x, y) { var el = document.elementFromPoint(x, y); return el && el.closest ? el.closest(".tp") : null; }
+  view.addEventListener("pointerdown", function (e) {
+    if (S.phase !== "setup") return; var m = e.target.closest && e.target.closest(".mem"); if (!m) return;
+    drag = { name: m.dataset.m, x: e.clientX, y: e.clientY, on: false, ghost: null, el: m };
+  });
+  document.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    if (!drag.on) { if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 9) return; drag.on = true; var g = drag.el.cloneNode(true); g.className = "mem dragghost"; document.body.appendChild(g); drag.ghost = g; pickM = null; }
+    drag.ghost.style.left = e.clientX + "px"; drag.ghost.style.top = e.clientY + "px";
+    document.querySelectorAll(".tp.over").forEach(function (n) { n.classList.remove("over"); }); var t = overTeam(e.clientX, e.clientY); if (t) t.classList.add("over");
+    e.preventDefault();
+  }, { passive: false });
+  function endDrag(e) {
+    if (!drag) return; var d = drag; drag = null;
+    if (!d.on) return;
+    if (d.ghost && d.ghost.parentNode) d.ghost.parentNode.removeChild(d.ghost);
+    document.querySelectorAll(".tp.over").forEach(function (n) { n.classList.remove("over"); });
+    justDragged = Date.now();
+    var el = document.elementFromPoint(e.clientX, e.clientY), mem = el && el.closest ? el.closest(".mem") : null, team = el && el.closest ? el.closest(".tp") : null;
+    if (mem && mem.dataset.m && mem.dataset.m !== d.name) swapMembers(d.name, mem.dataset.m);
+    else if (team) moveMember(d.name, +team.dataset.tm);
+    renderSetup();
+  }
+  document.addEventListener("pointerup", endDrag); document.addEventListener("pointercancel", endDrag);
+  view.addEventListener("click", function (e) { if (S.phase === "setup" && Date.now() - justDragged > 350) setupClick(e); });
   view.addEventListener("keydown", function (e) { if (e.target.id === "nn" && e.key === "Enter") { e.preventDefault(); addNew(); } e.stopPropagation(); });
 
   function startGame() {

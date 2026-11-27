@@ -132,6 +132,7 @@ html.short .panel{padding:calc(.9*var(--u)) 1.1vw}html.short .setup{gap:1.6vw}ht
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}@keyframes shk{0%,100%{transform:none}20%{transform:translateX(-1.2vw)}40%{transform:translateX(1.2vw)}60%{transform:translateX(-.8vw)}80%{transform:translateX(.8vw)}}.shk{animation:shk .45s}
 .bigcard{position:relative}.tickfx{position:absolute;right:3vw;top:calc(14*var(--u));font:800 calc(12*var(--u))/1 var(--sans);color:var(--n);opacity:0;animation:tickpop .6s ease-out}@keyframes tickpop{0%{opacity:0;transform:scale(.6)}30%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:translateY(-1dvh)}}
 html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));height:calc(24*var(--u))}html.short .turn .who{font-size:calc(7*var(--u))}html.short .turn .cat2{font-size:calc(5*var(--u));margin-top:.4dvh}
+.tp .m{display:flex;flex-wrap:wrap;gap:.4dvh .4vw;margin-top:.5dvh}.mem{border:2px solid var(--n);background:transparent;border-radius:999px;padding:.3dvh .8vw;font:600 clamp(11px,1.9dvh,17px) var(--sans)}.mem.on{background:var(--n);color:var(--y)}.emp{opacity:.55;font-size:clamp(10px,1.6dvh,14px)}
 /* dock */
 #dock{position:fixed;right:1.6vw;bottom:calc(1.2*var(--u));display:flex;gap:.4vw;align-items:center;z-index:40;background:rgba(245,215,110,.92);border-radius:999px;padding:calc(.2*var(--u)) .5vw}
 #dock button{width:calc(5.6*var(--u));height:calc(5.6*var(--u));border:0;background:transparent;display:grid;place-items:center;border-radius:50%;opacity:.85}
@@ -235,19 +236,33 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
       '<div class="addrow"><input id="nn" type="text" placeholder="Add someone new (not in the system)" autocomplete="off" spellcheck="false"><button class="btn" id="nadd">Add</button></div>' +
       '<div class="opts"><button class="btn ghost" id="sh">Everyone here</button><button class="btn ghost" id="sa">Everyone</button><button class="btn ghost" id="sn">Clear</button></div></div>' +
       '<div class="panel"><h2>Teams</h2><div class="opts" style="margin:0 0 1vh"><label>Teams <span class="stp"><button id="tm">&minus;</button><b id="tc">' + S.nteams + '</b><button id="tpl">+</button></span></label><label>Seconds <span class="stp"><button id="sm">&minus;</button><b id="sc">' + S.secs + '</b><button id="sp">+</button></span></label><label>Passes <span class="stp"><button id="pm">&minus;</button><b id="pc2">' + S.passMax + '</b><button id="pp">+</button></span></label><label>Warnings <span class="stp"><button id="xm">&minus;</button><b id="xc">' + (S.xMax - 1) + '</b><button id="xp">+</button></span></label><button class="btn ghost" id="shuf">Shuffle</button></div>' +
-      '<div class="teamsprev">' + tp.map(function (t, i) { return '<div class="tp"><b><span class="pc">' + SHAPES[i] + "</span>" + TOTEMS[i].n + '</b><span class="m">' + (t.map(esc).join(", ") || "&nbsp;") + "</span></div>"; }).join("") + '</div>' +
-      '<p class="micro" style="margin:1.2dvh 0 0">Official rules: a broken rule loses the turn. Warnings are optional leniency (0 is the real thing).</p><div class="foot"><button class="btn ghost" id="howto">How to play</button><button class="btn" id="go"' + (n < 2 ? " disabled" : "") + '>Start the game</button></div></div></div>';
+      '<div class="teamsprev">' + tp.map(function (t, i) { return '<div class="tp" data-tm="' + i + '"><b data-tm="' + i + '"><span class="pc">' + SHAPES[i] + "</span>" + TOTEMS[i].n + '</b><span class="m">' + (t.map(function (n) { return '<button type="button" class="mem' + (pickM === n ? " on" : "") + '" data-m="' + esc(n) + '">' + esc(n) + "</button>"; }).join("") || '<i class="emp">empty: tap here to move the picked person in</i>') + "</span></div>"; }).join("") + '</div>' +
+      '<p class="micro" style="margin:1.2dvh 0 0">To choose teams: tap a name, then tap the team to move them to (or tap another name to swap). Official rules: a broken rule loses the turn. Warnings are optional leniency (0 is the real thing).</p><div class="foot"><button class="btn ghost" id="howto">How to play</button><button class="btn" id="go"' + (n < 2 ? " disabled" : "") + '>Start the game</button></div></div></div>';
     setDock([["close", "Close", ICON.x]]);
     $("sub").textContent = "Set up";
   }
-  var prevTeams = null;
+  var prevTeams = null, pickM = null;   // pickM = the person you have tapped, waiting to be moved
+  // The team plan keeps whatever you arranged by hand; it only changes when people are added or removed, or the number of teams changes.
   function previewTeams() {
-    var names = selectedNames(), key = names.join("|") + "#" + S.nteams;
-    if (!prevTeams || prevTeams.key !== key) { prevTeams = { key: key, t: dealTeams(names, S.nteams) }; }
-    return prevTeams.t;
+    var names = selectedNames(), plan = prevTeams && prevTeams.t;
+    if (!plan) { prevTeams = { t: dealTeams(names, S.nteams) }; return prevTeams.t; }
+    plan = plan.map(function (t) { return t.filter(function (n) { return names.indexOf(n) >= 0; }); });
+    var have = {}; plan.forEach(function (t) { t.forEach(function (n) { have[n] = 1; }); });
+    var k = Math.max(1, Math.min(S.nteams, names.length || 1));
+    while (plan.length < k) plan.push([]);
+    while (plan.length > k) { var gone = plan.pop(); gone.forEach(function (n) { smallest(plan).push(n); }); }
+    names.forEach(function (n) { if (!have[n]) smallest(plan).push(n); });
+    prevTeams = { t: plan }; return plan;
   }
+  function smallest(plan) { var b = plan[0]; plan.forEach(function (t) { if (t.length < b.length) b = t; }); return b; }
+  function moveMember(name, toTeam) { var plan = prevTeams.t; plan.forEach(function (t) { var ix = t.indexOf(name); if (ix >= 0) t.splice(ix, 1); }); plan[toTeam].push(name); }
+  function swapMembers(n1, n2) { var plan = prevTeams.t, a1 = -1, a2 = -1, i1 = -1, i2 = -1; plan.forEach(function (t, ti) { var x = t.indexOf(n1), y = t.indexOf(n2); if (x >= 0) { a1 = ti; i1 = x; } if (y >= 0) { a2 = ti; i2 = y; } }); if (a1 < 0 || a2 < 0) return; plan[a1][i1] = n2; plan[a2][i2] = n1; }
   function dealTeams(names, k) { k = Math.max(1, Math.min(k, names.length || 1)); var t = []; for (var i = 0; i < k; i++) t.push([]); shuffle(names).forEach(function (nm, i) { t[i % k].push(nm); }); return t; }
   function setupClick(e) {
+    var mm = e.target.closest("[data-m]");
+    if (mm) { var nm = mm.dataset.m; if (!pickM) pickM = nm; else if (pickM === nm) pickM = null; else { swapMembers(pickM, nm); pickM = null; } renderSetup(); return; }
+    var tt = e.target.closest("[data-tm]");
+    if (tt && pickM) { moveMember(pickM, +tt.dataset.tm); pickM = null; renderSetup(); return; }
     var b = e.target.closest("button"); if (!b) return;
     if (b.dataset.id) { S.sel[b.dataset.id] = !S.sel[b.dataset.id]; renderSetup(); return; }
     var id = b.id;
@@ -263,7 +278,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
     else if (id === "pp") { S.passMax = Math.min(5, S.passMax + 1); renderSetup(); }
     else if (id === "xm") { S.xMax = Math.max(1, S.xMax - 1); renderSetup(); }
     else if (id === "xp") { S.xMax = Math.min(4, S.xMax + 1); renderSetup(); }
-    else if (id === "shuf") { prevTeams = null; renderSetup(); }
+    else if (id === "shuf") { prevTeams = null; pickM = null; renderSetup(); }
     else if (id === "go") startGame();
     else if (id === "howto") showRules();
   }
@@ -279,7 +294,8 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   view.addEventListener("keydown", function (e) { if (e.target.id === "nn" && e.key === "Enter") { e.preventDefault(); addNew(); } e.stopPropagation(); });
 
   function startGame() {
-    var t = previewTeams();
+    var t = previewTeams().filter(function (m) { return m.length; });
+    if (t.length < 2) { toast("Two teams need at least one person each."); return; }
     S.teams = t.map(function (m, i) { return { id: i, members: m, pos: 0, turns: 0, shape: SHAPES[i] }; });
     S.cur = 0; S.winner = -1; decks = {}; needle = 0; goReady();
   }
@@ -528,8 +544,22 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   }
 
   // ---------- Control: one card for everybody, no timer. The first team to shout the answer wins it. ----------
+  // The warning comes first: everyone except the describer closes their eyes or looks away before the card appears.
   function startControl(final, t) {
-    S.phase = "control"; S.ctl = { final: final, t: t }; S.cat = CATS[Math.floor(rnd() * CATS.length)]; S.word = nextWord(); save();
+    S.phase = "cwarn"; S.ctl = { final: final, t: t }; S.cat = CATS[Math.floor(rnd() * CATS.length)]; save();
+    view.innerHTML = '<div class="view msg"><div class="small">' + (final ? "Final Control" : "Control") + ' &middot; one card for everybody</div><div class="big"><em>Close your eyes</em><br>or look away</div><div class="small">' + esc(describerOf(t)) + " (" + esc(tname(t)) + ') comes to the front and describes. Everyone else: eyes shut or turned away.</div><div class="small">Press &#9654; when everybody is ready</div></div>';
+    setDock([["creveal", "Show the card", ICON.play]]);
+  }
+  function controlCount() {
+    if (S.phase !== "cwarn") return; S.phase = "ccount"; setDock([]); var n = 3;
+    (function tickDown() {
+      view.innerHTML = '<div class="view msg"><div class="small">Card in</div><div class="big">' + n + '</div><div class="small">Eyes stay shut until the describer starts</div></div>'; beep();
+      if (--n >= 0 && n > 0) return setTimeout(tickDown, 1000);
+      setTimeout(controlShow, 1000);
+    })();
+  }
+  function controlShow() {
+    var final = S.ctl.final, t = S.ctl.t; S.phase = "control"; S.word = nextWord();
     view.innerHTML = '<div class="main play2">' + boardHtml(true) + '<div class="bigcard"><div class="strip"><span class="on">' + (final ? "Final Control" : "Control") + '</span></div><div class="word" id="wd"></div><div class="rem" style="display:block;margin:0 0 1dvh">' + esc(describerOf(t)) + " (" + esc(tname(t)) + ') describes to EVERYONE. No timer. ' + (final ? "Win it and the game is yours." : "The first team to shout it gets the next turn.") + '</div><div class="aps">' + S.teams.map(function (x) { return '<button type="button" data-ap="' + x.id + '">' + x.shape + " " + (x.id + 1) + "</button>"; }).join("") + '</div><div class="rem" style="display:block">Tap the team that shouted it first, or press Space for another card if nobody has it or it was a tie.</div></div></div>';
     drawWheel(); fitWord();
     var ab = view.querySelector(".aps"); if (ab) ab.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) controlPick(+b.dataset.ap); });
@@ -550,7 +580,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
     view.innerHTML = '<div class="view msg"><div class="small">We have a winner</div><div class="big"><em>' + esc(who(w)) + '</em></div><div class="words">' + w.members.map(function (m) { return "<span>" + esc(m) + "</span>"; }).join("") + '</div><div class="small">Press &#9654; for a new game</div></div>';
     setDock([["newgame", "New game", ICON.again]]);
   }
-  function newGame() { try { localStorage.removeItem(KEY); } catch (e) {} S.phase = "setup"; S.winner = -1; prevTeams = null; renderSetup(); }
+  function newGame() { try { localStorage.removeItem(KEY); } catch (e) {} S.phase = "setup"; S.winner = -1; prevTeams = null; pickM = null; renderSetup(); }
 
   // ---------- rules: a walk-through, plus the hints the game gives as it goes ----------
   var rulePage = 0;
@@ -602,11 +632,11 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   dock.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) act(b.dataset.a); });
   function primary() {
     var p = S.phase;
-    if (p === "ready") startTurn(); else if (p === "play") right(); else if (p === "result") move(); else if (p === "bspin") spin(); else if (p === "bdone") passTurn(); else if (p === "control") controlAgain(); else if (p === "win") newGame();
+    if (p === "ready") startTurn(); else if (p === "play") right(); else if (p === "result") move(); else if (p === "bspin") spin(); else if (p === "bdone") passTurn(); else if (p === "cwarn") controlCount(); else if (p === "control") controlAgain(); else if (p === "win") newGame();
   }
   function act(a) {
     actx();
-    if (a === "start") startTurn(); else if (a === "begin") beginClock(); else if (a === "bspin") spin(); else if (a === "bnext") passTurn(); else if (a === "again") controlAgain();
+    if (a === "start") startTurn(); else if (a === "begin") beginClock(); else if (a === "bspin") spin(); else if (a === "bnext") passTurn(); else if (a === "again") controlAgain(); else if (a === "creveal") controlCount();
     else if (a === "right") right(); else if (a === "rules") showRules(0);
     else if (a === "undo") { if (S.phase === "result") { S.phase = "play"; S.forfeit = false; var w = S.got.pop(); S.word = w || nextWord(); S.paused = false; S.started = true; S.left = 8000; S.endAt = Date.now() + 8000; drawPlay(); clearInterval(timer); startTimerOnly(); playDock(); } else undo(); }
     else if (a === "pass") pass(); else if (a === "xmark") xmark(); else if (a === "pause") pause(); else if (a === "move") move(); else if (a === "newgame") { if (S.phase === "ready" && !confirm("Start a new game? Positions are lost.")) return; newGame(); }
@@ -648,7 +678,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   // wake the parent's top icons when the mouse moves in here
   document.addEventListener("mousemove", function () { if (inFrame) try { window.parent.postMessage("gcg-attention", "*"); } catch (e) {} });
 
-  if (/[?&]test\b/.test(location.search)) window.__art = { S: S, BON: BON, sqType: sqType, sqCat: sqCat, goReady: goReady, startTurn: startTurn, endTurn: endTurn, afterMove: afterMove, bonusResult: bonusResult, startControl: startControl, controlPick: controlPick, primary: primary, setWord: setWord, win: win };
+  if (/[?&]test\b/.test(location.search)) window.__art = { S: S, BON: BON, sqType: sqType, sqCat: sqCat, goReady: goReady, startTurn: startTurn, endTurn: endTurn, afterMove: afterMove, bonusResult: bonusResult, startControl: startControl, controlCount: controlCount, controlPick: controlPick, primary: primary, setWord: setWord, win: win };
   // ---------- start ----------
   loadPeople().then(function () {
     if (restore()) { goReady(); }

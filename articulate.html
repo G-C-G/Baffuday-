@@ -221,11 +221,21 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   var decks = {}, timer = 0;
   function save() { try { localStorage.setItem(KEY, JSON.stringify({ phase: S.phase, passMax: S.passMax, xMax: S.xMax, nteams: S.nteams, secs: S.secs, teams: S.teams, cur: S.cur, winner: S.winner })); } catch (e) {} }
   function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.passMax != null) S.passMax = r.passMax; if (r.xMax != null) S.xMax = r.xMax; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 60; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
+  // Words never repeat: every word drawn is remembered (even after a reload or a new game) until the whole category has been used.
+  var USEDKEY = "gcg-art-used", USED = {};
+  try { USED = JSON.parse(localStorage.getItem(USEDKEY) || "{}") || {}; } catch (e) { USED = {}; }
   function nextWord() {
-    var cat = S.cat, d = decks[cat];
-    if (!d || d.i >= d.a.length) d = decks[cat] = { a: shuffle(window.ART_WORDS[cat] || ["(no words)"]), i: 0 };
-    return d.a[d.i++];
+    var cat = S.cat, all = window.ART_WORDS[cat] || ["(no words)"], used = USED[cat] || (USED[cat] = []), d = decks[cat];
+    if (!d || d.i >= d.a.length) {
+      var left = all.filter(function (w) { return used.indexOf(w) < 0; });
+      if (!left.length) { USED[cat] = used = []; left = all.slice(); }      // the whole category has been played: start over
+      d = decks[cat] = { a: shuffle(left), i: 0 };
+    }
+    var w = d.a[d.i++]; used.push(w);
+    try { localStorage.setItem(USEDKEY, JSON.stringify(USED)); } catch (e) {}
+    return w;
   }
+
 
   // ---------- setup screen ----------
   function selectedNames() { var out = []; people().forEach(function (p) { if (S.sel[p.id]) out.push(p.name); }); return out; }
@@ -705,7 +715,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   // wake the parent's top icons when the mouse moves in here
   document.addEventListener("mousemove", function () { if (inFrame) try { window.parent.postMessage("gcg-attention", "*"); } catch (e) {} });
 
-  if (/[?&]test\b/.test(location.search)) window.__art = { S: S, BON: BON, sqType: sqType, sqCat: sqCat, goReady: goReady, startTurn: startTurn, endTurn: endTurn, afterMove: afterMove, bonusResult: bonusResult, startControl: startControl, controlCount: controlCount, controlPick: controlPick, primary: primary, setWord: setWord, win: win };
+  if (/[?&]test\b/.test(location.search)) window.__art = { nextWord: nextWord, S: S, BON: BON, sqType: sqType, sqCat: sqCat, goReady: goReady, startTurn: startTurn, endTurn: endTurn, afterMove: afterMove, bonusResult: bonusResult, startControl: startControl, controlCount: controlCount, controlPick: controlPick, primary: primary, setWord: setWord, win: win };
   // ---------- start ----------
   loadPeople().then(function () {
     if (restore()) { goReady(); }

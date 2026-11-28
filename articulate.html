@@ -222,7 +222,7 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
   function save() { try { localStorage.setItem(KEY, JSON.stringify({ phase: S.phase, passMax: S.passMax, xMax: S.xMax, nteams: S.nteams, secs: S.secs, teams: S.teams, cur: S.cur, winner: S.winner })); } catch (e) {} }
   function restore() { try { var r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r && r.teams && r.teams.length && r.phase !== "setup") { S.teams = r.teams; if (r.passMax != null) S.passMax = r.passMax; if (r.xMax != null) S.xMax = r.xMax; S.cur = r.cur || 0; S.nteams = r.nteams; S.secs = r.secs || 60; S.winner = r.winner == null ? -1 : r.winner; S.phase = S.winner >= 0 ? "win" : "ready"; return true; } } catch (e) {} return false; }
   // Words never repeat: every word drawn is remembered (even after a reload or a new game) until the whole category has been used.
-  var USEDKEY = "gcg-art-used", USED = {};
+  var USEDKEY = "gcg-art-used", USED = {}, LASTG = {};
   try { USED = JSON.parse(localStorage.getItem(USEDKEY) || "{}") || {}; } catch (e) { USED = {}; }
   function nextWord() {
     var cat = S.cat, all = window.ART_WORDS[cat] || ["(no words)"], used = USED[cat] || (USED[cat] = []), d = decks[cat];
@@ -231,7 +231,10 @@ html.short .turn .tip.rl{display:none}html.short .stack{width:calc(19*var(--u));
       if (!left.length) { USED[cat] = used = []; left = all.slice(); }      // the whole category has been played: start over
       d = decks[cat] = { a: shuffle(left), i: 0 };
     }
-    var w = d.a[d.i++]; used.push(w);
+    // variety: never three words in a row from the same section (two at worst), when the rest of the deck allows it
+    var G = (window.ART_GROUP || {})[cat] || {}, lg = LASTG[cat] || (LASTG[cat] = []);
+    if (lg.length === 2 && lg[0] === lg[1]) { for (var k = d.i; k < d.a.length; k++) { if (G[d.a[k]] !== lg[0]) { var tmp = d.a[d.i]; d.a[d.i] = d.a[k]; d.a[k] = tmp; break; } } }
+    var w = d.a[d.i++]; used.push(w); lg.push(G[w]); if (lg.length > 2) lg.shift();
     try { localStorage.setItem(USEDKEY, JSON.stringify(USED)); } catch (e) {}
     return w;
   }
